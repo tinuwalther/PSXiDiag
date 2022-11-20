@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    New-vCenterDiagram.ps1
+    New-SimpleVCSADiagram.ps1
 
 .DESCRIPTION
-    New-vCenterDiagram - Create a Mermaid Class Diagram.
+    New-SimpleVCSADiagram - Create a Mermaid Class Diagram.
 
 .PARAMETER InputObject
     Specify a valid InputObject.
@@ -18,17 +18,17 @@
     Switch, if omitted the Output is saved as Markdown-File else as HTML-File.
     
 .EXAMPLE
-    .\New-vCenterDiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'ESXiHost Inventory'
+    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'ESXiHost Inventory'
 
     Import-Csv with the default Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'ESXiHost Inventory' as Markdown.
 
 .EXAMPLE
-    .\New-vCenterDiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'ESXiHost Inventory' -Html
+    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'ESXiHost Inventory' -Html
 
     Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'ESXiHost Inventory' as Html.
 
 .EXAMPLE
-    .\New-vCenterDiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'ESXiHost Inventory' -Title 'ESXiHost Inventory' -Html
+    .\New-SimpleVCSADiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'ESXiHost Inventory' -Title 'ESXiHost Inventory' -Html
 
     Import from a JSON-File and create the Mermaid-Diagram with the content of the CSV and the Title 'ESXiHost Inventory' as Html.
 
@@ -275,7 +275,7 @@ process{
                     "<button class='button-small'><a href='#$($vCenter)'><b>$vCenter</b></a></button>" | Add-Content $OutFile -Encoding utf8 -Force
                     Write-Verbose $_
                 }else{
-                    "- [vCenter $($vCenter)](#vcenter-$($vCenter))" | Add-Content $OutFile -Encoding utf8
+                    " - [vCenter $($vCenter)](`#vcenter-$(($vCenter).ToLower()))" | Add-Content $OutFile -Encoding utf8
                 }
             }
         }
@@ -349,6 +349,8 @@ process{
 
                                     if($HostObject.ConnectionState -eq 'Connected'){
                                         $prefix = '+'
+                                    }elseif($HostObject.ConnectionState -match 'New'){
+                                        $prefix = 'o'
                                     }else{
                                         $prefix = '-'
                                     }
