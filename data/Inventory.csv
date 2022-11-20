@@ -1,0 +1,25 @@
+﻿HostName;Version;Manufacturer;Model;vCenterServer;Cluster;Datacenter;ConnectionState
+ESXi7912.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0021.my.company.ch;Oracle;Ost;Connected
+ESXi8911.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0021.my.company.ch;Oracle;Nord;Connected
+ESXi7999.my.company.ch;7.0.3;HP;ProLiant DL380 Gen9;vCSA0100.my.company.ch;c8tn6989;Ost;Connected
+ESXi8998.my.company.ch;7.0.3;HP;ProLiant DL380 Gen9;vCSA0100.my.company.ch;c8tn6989;Nord;Connected
+ESXi8052.my.company.ch;7.0.3;HPE;Synergy 480 Gen10;vCSA0100.my.company.ch;c4tn9070;Nord;Connected
+ESXi8052.my.company.ch;7.0.3;HPE;Synergy 480 Gen10;vCSA0100.my.company.ch;c4tn9070;Nord;Connected
+ESXi7051.my.company.ch;7.0.3;HPE;Synergy 480 Gen10;vCSA0100.my.company.ch;c4tn9070;Ost;Connected
+ESXi8051.my.company.ch;7.0.3;HPE;Synergy 480 Gen10;vCSA0100.my.company.ch;c4tn9070;Nord;Connected
+ESXi8202.my.company.ch;6.5;HP;ProLiant XL170r Gen9;vCSA0010.my.company.ch;DMZPlatin01;Nord;Connected
+ESXi1202.my.company.ch;6.5;HP;ProLiant XL170r Gen9;vCSA0010.my.company.ch;DMZPlatin01;West;Connected
+ESXi1201.my.company.ch;6.5;HP;ProLiant XL170r Gen9;vCSA0010.my.company.ch;DMZPlatin01;West;Connected
+ESXi8201.my.company.ch;6.5;HP;ProLiant XL170r Gen9;vCSA0010.my.company.ch;DMZPlatin01;Nord;Connected
+ESXi1220.my.company.ch;6.7;HP;ProLiant XL170r Gen9;vCSA0010.my.company.ch;FinPlatin01;West;Connected
+ESXi1209.my.company.ch;6.7;HP;ProLiant XL170r Gen9;vCSA0010.my.company.ch;FinPlatin01;West;Connected
+ESXi8220.my.company.ch;6.7;HP;ProLiant XL170r Gen9;vCSA0010.my.company.ch;FinPlatin01;Nord;Connected
+ESXi8218.my.company.ch;6.7;HP;ProLiant XL170r Gen9;vCSA0010.my.company.ch;FinPlatin01;Nord;Connected
+ESXi1994.my.company.ch;6.7;Huawei;XH620 V3;vCSA0010.my.company.ch;z-DMZ-Transfer;West;Connected
+ESXi8901.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0020.my.company.ch;Oracle;Nord;Connected
+ESXi7902.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0020.my.company.ch;Oracle;Ost;Connected
+ESXi7903.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0020.my.company.ch;Oracle;Ost;Connected
+ESXi1902.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0020.my.company.ch;Oracle;West;Connected
+ESXi8903.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0020.my.company.ch;Oracle;Nord;Connected
+ESXi8901.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0020.my.company.ch;Oracle;Nord;Connected
+ESXi7904.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0020.my.company.ch;Oracle;Ost;Connected
