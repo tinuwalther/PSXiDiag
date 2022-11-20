@@ -232,7 +232,6 @@ $footer = @"
 
     $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
     $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
-    #Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath ("$($BaseInputFile).html")
 
     if($Html){
         $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath $($($MyInvocation.MyCommand.Name) -replace '.ps1', '.html')

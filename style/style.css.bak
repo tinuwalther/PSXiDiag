@@ -63,8 +63,8 @@ body {
 
 header {
   /*background: #033b63;*/
-  padding: 10;
-  color: var(--bs-gray-200);
+  padding: 20;
+  color: white;
   font-size: medium;
   display: block;
   overflow: auto;
