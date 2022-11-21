@@ -200,7 +200,7 @@ $head = @"
 <head>
     <title>$($Page)</title>
     $css
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.13.4/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.2.2/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
 </head>
 "@

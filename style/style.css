@@ -63,7 +63,7 @@ body {
 
 header {
   /*background: #033b63;*/
-  padding: 10;
+  padding: 20;
   color: var(--bs-gray-200);
   font-size: medium;
   display: block;
@@ -95,14 +95,14 @@ h1 {
 
 h2 {
   font-family: "QuickSand", sans-serif;
-  margin-top: 50px;
+  margin-top: 40px;
   margin-bottom: 30px;
 }
 
 h3 {
   font-family: "QuickSand", sans-serif;
-  margin-top: 40px;
-  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 h4 {
