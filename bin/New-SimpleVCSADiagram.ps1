@@ -234,10 +234,10 @@ $footer = @"
     $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
 
     if($Html){
-        $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath $($($MyInvocation.MyCommand.Name) -replace '.ps1', '.html')
+        $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath "$($Title).html"
         Write-Verbose $OutFile
     }else{
-        $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath $($($MyInvocation.MyCommand.Name) -replace '.ps1', '.md')
+        $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath "$($Title).md"
         Write-Verbose $OutFile
     }
 }
@@ -327,21 +327,20 @@ process{
                             $FixModel  = $RootModel -replace '-'
 
                             "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)" | Add-Content $OutFile -Encoding utf8
-                            #"VC$($vcNo)C$($ClusterNo)_$($Cluster) : Get-Model()" | Add-Content $OutFile -Encoding utf8
         
                             "VC$($vcNo)C$($ClusterNo)_$($FixCluster) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel)" | Add-Content $OutFile -Encoding utf8
-                            #"VC$($vcNo)C$($ClusterNo)_$($Model) : Get-Datacenter()" | Add-Content $OutFile -Encoding utf8
                                     
-                            #region Group Datacenter
-                            $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Where-Object Model -match $RootModel | Group-Object Datacenter | Select-Object -ExpandProperty Name | ForEach-Object {
+                            #region Group PhysicalLocation
+                            $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Where-Object Model -match $RootModel | Group-Object PhysicalLocation | Select-Object -ExpandProperty Name | ForEach-Object {
 
-                                Write-Verbose "Datacenter $($_)"
-                                $Datacenter = $_
-                                
-                                "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($Datacenter)" | Add-Content $OutFile -Encoding utf8
+                                Write-Verbose "PhysicalLocation $($_)"
+                                $PhysicalLocation = $_
+                                "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) : - $($PhysicalLocation)" | Add-Content $OutFile -Encoding utf8
+
+                                "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($PhysicalLocation)" | Add-Content $OutFile -Encoding utf8
 
                                 #region Group HostName
-                                $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Model -match $RootModel | Where-Object Datacenter -match $Datacenter | Group-Object HostName | Select-Object -ExpandProperty Name | ForEach-Object {
+                                $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Where-Object Model -match $RootModel | Where-Object PhysicalLocation -match $PhysicalLocation | Group-Object HostName | Select-Object -ExpandProperty Name | ForEach-Object {
                                     
                                     $HostObject = $InputObject | Where-Object HostName -match $($_)
                                     $ESXiHost   = $($HostObject.HostName).Split('.')[0]
@@ -354,12 +353,12 @@ process{
                                         $prefix = '-'
                                     }
 
-                                    "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($Datacenter) : $($prefix) $($ESXiHost), ESXi $($HostObject.Version), $($RootModel)" | Add-Content $OutFile -Encoding utf8
+                                    "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($PhysicalLocation) : $($prefix) $($ESXiHost), ESXi $($HostObject.Version), $($RootModel)" | Add-Content $OutFile -Encoding utf8
                                 }
                                 #endregion HostName
                                 
                             }
-                            #endregion Datacenter
+                            #endregion PhysicalLocation
                         
                             $ModelNo = 0
                         }

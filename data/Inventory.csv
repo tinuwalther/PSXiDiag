@@ -1,4 +1,4 @@
-﻿HostName;Version;Manufacturer;Model;vCenterServer;Cluster;Datacenter;ConnectionState
+﻿HostName;Version;Manufacturer;Model;vCenterServer;Cluster;PhysicalLocation;ConnectionState
 ESXi7912.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0021.my.company.ch;Oracle;Ost;Connected
 ESXi8911.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA0021.my.company.ch;Oracle;Nord;Connected
 ESXi7999.my.company.ch;7.0.3;HP;ProLiant DL380 Gen9;vCSA0100.my.company.ch;Windows;Ost;Connected
