@@ -1,4 +1,3 @@
-#Requires -Modules PSHTML
 <#
 .SYNOPSIS
     New-AdvancedVCSADiagram.ps1
@@ -9,9 +8,19 @@
 .PARAMETER InputObject
     Specify a valid InputObject.
 
+.PARAMETER InputObject
+    Specify a valid InputObject.
     
-.PARAMETER RelationShip
-    Specify a valid RelationShip.
+.PARAMETER Column
+    Specify the column-header of the Object, default is:
+    $Column = @{
+        Field01 = 'vCenterServer'
+        Field02 = 'Cluster'
+        Field03 = 'Model'
+        Field04 = 'PhysicalLocation'
+        Field05 = 'HostName'
+        Field06 = 'ConnectionState'
+    }
     
 .PARAMETER Title
     Specify a valid Title for the Website.
@@ -22,16 +31,45 @@
     Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Advanced ESXiHost Inventory' as Html.
 
 .EXAMPLE
-    .\New-AdvancedVCSADiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'Advanced ESXiHost Inventory' -Title 'ESXiHost Inventory'
+    .\New-AdvancedVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Advanced ESXiHost Inventory'
+
+    Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Advanced ESXiHost Inventory' as Html.
+
+.EXAMPLE
+    $Parameters = @{
+        Column      = @{
+            Field01 = 'vCenterServer'
+            Field02 = 'Cluster'
+            Field03 = 'Model'
+            Field04 = 'PhysicalLocation'
+            Field05 = 'HostName'
+            Field06 = 'ConnectionState'
+        }
+        InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
+        Title       = 'Advanced ESXiHost Inventory'
+    }
+    .\New-AdvancedVCSADiagram.ps1 @Parameters 
 
     Import from a JSON-File and create the Mermaid-Diagram with the content of the CSV and the Title 'Advanced ESXiHost Inventory' as Html.
 
 #>
 
+#Requires -Modules PSHTML
+
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$true)]
     [Object]$InputObject,
+
+    [Parameter(Mandatory=$false)]
+    [PSCustomObject]$Column = @{
+        Field01 = 'vCenterServer'
+        Field02 = 'Cluster'
+        Field03 = 'Model'
+        Field04 = 'PhysicalLocation'
+        Field05 = 'HostName'
+        Field06 = 'ConnectionState'
+    },
 
     [Parameter(Mandatory=$false)]
     [String]$RelationShip = '--',
@@ -53,12 +91,6 @@ begin{
 process{
 
     #Fields = HostName;Version;Manufacturer;Model;vCenterServer;Cluster;PhysicalLocation;ConnectionState
-    $Field01 = 'vCenterServer'
-    $Field02 = 'Cluster'
-    $Field03 = 'Model'
-    $Field04 = 'PhysicalLocation'
-    $Field05 = 'HostName'
-    $Field06 = 'ConnectionState'
     
     $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
     $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
@@ -102,11 +134,11 @@ process{
             div -class "collapse navbar-collapse" -id "collapsibleNavbar" -Content {
                 ul -class "navbar-nav" -content {
                     #FixedLinks
-                    li -class "nav-item" -content {
-                        a -class "nav-link" -href "https://pshtml.readthedocs.io/" -Target _blank -content { "PSHTML" }
-                    }
+                    # li -class "nav-item" -content {
+                    #     a -class "nav-link" -href "https://pshtml.readthedocs.io/" -Target _blank -content { "PSHTML" }
+                    # }
                     #DynamicLinks
-                    $InputObject | Group-Object $Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
+                    $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
                         $vCenter = $($_).Split('.')[0]
                         if(-not([String]::IsNullOrEmpty($vCenter))){
                             li -class "nav-item" -content {
@@ -125,7 +157,7 @@ process{
     $article = {
 
         #region <!-- vCenter -->
-        $InputObject | Group-Object $Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
+        $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
 
             #region <!-- Content -->
             div -id "Content" -Class "$($ContinerStyleFluid)" -Style "background-color:#034f84" {
@@ -139,7 +171,7 @@ process{
                     if(-not([String]::IsNullOrEmpty($vCenter))){
 
                         h3 -Id $($vCenter) -Content {
-                            "vCenter $($vCenter)"
+                            a -href "https://$($_)/ui/" -Target _blank -content { "vCenter $($vCenter)" }
                         } -Style "color:#198754; text-align: center"
                         hr
 
@@ -149,7 +181,7 @@ process{
                             "classDiagram`n"
 
                             #region Group Cluster
-                            $InputObject | Where-Object $Field01 -match $_ | Group-Object $Field02 | Select-Object -ExpandProperty Name | ForEach-Object {
+                            $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object $Column.Field02 | Select-Object -ExpandProperty Name | ForEach-Object {
                                 
                                 if(-not([String]::IsNullOrEmpty($_))){
 
@@ -162,7 +194,7 @@ process{
                                     "VC$($vcNo)_$($vCenter) : + $($RootCluster)`n"
 
                                     #region Group Model
-                                    $InputObject | Where-Object $Field01 -match $vCenter | Where-Object $Field02 -match $RootCluster | Group-Object $Field03 | Select-Object -ExpandProperty Name | ForEach-Object {
+                                    $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Group-Object $Column.Field03 | Select-Object -ExpandProperty Name | ForEach-Object {
                                         
                                         Write-Verbose "Model: $($_)"
 
@@ -175,7 +207,7 @@ process{
                                         "VC$($vcNo)C$($ClusterNo)_$($FixCluster) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel)`n"
                                                 
                                         #region Group PhysicalLocation
-                                        $InputObject | Where-Object $Field01 -match $vCenter | Where-Object $Field02 -match $RootCluster | Where-Object $Field03 -match $RootModel | Group-Object $Field04 | Select-Object -ExpandProperty Name | ForEach-Object {
+                                        $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Group-Object $Column.Field04 | Select-Object -ExpandProperty Name | ForEach-Object {
 
                                             Write-Verbose "PhysicalLocation $($_)"
                                             $PhysicalLocation = $_
@@ -184,14 +216,14 @@ process{
                                             "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($PhysicalLocation)`n"
 
                                             #region Group HostName
-                                            $InputObject | Where-Object $Field01 -match $vCenter | Where-Object $Field02 -match $RootCluster | Where-Object $Field03 -match $RootModel | Where-Object $Field04 -match $PhysicalLocation | Group-Object $Field05 | Select-Object -ExpandProperty Name | ForEach-Object {
+                                            $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Group-Object $Column.Field05 | Select-Object -ExpandProperty Name | ForEach-Object {
                                                 
-                                                $HostObject = $InputObject | Where-Object $Field05 -match $($_)
-                                                $ESXiHost   = $($HostObject.$Field05).Split('.')[0]
+                                                $HostObject = $InputObject | Where-Object $Column.Field05 -match $($_)
+                                                $ESXiHost   = $($HostObject.$($Column.Field05)).Split('.')[0]
 
-                                                if($HostObject.$Field06 -eq 'Connected'){
+                                                if($HostObject.$($Column.Field06) -eq 'Connected'){
                                                     $prefix = '+'
-                                                }elseif($HostObject.$Field06 -match 'New'){
+                                                }elseif($HostObject.$($Column.Field06) -match 'New'){
                                                     $prefix = 'o'
                                                 }else{
                                                     $prefix = '-'
@@ -266,7 +298,7 @@ process{
         body {
 
             #region <!-- header -->
-            header -Style "background-color:#dee2e6" {
+            header  {
                 div -id "j1" -class 'jumbotron text-center' -Style "padding:15; background-color:#033b63" -content {
                     p { h1 $HeaderTitle }
                     p { h2 $HeaderCaption }  

@@ -73,13 +73,13 @@ header {
 
 #Content {
   padding: 20;
-  background: #f8f9fa;
+  background: var(--bs-gray-200);
 }
 
 footer {
   background: #343a40;
   padding: 20;
-  color: #f8f9fa;
+  color: var(--bs-gray-200);
   text-align: center;
 }
 
@@ -89,7 +89,7 @@ p {
 
 h1 {
   font-family: "QuickSand", sans-serif;
-  margin-top: 60px;
+  margin-top: 40px;
   margin-bottom: 40px;
 }
 
@@ -138,4 +138,23 @@ pre {
 pre code {
   padding: 10px;
   color: #333;
+}
+
+a:link {
+  color: green;
+}
+
+/* visited link */
+  a:visited {
+  color: #198754;
+}
+
+/* mouse over link */
+  a:hover {
+    color: darkgreen;
+  }
+
+/* selected link */
+a:active {
+  color: lightgreen;
 }
