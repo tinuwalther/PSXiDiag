@@ -4,7 +4,7 @@ PsMmaDiagram builds Mermaid Diagrams with PowerShell as Markdown- or HTML-Files 
 
 ## Simple Class Diagram
 
-Create a simple Class Diagram from an object of VMware ESXiHost Inventory.
+Build a simple Class Diagram from an object of VMware ESXiHosts.
 
 ### Markdown Diagram
 
@@ -14,10 +14,15 @@ Import the data from a CSV and create a Mermaid-Class-Diagram with the content o
 - Title 'Simple ESXiHost Inventory'
 
 ````PowerShell
-.\bin\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Simple ESXiHost Inventory'
+Set-Location .\PsMmaDiagram\bin
+$Parameters = @{
+    InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
+    Title       = 'Simple ESXiHost Inventory'
+}
+.\New-SimpleVCSADiagram.ps1 @Parameters
 ````
 
-![New-vCenterDiagram](./img/PsMmDiagram-md.png)
+![New-SimpleVCSADiagram](./img/PsMmDiagram-md.png)
 
 ### HTML Diagram
 
@@ -26,26 +31,39 @@ Import the data from a CSV and create a Mermaid-Class-Diagram with the content o
 - Semicolon-Delimiter
 - Title 'Simple ESXiHost Inventory'
 
-CSS and Html is inside the Html-Page and the Computer must have access to the Internet to "https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.13.4/mermaid.min.js" to format the Mermaid-Diagrams.
+CSS and Html is inside the Html-Page and the Computer must have access to the Internet to mermaid.min.js to format the Diagrams.
 
 ````PowerShell
-.\bin\New-SimpleVCSADiagram.ps1 InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Simple ESXiHost Inventory' -Title 'ESXiHost Inventory' -Html
+Set-Location .\PsMmaDiagram\bin
+$Parameters = @{
+    InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
+    Title       = 'Simple ESXiHost Inventory'
+    Html        = $true
+}
+.\New-SimpleVCSADiagram.ps1 @Parameters 
 ````
 
-![New-vCenterDiagram](./img/PsMmDiagram-html.png)
+![New-SimpleVCSADiagram](./img/PsMmDiagram-html.png)
 
-## Advances Class Diagramm
+## Advances Class Diagram
 
-Builds Mermaid Diagrams with PSHTML and PowerShell as HTML-Files from an object of VMware ESXiHosts.
+Build Mermaid Diagrams with PSHTML and PowerShell as HTML-Files from an object of VMware ESXiHosts.
 
 Import the data from a CSV and create a Mermaid-Class-Diagram with the content of the CSV as Html with PSHTML.
+
+All libraies are included in the project in the assets-folder and no access to the Internet is needed.
 
 - Semicolon-Delimiter
 - Title 'Advanced ESXiHost Inventory'
 
 ````PowerShell
-.\bin\New-AdvancedVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Advanced ESXiHost Inventory'
+Set-Location .\PsMmaDiagram\bin
+$Parameters = @{
+    InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
+    Title       = 'Advanced ESXiHost Inventory'
+}
+.\New-AdvancedVCSADiagram.ps1 @Parameters 
 ````
-![New-vCenterDiagram](./img/AdvPsMmDiagram-html.png)
+![New-AdvancedVCSADiagram](./img/AdvPsMmDiagram-html.png)
 
 [Top](#)
