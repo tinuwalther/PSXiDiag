@@ -1,4 +1,4 @@
-#  - ESXiHost Inventory
+#  - Simple ESXiHost Inventory
 
  - [vCenter vCSA0010](#vcenter-vcsa0010)
  - [vCenter vCSA0020](#vcenter-vcsa0020)
@@ -132,6 +132,6 @@ VC4C2M1_Ost : + ESXi7999, ESXi 7.0.3, ProLiant DL380 Gen9
 
 ---
 
-I ♥ PS > Diagram created with PowerShell and Mermaid at 21.11.2022 20:28:03
+I ♥ PS > Diagram created with PowerShell and Mermaid at 22.11.2022 10:24:14
 
 ---

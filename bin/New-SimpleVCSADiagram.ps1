@@ -18,19 +18,19 @@
     Switch, if omitted the Output is saved as Markdown-File else as HTML-File.
     
 .EXAMPLE
-    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'ESXiHost Inventory'
+    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Simple ESXiHost Inventory'
 
-    Import-Csv with the default Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'ESXiHost Inventory' as Markdown.
-
-.EXAMPLE
-    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'ESXiHost Inventory' -Html
-
-    Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'ESXiHost Inventory' as Html.
+    Import-Csv with the default Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Simple ESXiHost Inventory' as Markdown.
 
 .EXAMPLE
-    .\New-SimpleVCSADiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'ESXiHost Inventory' -Title 'ESXiHost Inventory' -Html
+    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Simple ESXiHost Inventory' -Html
 
-    Import from a JSON-File and create the Mermaid-Diagram with the content of the CSV and the Title 'ESXiHost Inventory' as Html.
+    Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Simple ESXiHost Inventory' as Html.
+
+.EXAMPLE
+    .\New-SimpleVCSADiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'Simple ESXiHost Inventory' -Title 'ESXiHost Inventory' -Html
+
+    Import from a JSON-File and create the Mermaid-Diagram with the content of the CSV and the Title 'Simple ESXiHost Inventory' as Html.
 
 #>
 
