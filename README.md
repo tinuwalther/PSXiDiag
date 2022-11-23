@@ -51,7 +51,7 @@ Build Mermaid Diagrams with PSHTML and PowerShell as HTML-Files from an object o
 
 Import the data from a CSV and create a Mermaid-Class-Diagram with the content of the CSV as Html with PSHTML.
 
-All libraies are included in the project in the assets-folder and no access to the Internet is needed.
+All libraries are included in the project in the assets-folder and no access to the Internet is needed.
 
 - Semicolon-Delimiter
 - Title 'Advanced ESXiHost Inventory'
