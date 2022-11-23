@@ -45,7 +45,7 @@ $Parameters = @{
 
 ![New-SimpleVCSADiagram](./img/PsMmDiagram-html.png)
 
-## Advances Class Diagram
+## Advanced Class Diagram
 
 Build Mermaid Diagrams with PSHTML and PowerShell as HTML-Files from an object of VMware ESXiHosts.
 
