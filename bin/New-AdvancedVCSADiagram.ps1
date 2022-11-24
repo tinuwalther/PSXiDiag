@@ -26,14 +26,9 @@
     Specify a valid Title for the Website.
     
 .EXAMPLE
-    .\New-AdvancedVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Advanced ESXiHost Inventory'
+    .\New-AdvancedVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'PSHTML ESXiHost Inventory'
 
-    Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Advanced ESXiHost Inventory' as Html.
-
-.EXAMPLE
-    .\New-AdvancedVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Advanced ESXiHost Inventory'
-
-    Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Advanced ESXiHost Inventory' as Html.
+    Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'PSHTML ESXiHost Inventory' as Html.
 
 .EXAMPLE
     $Parameters = @{
@@ -46,11 +41,11 @@
             Field06 = 'ConnectionState'
         }
         InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
-        Title       = 'Advanced ESXiHost Inventory'
+        Title       = 'PSHTML ESXiHost Inventory'
     }
     .\New-AdvancedVCSADiagram.ps1 @Parameters 
 
-    Import from a JSON-File and create the Mermaid-Diagram with the content of the CSV and the Title 'Advanced ESXiHost Inventory' as Html.
+    Import from a JSON-File and create the Mermaid-Diagram with the content of the CSV and the Title 'PSHTML ESXiHost Inventory' as Html.
 
 #>
 
@@ -279,7 +274,7 @@ process{
             meta -name "description" -content_tag "PsMmaDiagram builds Mermaid Diagrams as HTML-Files with PSHTML from native PowerShell-Scripts"
 
             Link -href "assets/BootStrap/bootstrap.min.css" -rel stylesheet
-            Link -href "style/style.css" -rel stylesheet
+            Link -href "assets/style/style.css" -rel stylesheet
 
             Script -src "assets/Jquery/jquery.min.js"
 

@@ -18,19 +18,19 @@
     Switch, if omitted the Output is saved as Markdown-File else as HTML-File.
     
 .EXAMPLE
-    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Simple ESXiHost Inventory'
+    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Markdown ESXiHost Inventory'
 
-    Import-Csv with the default Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Simple ESXiHost Inventory' as Markdown.
-
-.EXAMPLE
-    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Simple ESXiHost Inventory' -Html
-
-    Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Simple ESXiHost Inventory' as Html.
+    Import-Csv with the default Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Markdown ESXiHost Inventory' as Markdown.
 
 .EXAMPLE
-    .\New-SimpleVCSADiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'Simple ESXiHost Inventory' -Title 'ESXiHost Inventory' -Html
+    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'HTML ESXiHost Inventory' -Html
 
-    Import from a JSON-File and create the Mermaid-Diagram with the content of the CSV and the Title 'Simple ESXiHost Inventory' as Html.
+    Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'HTML ESXiHost Inventory' as Html.
+
+.EXAMPLE
+    .\New-SimpleVCSADiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'HTML ESXiHost Inventory' -Title 'ESXiHost Inventory' -Html
+
+    Import from a JSON-File and create the Mermaid-Diagram with the content of the CSV and the Title 'HTML ESXiHost Inventory' as Html.
 
 #>
 
@@ -69,107 +69,135 @@ begin{
         Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', "$($function)$($params)" -Join ' ')
     
 @"
-<style>
-h1 {
-    text-align: center; 
-    color: white;
-} 
+<style> 
+    body { 
+        background: #212529 !important;
+        text-align: center; 
+    }
 
-h2 {
-    text-align: center; 
-    color: white;
-}
+    .header {
+        background: #033b63;
+        padding: 30px;
+        color: #e9ecef;
+        font-size: medium;
+        text-align: center; 
+        display: block;
+        overflow: auto;
+        overflow-y: hidden;
+    }
 
-h3 {
-    text-align: center; 
-    color: white;
-}
+    /* Style the top navigation bar */
+    .topnav {
+        overflow: hidden;
+        background-color: #333;
+    }
 
-p {
-    text-align: center; 
-    color: white;
-}    
+    /* Style the topnav links */
+    .topnav a {
+        float: left;
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        font-size: 16px;
+        font-family: "QuickSand", sans-serif;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
 
-a {
-    text-align: center; 
-    color: white;
-}
+    /* Change color on hover */
+    .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
 
-div {
-    text-align: center; 
-    color: white;
-}
+    div {
+        text-align: center; 
+        color: #e9ecef;
+    }
 
-header {
-    background-color: #033b63;
-    padding: 30px;
-    text-align: center;
-    font-size: 30px;
-    color: white;
-}
+    article {
+        padding: 20px;
+        background: #034f84;
+        text-align: center;
+    }
 
-nav {
-    background-color: 033b63;
-    text-align: center;
-}
+    #Content {
+        padding: 20px;
+        background: #034f84;
+        text-align: center; 
+    }
 
-body {
-    background-color: #034f84;
-    font-family: Verdana;
-    opacity: 0.9;
-    text-align: center;
-}
+    .footer {
+        padding: 10px;
+        text-align: center;
+    }
 
-footer {
-    background-color: #033b63;
-    font-size: 13px;
-    padding: 10px;
-}
+    hr {
+        color: #e9ecef;
+    }
 
-.button-small {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 8px 62px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 13px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
+    p {
+        font-family: "QuickSand", sans-serif;
+        text-align: center; 
+    }
 
-.button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 13px 62px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
+    h1 {
+        font-family: "QuickSand", sans-serif;
+        margin-top: 40px;
+        margin-bottom: 40px;
+        text-align: center; 
+    }
 
-a:link {
-    color: green;
-}
+    h2 {
+        font-family: "QuickSand", sans-serif;
+        margin-top: 40px;
+        margin-bottom: 30px;
+        text-align: center; 
+    }
 
-/* visited link */
-    a:visited {
-    color: lightgreen;
-}
+    h3 {
+        font-family: "QuickSand", sans-serif;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        text-align: center; 
+    }
 
-/* mouse over link */
-    a:hover {
-    color: hotpink;
-}
+    h4 {
+        font-family: "QuickSand", sans-serif;
+        margin-top: 10px;
+        margin-bottom: 60px;
+        text-align: center; 
+    }
 
-/* selected link */
-a:active {
-    color: darkgreen;
-}
+    a:link {
+        color: green;
+    }
+    /* visited link */
+        a:visited {
+        color: lightgreen;
+    }
+    /* mouse over link */
+        a:hover {
+        color: hotpink;
+    }
+    /* selected link */
+    a:active {
+        color: darkgreen;
+    }
+
+    /* Create three equal columns that float next to each other */
+    .column-left {
+        float: left;
+        width: 20%;
+    }
+    .column-middle {
+        float: left;
+        width: 60%;
+    }
+    .column-right {
+        float: left;
+        width: 20%;
+    }
 </style>
 "@
     }
@@ -207,17 +235,27 @@ $head = @"
 
 $header = @"
 <header>
-    <h1>$($Page)</h1>
-    <p>$($Title)</p>
+    <div class="header">
+        <h1>$($Page)</h1>
+        <h2>$($Title)</h2>
+        <p>PsMmaDiagram builds Mermaid Diagrams with PowerShell as HTML-Files from an object of VMware ESXiHosts</p>
+    </div>
 </header>
 "@
 
 $footer = @"
-<footer>
-    <p>I $([char]9829) PS > Diagram created with PowerShell and Mermaid at $((Get-Date).ToString())</p>
-    <p>Report saved as $($OutFile)</p>
-</footer>
-
+    <div class="footer">
+        <div class="column-left">
+            <p><a href="#">I $([char]9829) PS ></a></p>
+        </div>
+        <div class="column-middle">
+            <p>Diagram created with PowerShell and Mermaid</p>
+            <p>Report saved as $($OutFile)</p>
+        </div>
+        <div class="column-right">
+            <p>$((Get-Date).ToString())</p>
+        </div>
+    </div>
 </body>
 </html>
 "@
@@ -265,20 +303,21 @@ process{
         #endregion
 
         #region vCenterServer Nav Links
-        if($html){'<nav>' | Add-Content $OutFile -Encoding utf8}
+        if($html){'<div class="topnav">' | Add-Content $OutFile -Encoding utf8}
+        if($html){"<a href='#'><b>HOME</b></a>" | Add-Content $OutFile -Encoding utf8}
         $GroupVC = $InputObject | Group-Object vCenterServer | Select-Object -ExpandProperty Name
         $GroupVC | ForEach-Object {
             $vCenter = $($_).Split('.')[0]
             if(-not([String]::IsNullOrEmpty($vCenter))){
                 if($html){
-                    "<button class='button-small'><a href='#$($vCenter)'><b>$vCenter</b></a></button>" | Add-Content $OutFile -Encoding utf8 -Force
+                    "<a href='#$($vCenter)'><b>$vCenter</b></a>" | Add-Content $OutFile -Encoding utf8 -Force
                     Write-Verbose $_
                 }else{
                     " - [vCenter $($vCenter)](`#vcenter-$(($vCenter).ToLower()))" | Add-Content $OutFile -Encoding utf8
                 }
             }
         }
-        if($html){'</nav>' | Add-Content $OutFile -Encoding utf8}
+        if($html){'</div>' | Add-Content $OutFile -Encoding utf8}
         #endregion
 
         #region Group vCenter
@@ -291,7 +330,8 @@ process{
 
                 #region section header
                 if($html){
-                    "<hr><h3 id='$($vCenter)'><a href='https://$($_)/ui' target='_blank'>vCenter $($vCenter)</a></h3><hr>" | Add-Content $OutFile -Encoding utf8
+                    '<article>' | Add-Content $OutFile -Encoding utf8 -Force
+                    "<h3 id='$($vCenter)'><a href='https://$($_)/ui' target='_blank'>vCenter $($vCenter)</a></h3><br><hr><br>" | Add-Content $OutFile -Encoding utf8
                     '<div class="mermaid">' | Add-Content $OutFile -Encoding utf8
                     'classDiagram' | Add-Content $OutFile -Encoding utf8
                 }else{
@@ -372,7 +412,8 @@ process{
                 #endregion Group Cluster
 
                 if($html){
-                    '</div><p><button class="button"><a href="#">Top</a></button></p>' | Add-Content $OutFile -Encoding utf8
+                    '</div><p><a href="#">Top</a></p>' | Add-Content $OutFile -Encoding utf8
+                    "</article>" | Add-Content $OutFile -Encoding utf8 -Force
                 }else{
                     "`````````n" | Add-Content $OutFile -Encoding utf8
                     "[Top](#)`n" | Add-Content $OutFile -Encoding utf8

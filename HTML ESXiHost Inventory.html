@@ -1,123 +1,156 @@
 <!doctype html><html lang="en">
 <head>
     <title>New-SimpleVCSADiagram</title>
-    <style>
-h1 {
-    text-align: center; 
-    color: white;
-} 
+    <style> 
+    body { 
+        background: #212529 !important;
+        text-align: center; 
+    }
 
-h2 {
-    text-align: center; 
-    color: white;
-}
+    .header {
+        background: #033b63;
+        padding: 30px;
+        color: #e9ecef;
+        font-size: medium;
+        text-align: center; 
+        display: block;
+        overflow: auto;
+        overflow-y: hidden;
+    }
 
-h3 {
-    text-align: center; 
-    color: white;
-}
+    /* Style the top navigation bar */
+    .topnav {
+        overflow: hidden;
+        background-color: #333;
+    }
 
-p {
-    text-align: center; 
-    color: white;
-}    
+    /* Style the topnav links */
+    .topnav a {
+        float: left;
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        font-size: 16px;
+        font-family: "QuickSand", sans-serif;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
 
-a {
-    text-align: center; 
-    color: white;
-}
+    /* Change color on hover */
+    .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
 
-div {
-    text-align: center; 
-    color: white;
-}
+    div {
+        text-align: center; 
+        color: #e9ecef;
+    }
 
-header {
-    background-color: #033b63;
-    padding: 30px;
-    text-align: center;
-    font-size: 30px;
-    color: white;
-}
+    article {
+        padding: 20px;
+        background: #034f84;
+        text-align: center;
+    }
 
-nav {
-    background-color: 033b63;
-    text-align: center;
-}
+    #Content {
+        padding: 20px;
+        background: #034f84;
+        text-align: center; 
+    }
 
-body {
-    background-color: #034f84;
-    font-family: Verdana;
-    opacity: 0.9;
-    text-align: center;
-}
+    .footer {
+        padding: 10px;
+        text-align: center;
+    }
 
-footer {
-    background-color: #033b63;
-    font-size: 13px;
-    padding: 10px;
-}
+    hr {
+        color: #e9ecef;
+    }
 
-.button-small {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 8px 62px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 13px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
+    p {
+        font-family: "QuickSand", sans-serif;
+        text-align: center; 
+    }
 
-.button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 13px 62px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
+    h1 {
+        font-family: "QuickSand", sans-serif;
+        margin-top: 40px;
+        margin-bottom: 40px;
+        text-align: center; 
+    }
 
-a:link {
-    color: green;
-}
+    h2 {
+        font-family: "QuickSand", sans-serif;
+        margin-top: 40px;
+        margin-bottom: 30px;
+        text-align: center; 
+    }
 
-/* visited link */
-    a:visited {
-    color: lightgreen;
-}
+    h3 {
+        font-family: "QuickSand", sans-serif;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        text-align: center; 
+    }
 
-/* mouse over link */
-    a:hover {
-    color: hotpink;
-}
+    h4 {
+        font-family: "QuickSand", sans-serif;
+        margin-top: 10px;
+        margin-bottom: 60px;
+        text-align: center; 
+    }
 
-/* selected link */
-a:active {
-    color: darkgreen;
-}
+    a:link {
+        color: green;
+    }
+    /* visited link */
+        a:visited {
+        color: lightgreen;
+    }
+    /* mouse over link */
+        a:hover {
+        color: hotpink;
+    }
+    /* selected link */
+    a:active {
+        color: darkgreen;
+    }
+
+    /* Create three equal columns that float next to each other */
+    .column-left {
+        float: left;
+        width: 20%;
+    }
+    .column-middle {
+        float: left;
+        width: 60%;
+    }
+    .column-right {
+        float: left;
+        width: 20%;
+    }
 </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.2.2/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
 </head>
 <body>
 <header>
-    <h1>New-SimpleVCSADiagram</h1>
-    <p>Simple ESXiHost Inventory</p>
+    <div class="header">
+        <h1>New-SimpleVCSADiagram</h1>
+        <h2>HTML ESXiHost Inventory</h2>
+        <p>PsMmaDiagram builds Mermaid Diagrams with PowerShell as HTML-Files from an object of VMware ESXiHosts</p>
+    </div>
 </header>
-<nav>
-<button class='button-small'><a href='#vCSA010'><b>vCSA010</b></a></button>
-<button class='button-small'><a href='#vCSA020'><b>vCSA020</b></a></button>
-<button class='button-small'><a href='#vCSA021'><b>vCSA021</b></a></button>
-<button class='button-small'><a href='#vCSA100'><b>vCSA100</b></a></button>
-</nav>
-<hr><h3 id='vCSA010'><a href='https://vCSA010.my.company.ch/ui' target='_blank'>vCenter vCSA010</a></h3><hr>
+<div class="topnav">
+<a href='#'><b>HOME</b></a>
+<a href='#vCSA010'><b>vCSA010</b></a>
+<a href='#vCSA020'><b>vCSA020</b></a>
+<a href='#vCSA021'><b>vCSA021</b></a>
+<a href='#vCSA100'><b>vCSA100</b></a>
+</div>
+<article>
+<h3 id='vCSA010'><a href='https://vCSA010.my.company.ch/ui' target='_blank'>vCenter vCSA010</a></h3><br><hr><br>
 <div class="mermaid">
 classDiagram
 VC1_vCSA010 -- VC1C1_Linux
@@ -157,8 +190,10 @@ VC1C3M1_Nord : o ESXi8218, ESXi 6.7, Synergy 480 Gen10
 VC1C3M1_Synergy 480 Gen10 : - West, 1 ESXi Hosts
 VC1C3M1_Synergy 480 Gen10 -- VC1C3M1_West
 VC1C3M1_West : o ESXi1209, ESXi 6.7, Synergy 480 Gen10
-</div><p><button class="button"><a href="#">Top</a></button></p>
-<hr><h3 id='vCSA020'><a href='https://vCSA020.my.company.ch/ui' target='_blank'>vCenter vCSA020</a></h3><hr>
+</div><p><a href="#">Top</a></p>
+</article>
+<article>
+<h3 id='vCSA020'><a href='https://vCSA020.my.company.ch/ui' target='_blank'>vCenter vCSA020</a></h3><br><hr><br>
 <div class="mermaid">
 classDiagram
 VC2_vCSA020 -- VC2C1_Oracle
@@ -177,8 +212,10 @@ VC2C1M1_ProLiant DL380 Gen10 : - West, 2 ESXi Hosts
 VC2C1M1_ProLiant DL380 Gen10 -- VC2C1M1_West
 VC2C1M1_West : + ESXi1204, ESXi 6.7, ProLiant DL380 Gen10
 VC2C1M1_West : + ESXi1902, ESXi 6.7, ProLiant DL380 Gen10
-</div><p><button class="button"><a href="#">Top</a></button></p>
-<hr><h3 id='vCSA021'><a href='https://vCSA021.my.company.ch/ui' target='_blank'>vCenter vCSA021</a></h3><hr>
+</div><p><a href="#">Top</a></p>
+</article>
+<article>
+<h3 id='vCSA021'><a href='https://vCSA021.my.company.ch/ui' target='_blank'>vCenter vCSA021</a></h3><br><hr><br>
 <div class="mermaid">
 classDiagram
 VC3_vCSA021 -- VC3C1_Oracle
@@ -191,8 +228,10 @@ VC3C1M1_Nord : + ESXi8911, ESXi 6.7, ProLiant DL380 Gen10
 VC3C1M1_ProLiant DL380 Gen10 : - Ost, 1 ESXi Hosts
 VC3C1M1_ProLiant DL380 Gen10 -- VC3C1M1_Ost
 VC3C1M1_Ost : + ESXi7912, ESXi 6.7, ProLiant DL380 Gen10
-</div><p><button class="button"><a href="#">Top</a></button></p>
-<hr><h3 id='vCSA100'><a href='https://vCSA100.my.company.ch/ui' target='_blank'>vCenter vCSA100</a></h3><hr>
+</div><p><a href="#">Top</a></p>
+</article>
+<article>
+<h3 id='vCSA100'><a href='https://vCSA100.my.company.ch/ui' target='_blank'>vCenter vCSA100</a></h3><br><hr><br>
 <div class="mermaid">
 classDiagram
 VC4_vCSA100 -- VC4C1_Linux
@@ -216,11 +255,19 @@ VC4C2M1_Nord : + ESXi8998, ESXi 7.0.3, ProLiant DL380 Gen9
 VC4C2M1_ProLiant DL380 Gen9 : - Ost, 1 ESXi Hosts
 VC4C2M1_ProLiant DL380 Gen9 -- VC4C2M1_Ost
 VC4C2M1_Ost : + ESXi7999, ESXi 7.0.3, ProLiant DL380 Gen9
-</div><p><button class="button"><a href="#">Top</a></button></p>
-<footer>
-    <p>I ♥ PS > Diagram created with PowerShell and Mermaid at 23.11.2022 16:49:03</p>
-    <p>Report saved as F:\github.com\PsMmaDiagram\Simple ESXiHost Inventory.html</p>
-</footer>
-
+</div><p><a href="#">Top</a></p>
+</article>
+    <div class="footer">
+        <div class="column-left">
+            <p><a href="#">I ♥ PS ></a></p>
+        </div>
+        <div class="column-middle">
+            <p>Diagram created with PowerShell and Mermaid</p>
+            <p>Report saved as F:\github.com\PsMmaDiagram\HTML ESXiHost Inventory.html</p>
+        </div>
+        <div class="column-right">
+            <p>24.11.2022 12:47:46</p>
+        </div>
+    </div>
 </body>
 </html>
