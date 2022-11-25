@@ -55,6 +55,12 @@ $Parameters = @{
 
 ## PSHTML Class Diagram
 
+[PSHTML is a cross platform powershell module that allows to renders HTML using powershell syntax](https://pshtml.readthedocs.io/en/latest/)
+
+````PowerShell
+Install-Module PSHTML
+````
+
 Build a simple Class Diagram from an object of VMware ESXiHosts. It use PSHTML and BootStrap for the layout of the Page.
 
 ![New-AdvancedVCSADiagram](./img/AdvPsMmDiagram-html.png)
@@ -73,6 +79,17 @@ $Parameters = @{
     Title       = 'PSHTML ESXiHost Inventory'
 }
 .\New-AdvancedVCSADiagram.ps1 @Parameters 
+````
+
+[Top](#)
+
+
+## PSWriteHTML Diagram
+
+[Easy way to create diagrams using PowerShell and PSWriteHTML](https://evotec.xyz/easy-way-to-create-diagrams-using-powershell-and-pswritehtml/)
+
+````PowerShell
+Install-Module PSWriteHTML
 ````
 
 [Top](#)
