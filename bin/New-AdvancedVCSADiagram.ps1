@@ -70,7 +70,10 @@ param (
     [String]$RelationShip = '--',
 
     [Parameter(Mandatory=$true)]
-    [String]$Title
+    [String]$Title,
+
+    [Parameter(Mandatory=$false)]
+    [Switch]$VISJS
 )
 
 
@@ -94,262 +97,299 @@ process{
     $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath "$($Title).html"
     
     Write-Verbose $OutFile
-    $ContinerStyleFluid  = 'container-fluid'
 
-    #region header
-    $HeaderTitle        = $Page
-    $HeaderCaption      = $($Title)
-    #endregion
+    if($VISJS){
+        New-HTML -TitleText $Title -Online -FilePath $OutFile {
 
-    #region body
-    $BodyDescription    = "PsMmaDiagram builds Mermaid Diagrams with PSHTML and PowerShell as HTML-Files from an object of VMware ESXiHosts"
-    #endregion
-    
-    #region footer
-    $FooterSummary      = "Report saved as $($OutFile)"
-    #endregion
+            #region <!-- vCenter -->
+            $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
 
-    #region scriptblock
-    $navbar = {
+                $vcNo ++
+                $vCenter = $($_).Split('.')[0]
 
-        #region <!-- nav -->
-        nav -class "navbar navbar-expand-sm bg-dark navbar-dark sticky-top" -content {
-            a -class "navbar-brand" -href "#" -content {'Home'}
+                $FixCluster  = $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object $Column.Field02 | Select-Object -ExpandProperty Name | ForEach-Object {
+                    $_ -replace '-'
+                }
+                New-HTMLSection -HeaderText $vCenter -CanCollapse {
+                    New-HTMLPanel {
 
-            # <!-- Toggler/collapsibe Button -->
-            button -class "navbar-toggler" -Attributes @{
-                "type"="button"
-                "data-toggle"="collapse"
-                "data-target"="#collapsibleNavbar"
-            } -content {
-                span -class "navbar-toggler-icon"
-            }
+                        New-HTMLDiagram {
 
-            #region <!-- Navbar links -->
-            div -class "collapse navbar-collapse" -id "collapsibleNavbar" -Content {
-                ul -class "navbar-nav" -content {
-                    #FixedLinks
-                    # li -class "nav-item" -content {
-                    #     a -class "nav-link" -href "https://pshtml.readthedocs.io/" -Target _blank -content { "PSHTML" }
-                    # }
-                    #DynamicLinks
-                    $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
-                        $vCenter = $($_).Split('.')[0]
-                        if(-not([String]::IsNullOrEmpty($vCenter))){
-                            li -class "nav-item" -content {
-                                a -class "nav-link" -href "#$($vCenter)" -content { $($vCenter) }
+                            New-DiagramOptionsPhysics -Enabled $false
+                            New-DiagramOptionsInteraction -Hover $true
+                            New-DiagramOptionsLinks -ArrowsToEnabled $false -Color BlueViolet -ArrowsToType arrow -ArrowsFromEnabled $false
+
+                            New-DiagramNode -Label "vCenter $($vCenter)" -To $FixCluster -IconSolid align-left -IconColor Brown -IconAsImage
+                            $FixCluster | ForEach-Object {
+                                New-DiagramNode -Label $_ -IconRegular building -IconColor Brown -IconAsImage #-Shape box
                             }
                         }
+        
                     }
                 }
             }
-            #endregion Navbar links
-        }
-        #endregion nav
+        } -ShowHTML
+    }else{
 
-    }
+        $ContinerStyleFluid  = 'container-fluid'
 
-    $article = {
-
-        #region <!-- vCenter -->
-        $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
-
-            #region <!-- Content -->
-            div -id "Content" -Class "$($ContinerStyleFluid)" -Style "background-color:#034f84" {
-
-                #region  <!-- article -->
-                article -id "mermaid" -Content {
-
-                    $vcNo ++
-                    $vCenter = $($_).Split('.')[0]
-
-                    if(-not([String]::IsNullOrEmpty($vCenter))){
-
-                        h3 -Id $($vCenter) -Content {
-                            a -href "https://$($_)/ui/" -Target _blank -content { "vCenter $($vCenter)" }
-                        } -Style "color:#198754; text-align: center"
-                        hr
-
-                        #region mermaid
-                        div -Class "mermaid" -Style "text-align: center" {
-                            
-                            "classDiagram`n"
-
-                            #region Group Cluster
-                            $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object $Column.Field02 | Select-Object -ExpandProperty Name | ForEach-Object {
-                                
-                                if(-not([String]::IsNullOrEmpty($_))){
-
-                                    $ClusterNo ++
-                                    $RootCluster = $_
-                                    $FixCluster  = $RootCluster -replace '-'
-
-                                    # Print out vCenter --> Cluster
-                                    "VC$($vcNo)_$($vCenter) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixCluster)`n"
-                                    "VC$($vcNo)_$($vCenter) : + $($RootCluster)`n"
-
-                                    #region Group Model
-                                    $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Group-Object $Column.Field03 | Select-Object -ExpandProperty Name | ForEach-Object {
-                                        
-                                        Write-Verbose "Model: $($_)"
-
-                                        $ModelNo ++
-                                        $RootModel = $_
-                                        $FixModel  = $RootModel -replace '-'
-
-                                        "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)`n"
-                    
-                                        "VC$($vcNo)C$($ClusterNo)_$($FixCluster) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel)`n"
-                                                
-                                        #region Group PhysicalLocation
-                                        $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Group-Object $Column.Field04 | Select-Object -ExpandProperty Name | ForEach-Object {
-
-                                            Write-Verbose "PhysicalLocation $($_)"
-                                            $PhysicalLocation = $_
-                                            $ObjectCount = $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Select-Object -ExpandProperty HostName
-                                            
-                                            "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) : - $($PhysicalLocation), $($ObjectCount.count) ESXi Hosts`n"
-
-                                            "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($PhysicalLocation)`n"
-
-                                            #region Group HostName
-                                            $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Group-Object $Column.Field05 | Select-Object -ExpandProperty Name | ForEach-Object {
-                                                
-                                                $HostObject = $InputObject | Where-Object $Column.Field05 -match $($_)
-                                                $ESXiHost   = $($HostObject.$($Column.Field05)).Split('.')[0]
-
-                                                if($HostObject.$($Column.Field06) -eq 'Connected'){
-                                                    $prefix = '+'
-                                                }elseif($HostObject.$($Column.Field06) -match 'New'){
-                                                    $prefix = 'o'
-                                                }else{
-                                                    $prefix = '-'
-                                                }
-
-                                                "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($PhysicalLocation) : $($prefix) $($ESXiHost), ESXi $($HostObject.Version), $($RootModel)`n"
-                                            }
-                                            #endregion HostName
-                                            
-                                        }
-                                        #endregion PhysicalLocation
-                                    
-                                        $ModelNo = 0
-                                    }
-                                    #endregion Group Model
-
-                                }else{
-                                    Write-Verbose "Empty Cluster"
-                                }
-
-                            }
-                            #endregion Group Cluster
-
-                            $ClusterNo = 0
-                        }
-                        #endregion mermaid
-
-                    }else{
-                        Write-Verbose "Emptry vCenter"
-                    }
-
-                }
-                #endregion article
-
-            }
-            #endregion content
-        } 
-        #endregion vCenter
-
-    }
-    #endregion scriptblock
-
-    #region HTML
-    $HTML = html {
-
-        #region head
-        head {
-            meta -charset 'UTF-8'
-            meta -name 'author' -content "Martin Walther"  
-            meta -name "keywords" -content_tag "PSHTML, PowerShell, Mermaid Diagram"
-            meta -name "description" -content_tag "PsMmaDiagram builds Mermaid Diagrams as HTML-Files with PSHTML from native PowerShell-Scripts"
-
-            Link -href "assets/BootStrap/bootstrap.min.css" -rel stylesheet
-            Link -href "assets/style/style.css" -rel stylesheet
-
-            Script -src "assets/Jquery/jquery.min.js"
-
-            Script -src "assets/Chartjs/Chart.bundle.min.js"
-
-            script -src "assets/mermaid/mermaid.min.js"
-            
-            script {mermaid.initialize({startOnLoad:true})}
-
-            Script -src "assets/BootStrap/bootstrap.js"
-            Script -src "assets/BootStrap/bootstrap.min.js"
-    
-            title $HeaderTitle
-        } 
-        #endregion header
+        #region header
+        $HeaderTitle        = $Page
+        $HeaderCaption      = $($Title)
+        #endregion
 
         #region body
-        body {
-
-            #region <!-- header -->
-            header  {
-                div -id "j1" -class 'jumbotron text-center' -Style "padding:15; background-color:#033b63" -content {
-                    p { h1 $HeaderTitle }
-                    p { h2 $HeaderCaption }  
-                    p { $BodyDescription }  
-                }
-            }
-            #endregion header
-
-            #region <!-- section -->
-            section -id "section" -Content {  
-
-                Invoke-Command -ScriptBlock $navbar
-
-                #region <!-- column -->
-                div -Class "$($ContinerStyleFluid)" -Style "background-color:#034f84" {
-                
-                    Invoke-Command -ScriptBlock $article
-
-                }
-                #endregion column
-
-            }
-            #endregion section
-            
-        }
-        #endregion body
-
+        $BodyDescription    = "PsMmaDiagram builds Mermaid Diagrams with PSHTML and PowerShell as HTML-Files from an object of VMware ESXiHosts"
+        #endregion
+        
         #region footer
-        div -Class $ContinerStyleFluid -Style "background-color:#343a40" {
-            Footer {
+        $FooterSummary      = "Report saved as $($OutFile)"
+        #endregion
 
-                div -Class $ContinerStyleFluid {
-                    div -Class "row align-items-center" {
-                        div -Class "col-md" {
-                            p {
-                                a -href "#" -content { "I $([char]9829) PS >" }
+        #region scriptblock
+        $navbar = {
+
+            #region <!-- nav -->
+            nav -class "navbar navbar-expand-sm bg-dark navbar-dark sticky-top" -content {
+                a -class "navbar-brand" -href "#" -content {'Home'}
+
+                # <!-- Toggler/collapsibe Button -->
+                button -class "navbar-toggler" -Attributes @{
+                    "type"="button"
+                    "data-toggle"="collapse"
+                    "data-target"="#collapsibleNavbar"
+                } -content {
+                    span -class "navbar-toggler-icon"
+                }
+
+                #region <!-- Navbar links -->
+                div -class "collapse navbar-collapse" -id "collapsibleNavbar" -Content {
+                    ul -class "navbar-nav" -content {
+                        #FixedLinks
+                        # li -class "nav-item" -content {
+                        #     a -class "nav-link" -href "https://pshtml.readthedocs.io/" -Target _blank -content { "PSHTML" }
+                        # }
+                        #DynamicLinks
+                        $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
+                            $vCenter = $($_).Split('.')[0]
+                            if(-not([String]::IsNullOrEmpty($vCenter))){
+                                li -class "nav-item" -content {
+                                    a -class "nav-link" -href "#$($vCenter)" -content { $($vCenter) }
+                                }
                             }
-                        }
-                        div -Class "col-md" {
-                            p {$FooterSummary}
-                        }
-                        div -Class "col-md" {
-                            p {$((Get-Date).ToString())}
                         }
                     }
                 }
-        
+                #endregion Navbar links
             }
-        }
-        #endregion footer
+            #endregion nav
 
+        }
+
+        $article = {
+
+            #region <!-- vCenter -->
+            $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
+
+                #region <!-- Content -->
+                div -id "Content" -Class "$($ContinerStyleFluid)" -Style "background-color:#034f84" {
+
+                    #region  <!-- article -->
+                    article -id "mermaid" -Content {
+
+                        $vcNo ++
+                        $vCenter = $($_).Split('.')[0]
+
+                        if(-not([String]::IsNullOrEmpty($vCenter))){
+
+                            h3 -Id $($vCenter) -Content {
+                                a -href "https://$($_)/ui/" -Target _blank -content { "vCenter $($vCenter)" }
+                            } -Style "color:#198754; text-align: center"
+                            hr
+
+                            #region mermaid
+                            div -Class "mermaid" -Style "text-align: center" {
+                                
+                                "classDiagram`n"
+
+                                #region Group Cluster
+                                $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object $Column.Field02 | Select-Object -ExpandProperty Name | ForEach-Object {
+                                    
+                                    if(-not([String]::IsNullOrEmpty($_))){
+
+                                        $ClusterNo ++
+                                        $RootCluster = $_
+                                        $FixCluster  = $RootCluster -replace '-'
+
+                                        # Print out vCenter --> Cluster
+                                        "VC$($vcNo)_$($vCenter) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixCluster)`n"
+                                        "VC$($vcNo)_$($vCenter) : + $($RootCluster)`n"
+
+                                        #region Group Model
+                                        $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Group-Object $Column.Field03 | Select-Object -ExpandProperty Name | ForEach-Object {
+                                            
+                                            Write-Verbose "Model: $($_)"
+
+                                            $ModelNo ++
+                                            $RootModel = $_
+                                            $FixModel  = $RootModel -replace '-'
+
+                                            "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)`n"
+                        
+                                            "VC$($vcNo)C$($ClusterNo)_$($FixCluster) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel)`n"
+                                                    
+                                            #region Group PhysicalLocation
+                                            $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Group-Object $Column.Field04 | Select-Object -ExpandProperty Name | ForEach-Object {
+
+                                                Write-Verbose "PhysicalLocation $($_)"
+                                                $PhysicalLocation = $_
+                                                $ObjectCount = $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Select-Object -ExpandProperty HostName
+                                                
+                                                "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) : - $($PhysicalLocation), $($ObjectCount.count) ESXi Hosts`n"
+
+                                                "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($PhysicalLocation)`n"
+
+                                                #region Group HostName
+                                                $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Group-Object $Column.Field05 | Select-Object -ExpandProperty Name | ForEach-Object {
+                                                    
+                                                    $HostObject = $InputObject | Where-Object $Column.Field05 -match $($_)
+                                                    $ESXiHost   = $($HostObject.$($Column.Field05)).Split('.')[0]
+
+                                                    if($HostObject.$($Column.Field06) -eq 'Connected'){
+                                                        $prefix = '+'
+                                                    }elseif($HostObject.$($Column.Field06) -match 'New'){
+                                                        $prefix = 'o'
+                                                    }else{
+                                                        $prefix = '-'
+                                                    }
+
+                                                    "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($PhysicalLocation) : $($prefix) $($ESXiHost), ESXi $($HostObject.Version), $($RootModel)`n"
+                                                }
+                                                #endregion HostName
+                                                
+                                            }
+                                            #endregion PhysicalLocation
+                                        
+                                            $ModelNo = 0
+                                        }
+                                        #endregion Group Model
+
+                                    }else{
+                                        Write-Verbose "Empty Cluster"
+                                    }
+
+                                }
+                                #endregion Group Cluster
+
+                                $ClusterNo = 0
+                            }
+                            #endregion mermaid
+
+                        }else{
+                            Write-Verbose "Emptry vCenter"
+                        }
+
+                    }
+                    #endregion article
+
+                }
+                #endregion content
+            } 
+            #endregion vCenter
+
+        }
+        #endregion scriptblock
+
+        #region HTML
+        $HTML = html {
+
+            #region head
+            head {
+                meta -charset 'UTF-8'
+                meta -name 'author' -content "Martin Walther"  
+                meta -name "keywords" -content_tag "PSHTML, PowerShell, Mermaid Diagram"
+                meta -name "description" -content_tag "PsMmaDiagram builds Mermaid Diagrams as HTML-Files with PSHTML from native PowerShell-Scripts"
+
+                Link -href "assets/BootStrap/bootstrap.min.css" -rel stylesheet
+                Link -href "assets/style/style.css" -rel stylesheet
+
+                Script -src "assets/Jquery/jquery.min.js"
+
+                Script -src "assets/Chartjs/Chart.bundle.min.js"
+
+                script -src "assets/mermaid/mermaid.min.js"
+                
+                script {mermaid.initialize({startOnLoad:true})}
+
+                Script -src "assets/BootStrap/bootstrap.js"
+                Script -src "assets/BootStrap/bootstrap.min.js"
+        
+                title $HeaderTitle
+            } 
+            #endregion header
+
+            #region body
+            body {
+
+                #region <!-- header -->
+                header  {
+                    div -id "j1" -class 'jumbotron text-center' -Style "padding:15; background-color:#033b63" -content {
+                        p { h1 $HeaderTitle }
+                        p { h2 $HeaderCaption }  
+                        p { $BodyDescription }  
+                    }
+                }
+                #endregion header
+
+                #region <!-- section -->
+                section -id "section" -Content {  
+
+                    Invoke-Command -ScriptBlock $navbar
+
+                    #region <!-- column -->
+                    div -Class "$($ContinerStyleFluid)" -Style "background-color:#034f84" {
+                    
+                        Invoke-Command -ScriptBlock $article
+
+                    }
+                    #endregion column
+
+                }
+                #endregion section
+                
+            }
+            #endregion body
+
+            #region footer
+            div -Class $ContinerStyleFluid -Style "background-color:#343a40" {
+                Footer {
+
+                    div -Class $ContinerStyleFluid {
+                        div -Class "row align-items-center" {
+                            div -Class "col-md" {
+                                p {
+                                    a -href "#" -content { "I $([char]9829) PS >" }
+                                }
+                            }
+                            div -Class "col-md" {
+                                p {$FooterSummary}
+                            }
+                            div -Class "col-md" {
+                                p {$((Get-Date).ToString())}
+                            }
+                        }
+                    }
+            
+                }
+            }
+            #endregion footer
+
+        }
+        $Html | Set-Content $OutFile -Encoding utf8
+        #endregion html
+
+        Start-Process $($OutFile)
     }
-    $Html | Set-Content $OutFile -Encoding utf8
-    #endregion html
 }
 
 end{
@@ -359,7 +399,5 @@ end{
         '{1:0}h {2:0}m {3:0}s {4:000}ms' -f $_.Days, $_.Hours, $_.Minutes, $_.Seconds, $_.Milliseconds
     }
     Write-Verbose $('Finished in:', $Formatted -Join ' ')
-
-    Start-Process $($OutFile)
     return $($OutFile)
 }
