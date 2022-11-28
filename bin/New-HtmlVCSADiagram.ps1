@@ -1,12 +1,23 @@
 <#
 .SYNOPSIS
-    New-SimpleVCSADiagram.ps1
+    New-HtmlVCSADiagram.ps1
 
 .DESCRIPTION
-    New-SimpleVCSADiagram - Create a Mermaid Class Diagram.
+    New-HtmlVCSADiagram - Create a Mermaid Class Diagram.
 
 .PARAMETER InputObject
     Specify a valid InputObject.
+    
+.PARAMETER Column
+    Specify the column-header of the Object, default is:
+    $Column = @{
+        Field01 = 'vCenterServer'
+        Field02 = 'Cluster'
+        Field03 = 'Model'
+        Field04 = 'PhysicalLocation'
+        Field05 = 'HostName'
+        Field06 = 'ConnectionState'
+    }
     
 .PARAMETER RelationShip
     Specify a valid RelationShip.
@@ -14,21 +25,13 @@
 .PARAMETER Title
     Specify a valid Title for the Website.
     
-.PARAMETER Html
-    Switch, if omitted the Output is saved as Markdown-File else as HTML-File.
-    
 .EXAMPLE
-    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'Markdown ESXiHost Inventory'
-
-    Import-Csv with the default Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Markdown ESXiHost Inventory' as Markdown.
-
-.EXAMPLE
-    .\New-SimpleVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'HTML ESXiHost Inventory' -Html
+    .\New-HtmlVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'HTML ESXiHost Inventory'
 
     Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'HTML ESXiHost Inventory' as Html.
 
 .EXAMPLE
-    .\New-SimpleVCSADiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'HTML ESXiHost Inventory' -Title 'ESXiHost Inventory' -Html
+    .\New-HtmlVCSADiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'HTML ESXiHost Inventory'
 
     Import from a JSON-File and create the Mermaid-Diagram with the content of the CSV and the Title 'HTML ESXiHost Inventory' as Html.
 
@@ -40,13 +43,20 @@ param (
     [Object]$InputObject,
 
     [Parameter(Mandatory=$false)]
+    [PSCustomObject]$Column = @{
+        Field01 = 'vCenterServer'
+        Field02 = 'Cluster'
+        Field03 = 'Model'
+        Field04 = 'PhysicalLocation'
+        Field05 = 'HostName'
+        Field06 = 'ConnectionState'
+    },
+
+    [Parameter(Mandatory=$false)]
     [String]$RelationShip = '--',
 
     [Parameter(Mandatory=$true)]
-    [String]$Title,
-
-    [Parameter(Mandatory=$false)]
-    [Switch]$Html
+    [String]$Title
 )
 
 
@@ -57,7 +67,19 @@ begin{
         $params = "$($params) -$($item) $($PSBoundParameters[$item])"
     }
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($function)$($params)" -Join ' ')
+}
 
+process{
+
+    #Fields = HostName;Version;Manufacturer;Model;vCenterServer;Cluster;PhysicalLocation;ConnectionState
+
+    $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
+    $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
+
+    $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath "$($Title).html"
+    Write-Verbose $OutFile
+
+    #region HTML Definition
     function New-CSS{
         [CmdletBinding()]
         param ()
@@ -73,17 +95,23 @@ begin{
     body { 
         background: #212529 !important;
         text-align: center; 
+        font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"
     }
 
     .header {
         background: #033b63;
         padding: 30px;
         color: #e9ecef;
+        font-family: "QuickSand", sans-serif;
         font-size: medium;
         text-align: center; 
         display: block;
         overflow: auto;
         overflow-y: hidden;
+        margin-top: 20px;
+        margin-bottom: 50px;
+        margin-left: 10px;
+        margin-right: 10px;
     }
 
     /* Style the top navigation bar */
@@ -133,7 +161,7 @@ begin{
     }
 
     hr {
-        color: #e9ecef;
+        border: 1px solid gray;
     }
 
     p {
@@ -146,6 +174,7 @@ begin{
         margin-top: 40px;
         margin-bottom: 40px;
         text-align: center; 
+        font-size:2.5rem;
     }
 
     h2 {
@@ -153,6 +182,7 @@ begin{
         margin-top: 40px;
         margin-bottom: 30px;
         text-align: center; 
+        font-size:2rem;
     }
 
     h3 {
@@ -160,6 +190,7 @@ begin{
         margin-top: 20px;
         margin-bottom: 10px;
         text-align: center; 
+        font-size:1.75rem;
     }
 
     h4 {
@@ -167,6 +198,7 @@ begin{
         margin-top: 10px;
         margin-bottom: 60px;
         text-align: center; 
+        font-size:1.5rem
     }
 
     a:link {
@@ -212,6 +244,9 @@ begin{
             [String]$Title,
 
             [Parameter(Mandatory=$true)]
+            [String]$BodyDescription,
+
+            [Parameter(Mandatory=$true)]
             [String]$OutFile,
 
             [Parameter(Mandatory=$true)]
@@ -238,7 +273,7 @@ $header = @"
     <div class="header">
         <h1>$($Page)</h1>
         <h2>$($Title)</h2>
-        <p>PsMmaDiagram builds Mermaid Diagrams with PowerShell as HTML-Files from an object of VMware ESXiHosts</p>
+        <p>$($BodyDescription)</p>
     </div>
 </header>
 "@
@@ -267,57 +302,42 @@ $footer = @"
         }
 
     }
+    #endregion HTML
 
-    $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
-    $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
-
-    if($Html){
-        $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath "$($Title).html"
-        Write-Verbose $OutFile
-    }else{
-        $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath "$($Title).md"
-        Write-Verbose $OutFile
-    }
-}
-
-process{
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', $function -Join ' ')
 
     #region import Html code
-    if($Html){
-        $HtmlDefinition = New-HTML -Page $Page -Title $Title -OutFile $OutFile -Css (New-CSS)
+    $Parameter = @{
+        Page            = $Page
+        Title           = $Title
+        BodyDescription = 'PsMmaDiagram builds Mermaid Diagrams with PowerShell as HTML-Files from an object of VMware ESXiHosts'
+        OutFile         = $OutFile
+        Css             = (New-CSS)
     }
+    $HtmlDefinition = New-HTML @Parameter
     #endregion
 
     try{
 
-        #region HTML/Markdown Header
-        if($html){
-            '<!doctype html><html lang="en">'  | Set-Content $OutFile -Encoding utf8
-            $HtmlDefinition.head | Add-Content $OutFile -Encoding utf8 -Force
-            "<body>" | Add-Content $OutFile -Encoding utf8 -Force
-            $HtmlDefinition.header | Add-Content $OutFile -Encoding utf8 -Force
-        }else{
-            "# $($Header) - $($Title)`n" | Set-Content $OutFile -Encoding utf8 -Force
-        }
+        #region HTML Header
+        '<!doctype html><html lang="en">'  | Set-Content $OutFile -Encoding utf8
+        $HtmlDefinition.head | Add-Content $OutFile -Encoding utf8 -Force
+        "<body>" | Add-Content $OutFile -Encoding utf8 -Force
+        $HtmlDefinition.header | Add-Content $OutFile -Encoding utf8 -Force
         #endregion
 
         #region vCenterServer Nav Links
-        if($html){'<div class="topnav">' | Add-Content $OutFile -Encoding utf8}
-        if($html){"<a href='#'><b>HOME</b></a>" | Add-Content $OutFile -Encoding utf8}
-        $GroupVC = $InputObject | Group-Object vCenterServer | Select-Object -ExpandProperty Name
+        '<div class="topnav">' | Add-Content $OutFile -Encoding utf8
+        "<a href='#'><b>HOME</b></a>" | Add-Content $OutFile -Encoding utf8
+        $GroupVC = $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name
         $GroupVC | ForEach-Object {
             $vCenter = $($_).Split('.')[0]
             if(-not([String]::IsNullOrEmpty($vCenter))){
-                if($html){
-                    "<a href='#$($vCenter)'><b>$vCenter</b></a>" | Add-Content $OutFile -Encoding utf8 -Force
-                    Write-Verbose $_
-                }else{
-                    " - [vCenter $($vCenter)](`#vcenter-$(($vCenter).ToLower()))" | Add-Content $OutFile -Encoding utf8
-                }
+                "<a href='#$($vCenter)'><b>$vCenter</b></a>" | Add-Content $OutFile -Encoding utf8 -Force
+                Write-Verbose $_
             }
         }
-        if($html){'</div>' | Add-Content $OutFile -Encoding utf8}
+        '</div>' | Add-Content $OutFile -Encoding utf8
         #endregion
 
         #region Group vCenter
@@ -328,24 +348,15 @@ process{
             if(-not([String]::IsNullOrEmpty($vCenter))){
                 Write-Verbose "vCenter: $($_)"
 
-                #region section header
-                if($html){
-                    '<article>' | Add-Content $OutFile -Encoding utf8 -Force
-                    "<h3 id='$($vCenter)'><a href='https://$($_)/ui' target='_blank'>vCenter $($vCenter)</a></h3><br><hr><br>" | Add-Content $OutFile -Encoding utf8
-                    '<div class="mermaid">' | Add-Content $OutFile -Encoding utf8
-                    'classDiagram' | Add-Content $OutFile -Encoding utf8
-                }else{
-                    "---`n" | Add-Content $OutFile -Encoding utf8
-                    "## [vCenter $($vCenter)](https://$($_)/ui)`n" | Add-Content $OutFile -Encoding utf8
-                    "---`n" | Add-Content $OutFile -Encoding utf8
-            
-                    "````````mermaid" | Add-Content $OutFile -Encoding utf8
-                    "classDiagram"    | Add-Content $OutFile -Encoding utf8
-                }
-                #endregion
+                #region article
+                #'<button type="button" class="collapsible">Open Collapsible</button>'| Add-Content $OutFile -Encoding utf8
+                '<article>' | Add-Content $OutFile -Encoding utf8 -Force
+                "<h3 id='$($vCenter)'><a href='https://$($_)/ui' target='_blank'>vCenter $($vCenter)</a></h3><br><hr><br>" | Add-Content $OutFile -Encoding utf8
+                '<div class="mermaid">' | Add-Content $OutFile -Encoding utf8
+                'classDiagram' | Add-Content $OutFile -Encoding utf8
 
                 #region Group Cluster
-                $InputObject | Where-Object vCenterServer -match $_ | Group-Object Cluster | Select-Object -ExpandProperty Name | ForEach-Object {
+                $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object $Column.Field02 | Select-Object -ExpandProperty Name | ForEach-Object {
                     if(-not([String]::IsNullOrEmpty($_))){
 
                         Write-Verbose "Cluster: $($_)"
@@ -358,7 +369,7 @@ process{
                         "VC$($vcNo)_$($vCenter) : + $($RootCluster)" | Add-Content $OutFile -Encoding utf8
         
                         #region Group Model
-                        $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Group-Object Model | Select-Object -ExpandProperty Name | ForEach-Object {
+                        $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Group-Object $Column.Field03 | Select-Object -ExpandProperty Name | ForEach-Object {
                             
                             Write-Verbose "Model: $($_)"
 
@@ -371,25 +382,25 @@ process{
                             "VC$($vcNo)C$($ClusterNo)_$($FixCluster) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel)" | Add-Content $OutFile -Encoding utf8
                                     
                             #region Group PhysicalLocation
-                            $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Where-Object Model -match $RootModel | Group-Object PhysicalLocation | Select-Object -ExpandProperty Name | ForEach-Object {
+                            $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Group-Object $Column.Field04 | Select-Object -ExpandProperty Name | ForEach-Object {
 
                                 Write-Verbose "PhysicalLocation $($_)"
                                 $PhysicalLocation = $_
-                                $ObjectCount = $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Where-Object Model -match $RootModel | Where-Object PhysicalLocation -match $PhysicalLocation | Select-Object -ExpandProperty HostName
+                                $ObjectCount = $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Select-Object -ExpandProperty $Column.Field05
 
                                 "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) : - $($PhysicalLocation), $($ObjectCount.count) ESXi Hosts" | Add-Content $OutFile -Encoding utf8
 
                                 "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($PhysicalLocation)" | Add-Content $OutFile -Encoding utf8
 
                                 #region Group HostName
-                                $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Where-Object Model -match $RootModel | Where-Object PhysicalLocation -match $PhysicalLocation | Group-Object HostName | Select-Object -ExpandProperty Name | ForEach-Object {
+                                $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Group-Object $Column.Field05 | Select-Object -ExpandProperty Name | ForEach-Object {
                                     
                                     $HostObject = $InputObject | Where-Object HostName -match $($_)
                                     $ESXiHost   = $($HostObject.HostName).Split('.')[0]
 
-                                    if($HostObject.ConnectionState -eq 'Connected'){
+                                    if($HostObject.$($Column.Field06) -eq 'Connected'){
                                         $prefix = '+'
-                                    }elseif($HostObject.ConnectionState -match 'New'){
+                                    }elseif($HostObject.$($Column.Field06) -match 'New'){
                                         $prefix = 'o'
                                     }else{
                                         $prefix = '-'
@@ -411,16 +422,14 @@ process{
                 $ClusterNo = 0
                 #endregion Group Cluster
 
-                if($html){
-                    '</div><p><a href="#">Top</a></p>' | Add-Content $OutFile -Encoding utf8
-                    "</article>" | Add-Content $OutFile -Encoding utf8 -Force
-                }else{
-                    "`````````n" | Add-Content $OutFile -Encoding utf8
-                    "[Top](#)`n" | Add-Content $OutFile -Encoding utf8
-                }
+                '</div><p><a href="#">Top</a></p>' | Add-Content $OutFile -Encoding utf8
+                "</article>" | Add-Content $OutFile -Encoding utf8 -Force
+                #endregion article
             }
         }
         #endregion Group vCenter
+
+        Start-Process $($OutFile)
 
     }catch{
         Write-Warning $('ScriptName:', $($_.InvocationInfo.ScriptName), 'LineNumber:', $($_.InvocationInfo.ScriptLineNumber), 'Message:', $($_.Exception.Message) -Join ' ')
@@ -430,13 +439,7 @@ process{
 }
 
 end{
-    if($html){
-        $HtmlDefinition.footer | Add-Content $OutFile -Encoding utf8
-    }else{
-        "---`n" | Add-Content $OutFile -Encoding utf8
-        "I $([char]9829) PS > Diagram created with PowerShell and Mermaid at $((Get-Date).ToString())`n" | Add-Content $OutFile -Encoding utf8
-        "---" | Add-Content $OutFile -Encoding utf8
-    }
+    $HtmlDefinition.footer | Add-Content $OutFile -Encoding utf8
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', $function -Join ' ')
     $TimeSpan  = New-TimeSpan -Start $StartTime -End (Get-Date)
@@ -445,6 +448,5 @@ end{
     }
     Write-Verbose $('Finished in:', $Formatted -Join ' ')
 
-    Start-Process $($OutFile)
     return $($OutFile)
 }

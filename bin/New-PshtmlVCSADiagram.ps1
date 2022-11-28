@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    New-AdvancedVCSADiagram.ps1
+    New-PshtmlVCSADiagram.ps1
 
 .DESCRIPTION
-    New-AdvancedVCSADiagram - Create a Mermaid Class Diagram.
+    New-PshtmlVCSADiagram - Create a Mermaid Class Diagram.
 
 .PARAMETER InputObject
     Specify a valid InputObject.
@@ -26,7 +26,7 @@
     Specify a valid Title for the Website.
     
 .EXAMPLE
-    .\New-AdvancedVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'PSHTML ESXiHost Inventory'
+    .\New-PshtmlVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'PSHTML ESXiHost Inventory'
 
     Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'PSHTML ESXiHost Inventory' as Html.
 
@@ -105,11 +105,11 @@ process{
             $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
 
                 $vcNo ++
+                $RootVC = $_
                 $vCenter = $($_).Split('.')[0]
 
-                $FixCluster  = $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object $Column.Field02 | Select-Object -ExpandProperty Name | ForEach-Object {
-                    $_ -replace '-'
-                }
+                $ClusterArray  = $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object $Column.Field02 | Select-Object -ExpandProperty Name 
+                
                 New-HTMLSection -HeaderText $vCenter -CanCollapse {
                     New-HTMLPanel {
 
@@ -119,8 +119,10 @@ process{
                             New-DiagramOptionsInteraction -Hover $true
                             New-DiagramOptionsLinks -ArrowsToEnabled $false -Color BlueViolet -ArrowsToType arrow -ArrowsFromEnabled $false
 
-                            New-DiagramNode -Label "vCenter $($vCenter)" -To $FixCluster -IconSolid align-left -IconColor Brown -IconAsImage
-                            $FixCluster | ForEach-Object {
+                            # Relationship vCenter to Cluster (Array)
+                            New-DiagramNode -Label "VC$($vcNo)_$($vCenter)" -To $ClusterArray -IconSolid align-left -IconColor Brown -IconAsImage
+                            $ClusterArray | ForEach-Object {
+                                # Print out each Cluster
                                 New-DiagramNode -Label $_ -IconRegular building -IconColor Brown -IconAsImage #-Shape box
                             }
                         }
@@ -243,7 +245,7 @@ process{
 
                                                 Write-Verbose "PhysicalLocation $($_)"
                                                 $PhysicalLocation = $_
-                                                $ObjectCount = $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Select-Object -ExpandProperty HostName
+                                                $ObjectCount = $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Select-Object -ExpandProperty $Column.Field05
                                                 
                                                 "VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($FixModel) : - $($PhysicalLocation), $($ObjectCount.count) ESXi Hosts`n"
 
@@ -322,7 +324,7 @@ process{
                 script {mermaid.initialize({startOnLoad:true})}
 
                 Script -src "assets/BootStrap/bootstrap.js"
-                Script -src "assets/BootStrap/bootstrap.min.js"
+                #Script -src "assets/BootStrap/bootstrap.min.js"
         
                 title $HeaderTitle
             } 
