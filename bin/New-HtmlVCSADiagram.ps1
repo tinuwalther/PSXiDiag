@@ -93,6 +93,7 @@ process{
 @"
 <style> 
     body { 
+        margin:0;
         background: #212529 !important;
         text-align: center; 
         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"
@@ -106,12 +107,11 @@ process{
         font-size: medium;
         text-align: center; 
         display: block;
-        overflow: auto;
         overflow-y: hidden;
         margin-top: 20px;
-        margin-bottom: 50px;
-        margin-left: 10px;
-        margin-right: 10px;
+        margin-bottom: 10px;
+        margin-left: 0px;
+        margin-right: 0px;
     }
 
     /* Style the top navigation bar */
@@ -136,6 +136,33 @@ process{
     .topnav a:hover {
         background-color: #ddd;
         color: black;
+    }
+
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #333;
+        position: fixed;
+        top: 0;
+        width: 100%;
+    }
+      
+    li {
+        float: left;
+    }
+      
+    .active {
+        background-color: #4CAF50;
+    }
+      
+    li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
     }
 
     div {
@@ -203,15 +230,19 @@ process{
 
     a:link {
         color: green;
+        text-decoration: none;
     }
+
     /* visited link */
-        a:visited {
+    a:visited {
         color: lightgreen;
     }
+
     /* mouse over link */
-        a:hover {
+    a:hover {
         color: hotpink;
     }
+
     /* selected link */
     a:active {
         color: darkgreen;
@@ -328,15 +359,17 @@ $footer = @"
 
         #region vCenterServer Nav Links
         '<div class="topnav">' | Add-Content $OutFile -Encoding utf8
-        "<a href='#'><b>HOME</b></a>" | Add-Content $OutFile -Encoding utf8
+        '<ul>' | Add-Content $OutFile -Encoding utf8
+        '<li><a class="active" href="#"><b>HOME</b></a></li>' | Add-Content $OutFile -Encoding utf8
         $GroupVC = $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name
         $GroupVC | ForEach-Object {
             $vCenter = $($_).Split('.')[0]
             if(-not([String]::IsNullOrEmpty($vCenter))){
-                "<a href='#$($vCenter)'><b>$vCenter</b></a>" | Add-Content $OutFile -Encoding utf8 -Force
+                "<li><a href='#$($vCenter)'><b>$vCenter</b></a></li>" | Add-Content $OutFile -Encoding utf8 -Force
                 Write-Verbose $_
             }
         }
+        '</ul>' | Add-Content $OutFile -Encoding utf8
         '</div>' | Add-Content $OutFile -Encoding utf8
         #endregion
 
@@ -422,7 +455,7 @@ $footer = @"
                 $ClusterNo = 0
                 #endregion Group Cluster
 
-                '</div><p><a href="#">Top</a></p>' | Add-Content $OutFile -Encoding utf8
+                #'</div><p><a href="#">Top</a></p>' | Add-Content $OutFile -Encoding utf8
                 "</article>" | Add-Content $OutFile -Encoding utf8 -Force
                 #endregion article
             }

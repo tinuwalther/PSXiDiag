@@ -3,6 +3,7 @@
     <title>New-HtmlVCSADiagram</title>
     <style> 
     body { 
+        margin:0;
         background: #212529 !important;
         text-align: center; 
         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"
@@ -16,12 +17,11 @@
         font-size: medium;
         text-align: center; 
         display: block;
-        overflow: auto;
         overflow-y: hidden;
         margin-top: 20px;
-        margin-bottom: 50px;
-        margin-left: 10px;
-        margin-right: 10px;
+        margin-bottom: 10px;
+        margin-left: 0px;
+        margin-right: 0px;
     }
 
     /* Style the top navigation bar */
@@ -46,6 +46,33 @@
     .topnav a:hover {
         background-color: #ddd;
         color: black;
+    }
+
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #333;
+        position: fixed;
+        top: 0;
+        width: 100%;
+    }
+      
+    li {
+        float: left;
+    }
+      
+    .active {
+        background-color: #4CAF50;
+    }
+      
+    li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
     }
 
     div {
@@ -113,15 +140,19 @@
 
     a:link {
         color: green;
+        text-decoration: none;
     }
+
     /* visited link */
-        a:visited {
+    a:visited {
         color: lightgreen;
     }
+
     /* mouse over link */
-        a:hover {
+    a:hover {
         color: hotpink;
     }
+
     /* selected link */
     a:active {
         color: darkgreen;
@@ -153,11 +184,13 @@
     </div>
 </header>
 <div class="topnav">
-<a href='#'><b>HOME</b></a>
-<a href='#vCSA010'><b>vCSA010</b></a>
-<a href='#vCSA020'><b>vCSA020</b></a>
-<a href='#vCSA021'><b>vCSA021</b></a>
-<a href='#vCSA100'><b>vCSA100</b></a>
+<ul>
+<li><a class="active" href="#"><b>HOME</b></a></li>
+<li><a href='#vCSA010'><b>vCSA010</b></a></li>
+<li><a href='#vCSA020'><b>vCSA020</b></a></li>
+<li><a href='#vCSA021'><b>vCSA021</b></a></li>
+<li><a href='#vCSA100'><b>vCSA100</b></a></li>
+</ul>
 </div>
 <article>
 <h3 id='vCSA010'><a href='https://vCSA010.my.company.ch/ui' target='_blank'>vCenter vCSA010</a></h3><br><hr><br>
@@ -200,7 +233,6 @@ VC1C3M1_Nord : o ESXi8218, ESXi 6.7, Synergy 480 Gen10
 VC1C3M1_Synergy 480 Gen10 : - West, 1 ESXi Hosts
 VC1C3M1_Synergy 480 Gen10 -- VC1C3M1_West
 VC1C3M1_West : o ESXi1209, ESXi 6.7, Synergy 480 Gen10
-</div><p><a href="#">Top</a></p>
 </article>
 <article>
 <h3 id='vCSA020'><a href='https://vCSA020.my.company.ch/ui' target='_blank'>vCenter vCSA020</a></h3><br><hr><br>
@@ -222,7 +254,6 @@ VC2C1M1_ProLiant DL380 Gen10 : - West, 2 ESXi Hosts
 VC2C1M1_ProLiant DL380 Gen10 -- VC2C1M1_West
 VC2C1M1_West : + ESXi1204, ESXi 6.7, ProLiant DL380 Gen10
 VC2C1M1_West : + ESXi1902, ESXi 6.7, ProLiant DL380 Gen10
-</div><p><a href="#">Top</a></p>
 </article>
 <article>
 <h3 id='vCSA021'><a href='https://vCSA021.my.company.ch/ui' target='_blank'>vCenter vCSA021</a></h3><br><hr><br>
@@ -238,7 +269,6 @@ VC3C1M1_Nord : + ESXi8911, ESXi 6.7, ProLiant DL380 Gen10
 VC3C1M1_ProLiant DL380 Gen10 : - Ost, 1 ESXi Hosts
 VC3C1M1_ProLiant DL380 Gen10 -- VC3C1M1_Ost
 VC3C1M1_Ost : + ESXi7912, ESXi 6.7, ProLiant DL380 Gen10
-</div><p><a href="#">Top</a></p>
 </article>
 <article>
 <h3 id='vCSA100'><a href='https://vCSA100.my.company.ch/ui' target='_blank'>vCenter vCSA100</a></h3><br><hr><br>
@@ -265,7 +295,6 @@ VC4C2M1_Nord : + ESXi8998, ESXi 7.0.3, ProLiant DL380 Gen9
 VC4C2M1_ProLiant DL380 Gen9 : - Ost, 1 ESXi Hosts
 VC4C2M1_ProLiant DL380 Gen9 -- VC4C2M1_Ost
 VC4C2M1_Ost : + ESXi7999, ESXi 7.0.3, ProLiant DL380 Gen9
-</div><p><a href="#">Top</a></p>
 </article>
     <div class="footer">
         <div class="column-left">
@@ -276,7 +305,7 @@ VC4C2M1_Ost : + ESXi7999, ESXi 7.0.3, ProLiant DL380 Gen9
             <p>Report saved as F:\github.com\PsMmaDiagram\HTML ESXiHost Inventory.html</p>
         </div>
         <div class="column-right">
-            <p>28.11.2022 21:13:04</p>
+            <p>01.12.2022 18:01:25</p>
         </div>
     </div>
 </body>
