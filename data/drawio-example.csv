@@ -1,0 +1,36 @@
+## **********************************************************
+## Configuration
+## **********************************************************
+## labels: %name%
+# labels: {"label1" : "%name% - %type%", "label2" : "%name%", "label3" : "%name% - %model%"}
+# labelname: labeltype
+# style: whiteSpace=wrap;html=1;rounded=1;fillColor=#034f84;strokeColor=#000000;
+# namespace: csvimport-
+# connect: {"from": "refs", "to": "id", "style": "curved=0;endArrow=none;endFill=0;fontSize=11;"}
+# width: auto
+# height: auto
+# padding: 20
+# ignore: refs
+# nodespacing: 60
+# levelspacing: 60
+# edgespacing: 40
+# layout: auto
+## **********************************************************
+## CSV Data
+## **********************************************************
+id,type,name,model,refs,labeltype
+1,vCenter,vCSA021,"","2,3",label2
+2,Cluster,Windows,"","4,5,6",label1
+3,Cluster,Linux,"","4,5,6",label1
+4,Model,ProLiant DL380 Gen10,"","7,8",label2
+5,Model,ProLiant XL170r Gen10,"","9",label2
+6,Model,Synergy 480 Gen10,"","7,8,9",label2
+7,Datacenter,Ost,"","10,11",label1
+8,Datacenter,West,"","12,13",label1
+9,Datacenter,Nord,"","14,15",label1
+10,ESXiHost,"ESXi7912","ProLiant DL380 Gen10","",label3
+11,ESXiHost,"ESXi7999","ProLiant DL380 Gen10","",label3
+12,ESXiHost,"ESXi1204","ProLiant XL170r Gen10","",label3
+13,ESXiHost,"ESXi8202","ProLiant XL170r Gen10","",label3
+14,ESXiHost,"ESXi1204","Synergy 480 Gen10","",label3
+15,ESXiHost,"ESXi1204","Synergy 480 Gen10","",label3
