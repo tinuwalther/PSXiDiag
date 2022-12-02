@@ -1,4 +1,4 @@
-#  - Markdown ESXiHost Inventory
+# Markdown ESXiHost Inventory
 
  - [vCenter vCSA010](#vcenter-vcsa010)
  - [vCenter vCSA020](#vcenter-vcsa020)
@@ -118,7 +118,8 @@ VC4C1_Linux -- VC4C1M1_Synergy 480 Gen10
 VC4C1M1_Synergy 480 Gen10 : - Nord, 3 ESXi Hosts
 VC4C1M1_Synergy 480 Gen10 -- VC4C1M1_Nord
 VC4C1M1_Nord : + ESXi8051, ESXi 7.0.3, Synergy 480 Gen10
-VC4C1M1_Nord : + ESXi8052, ESXi 7.0.3 7.0.3, Synergy 480 Gen10
+VC4C1M1_Nord : + ESXi8052, ESXi 7.0.3, Synergy 480 Gen10
+VC4C1M1_Nord : + ESXi8053, ESXi 7.0.3, Synergy 480 Gen10
 VC4C1M1_Synergy 480 Gen10 : - Ost, 1 ESXi Hosts
 VC4C1M1_Synergy 480 Gen10 -- VC4C1M1_Ost
 VC4C1M1_Ost : + ESXi7051, ESXi 7.0.3, Synergy 480 Gen10
@@ -138,6 +139,6 @@ VC4C2M1_Ost : + ESXi7999, ESXi 7.0.3, ProLiant DL380 Gen9
 
 ---
 
-I ♥ PS > Diagram created with PowerShell and Mermaid at 02.12.2022 14:55:43
+I ♥ PS > Diagram created with PowerShell and Mermaid at 02.12.2022 18:53:36
 
 ---

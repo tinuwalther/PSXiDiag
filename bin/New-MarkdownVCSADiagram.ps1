@@ -69,7 +69,7 @@ process{
     try{
 
         #region Markdown Header
-        "# $($Header) - $($Title)`n" | Set-Content $OutFile -Encoding utf8 -Force
+        "# $($Title)`n" | Set-Content $OutFile -Encoding utf8 -Force
         #endregion
 
         #region vCenterServer Nav Links
