@@ -5,6 +5,7 @@ PsMmaDiagram builds Mermaid Diagrams with PowerShell and save it as Markdown- or
  - [Markdown Class Diagram](#markdown-class-diagram)
  - [HTML Class Diagram](#html-class-diagram)
  - [PSHTML Class Diagram](#pshtml-class-diagram)
+ - [Draw.IO Diagram](#drawio-diagram)
 
 ## Markdown Class Diagram
 
@@ -75,18 +76,7 @@ $Parameters = @{
 
 [Top](#)
 
-
-## PSWriteHTML Diagram
-
-[Easy way to create diagrams using PowerShell and PSWriteHTML](https://evotec.xyz/easy-way-to-create-diagrams-using-powershell-and-pswritehtml/)
-
-````PowerShell
-Install-Module PSWriteHTML
-````
-
-[Top](#)
-
-## Draw.io
+## Draw.io Diagram
 
 Create CSV-file to [import into draw.io diagrams](https://drawio-app.com/import-from-csv-to-drawio/)
 
