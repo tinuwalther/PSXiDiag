@@ -10,11 +10,11 @@
 # width: auto
 # height: auto
 # padding: 40
-# ignore: refs
+# ignore: refs,labeltype
 # nodespacing: 60
 # levelspacing: 100
 # edgespacing: 40
-# layout: verticaltree
+# layout: smart
 ## **********************************************************
 ## CSV Data
 ## **********************************************************

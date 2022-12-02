@@ -78,7 +78,7 @@ $Parameters = @{
 
 ## Draw.io Diagram
 
-Create CSV-File(s) to [import into draw.io](https://drawio-app.com/import-from-csv-to-drawio/).
+Create CSV-File(s) to [import into draw.io](https://drawio-app.com/import-from-csv-to-drawio/). The CSV-File(s) will be stored under ..\data.
 
 ![Draw-PsMwaDiagram](./img/PsMwaDiagram-draw.png)
 

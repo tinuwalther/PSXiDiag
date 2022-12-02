@@ -10,11 +10,11 @@
 # width: auto
 # height: auto
 # padding: 40
-# ignore: refs
+# ignore: refs,labeltype
 # nodespacing: 60
 # levelspacing: 100
 # edgespacing: 40
-# layout: verticaltree
+# layout: smart
 ## **********************************************************
 ## CSV Data
 ## **********************************************************
@@ -23,7 +23,7 @@ id,refs,type,name,model,version,labeltype
 21,2,Cluster,Oracle,"","",label2
 211,21,Model,ProLiant DL380 Gen10,"","",label1
 2111,211,PhysicalLocation,Nord,"","",label2
-21111,2111,ESXiHost,"+ ESXi8901",ProLiant DL380 Gen10,6.7 6.7,label3
+21111,2111,ESXiHost,"+ ESXi8901",ProLiant DL380 Gen10,6.7,label3
 21112,2111,ESXiHost,"+ ESXi8903",ProLiant DL380 Gen10,6.7,label3
 2112,211,PhysicalLocation,Ost,"","",label2
 21121,2112,ESXiHost,"+ ESXi7902",ProLiant DL380 Gen10,6.7,label3

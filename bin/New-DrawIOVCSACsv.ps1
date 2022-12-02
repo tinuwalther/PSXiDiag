@@ -62,7 +62,6 @@ $header = @"
 ## **********************************************************
 ## Configuration
 ## **********************************************************
-## labels: %name%
 # labels: {"label1" : "%name%", "label2" : "%type%: %name%", "label3" : "%name% - %version% - %model%"}
 # labelname: labeltype
 # style: whiteSpace=wrap;html=1;rounded=1;fillColor=#034f84;strokeColor=#000000;
@@ -71,11 +70,11 @@ $header = @"
 # width: auto
 # height: auto
 # padding: 40
-# ignore: refs
+# ignore: refs,labeltype
 # nodespacing: 60
 # levelspacing: 100
 # edgespacing: 40
-# layout: verticaltree
+# layout: smart
 ## **********************************************************
 ## CSV Data
 ## **********************************************************
@@ -94,7 +93,7 @@ id,refs,type,name,model,version,labeltype
             if(-not([String]::IsNullOrEmpty($vCenter))){
                 
                 Write-Verbose "vCenter: $($vcNo) -> $($_)"
-                $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath "$($Title)-$($vCenter).csv"
+                $OutFile = Join-Path -Path $($PSScriptRoot).Replace('bin','data') -ChildPath "$($Title)-$($vCenter).csv"
                 Write-Verbose $OutFile
 
                 $header | Set-Content $OutFile -Encoding utf8 -Force
@@ -166,7 +165,6 @@ id,refs,type,name,model,version,labeltype
                                     #id,refs,type,name,model,version,labeltype
                                     #10,"",ESXiHost,"ESXi7912","ProLiant DL380 Gen10","6.7",label3
                                     "$($vcNo)$($ClusterNo)$($ModelNo)$($PhysicalLocationNo)$($HostNameNo),$($vcNo)$($ClusterNo)$($ModelNo)$($PhysicalLocationNo),ESXiHost,""$($prefix) $($ESXiHost)"",$($RootModel),$($HostObject.Version),label3" | Add-Content $OutFile -Encoding utf8
-                                    #"VC$($vcNo)C$($ClusterNo)M$($ModelNo)_$($PhysicalLocation) : $($prefix) $($ESXiHost), ESXi $($HostObject.Version), $($RootModel)" | Add-Content $OutFile -Encoding utf8
                                 }
                                 #endregion HostName
                                 $HostNameNo = 0
@@ -178,7 +176,6 @@ id,refs,type,name,model,version,labeltype
                         $ModelNo = 0
                     }
                 }
-
                 $ClusterNo = 0
                 #endregion Group Cluster
             }
