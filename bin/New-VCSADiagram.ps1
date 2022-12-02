@@ -20,6 +20,11 @@
 
     Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'PSHTML ESXiHost Inventory' as Html.
 
+.EXAMPLE
+    .\New-VCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'DrawIO ESXiHost Inventory' -DrawIO
+
+    Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'DrawIO ESXiHost Inventory' as Html.
+
 #>
 
 [CmdletBinding()]
@@ -34,13 +39,20 @@ param (
     [Switch]$Html,
 
     [Parameter(Mandatory=$false)]
-    [Switch]$Pshtml
+    [Switch]$Pshtml,
+
+    [Parameter(Mandatory=$false)]
+    [Switch]$DrawIo
 )
+
+Write-Host "Running Scrip:", $MyInvocation.MyCommand -ForegroundColor Green
 
 if($Html){
     $CommandToExecute = $(Join-Path -Path $PSScriptRoot -ChildPath 'New-HtmlVCSADiagram.ps1')
 }elseif($Pshtml){
     $CommandToExecute = $(Join-Path -Path $PSScriptRoot -ChildPath 'New-PshtmlVCSADiagram.ps1')
+}elseif($DrawIo){
+    $CommandToExecute = $(Join-Path -Path $PSScriptRoot -ChildPath 'New-DrawIOVCSACsv.ps1')
 }else{
     $CommandToExecute = $(Join-Path -Path $PSScriptRoot -ChildPath 'New-MarkdownVCSADiagram.ps1')
 }

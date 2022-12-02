@@ -3,7 +3,7 @@ ESXi7912.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA021.my.company.ch;Oracle
 ESXi8911.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA021.my.company.ch;Oracle;Nord;Connected
 ESXi7999.my.company.ch;7.0.3;HP;ProLiant DL380 Gen9;vCSA100.my.company.ch;Windows;Ost;Connected
 ESXi8998.my.company.ch;7.0.3;HP;ProLiant DL380 Gen9;vCSA100.my.company.ch;Windows;Nord;Connected
-ESXi8052.my.company.ch;7.0.3;HPE;Synergy 480 Gen10;vCSA100.my.company.ch;Linux;Nord;Connected
+ESXi8053.my.company.ch;7.0.3;HPE;Synergy 480 Gen10;vCSA100.my.company.ch;Linux;Nord;Connected
 ESXi8052.my.company.ch;7.0.3;HPE;Synergy 480 Gen10;vCSA100.my.company.ch;Linux;Nord;Connected
 ESXi7051.my.company.ch;7.0.3;HPE;Synergy 480 Gen10;vCSA100.my.company.ch;Linux;Ost;Connected
 ESXi8051.my.company.ch;7.0.3;HPE;Synergy 480 Gen10;vCSA100.my.company.ch;Linux;Nord;Connected

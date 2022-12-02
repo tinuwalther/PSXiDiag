@@ -19,22 +19,18 @@
 ## CSV Data
 ## **********************************************************
 id,refs,type,name,model,version,labeltype
-1,"2,3",vCenterServer,vCSA021,"Appliance","7.0.3",label1
-
-2,"4,5,6",Cluster,Windows,"","",label2
-3,"4,5,6",Cluster,Linux,"","",label2
-
-4,"7",Model,ProLiant DL380 Gen10,"","Gen10",label1
-5,"8",Model,ProLiant XL170r Gen9,"","Gen9",label1
-6,"9",Model,Synergy 480 Gen10,"","Gen10",label1
-
-7,"10,11",PhysicalLocation,Ost,"","",label2
-8,"12,13",PhysicalLocation,West,"","",label2
-9,"14,15",PhysicalLocation,Nord,"","",label2
-
-10,"",ESXiHost,"ESXi7912","ProLiant DL380 Gen10","6.7",label3
-11,"",ESXiHost,"ESXi7999","ProLiant DL380 Gen10","6.7",label3
-12,"",ESXiHost,"ESXi1204","ProLiant XL170r Gen9","6.5",label3
-13,"",ESXiHost,"ESXi8202","ProLiant XL170r Gen9","6.5",label3
-14,"",ESXiHost,"ESXi1204","Synergy 480 Gen10","7.0.3",label3
-15,"",ESXiHost,"ESXi1204","Synergy 480 Gen10","7.0.3",label3
+4,"",vCenterServer,vCSA100,Appliance,"",label1
+41,4,Cluster,Linux,"","",label2
+411,41,Model,Synergy 480 Gen10,"","",label1
+4111,411,PhysicalLocation,Nord,"","",label2
+41111,4111,ESXiHost,"+ ESXi8051",Synergy 480 Gen10,7.0.3,label3
+41112,4111,ESXiHost,"+ ESXi8052",Synergy 480 Gen10,7.0.3,label3
+41113,4111,ESXiHost,"+ ESXi8053",Synergy 480 Gen10,7.0.3,label3
+4112,411,PhysicalLocation,Ost,"","",label2
+41121,4112,ESXiHost,"+ ESXi7051",Synergy 480 Gen10,7.0.3,label3
+42,4,Cluster,Windows,"","",label2
+421,42,Model,ProLiant DL380 Gen9,"","",label1
+4211,421,PhysicalLocation,Nord,"","",label2
+42111,4211,ESXiHost,"+ ESXi8998",ProLiant DL380 Gen9,7.0.3,label3
+4212,421,PhysicalLocation,Ost,"","",label2
+42121,4212,ESXiHost,"+ ESXi7999",ProLiant DL380 Gen9,7.0.3,label3

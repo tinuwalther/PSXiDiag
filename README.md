@@ -57,7 +57,7 @@ Install-Module PSHTML
 
 Build a simple Class Diagram from an object of VMware ESXiHosts. It use PSHTML and BootStrap for the layout of the Page.
 
-![New-AdvancedVCSADiagram](./img/AdvPsMmDiagram-html.png)
+![New-AdvancedVCSADiagram](./img/PsMmDiagram-pshtml.png)
 
 Import the data from a CSV-file and create a Mermaid-Class-Diagram with the content of the object as Html with PSHTML.
 
@@ -88,6 +88,18 @@ Install-Module PSWriteHTML
 
 ## Draw.io
 
-[Import from CSV to draw.io diagrams](https://drawio-app.com/import-from-csv-to-drawio/)
+Create CSV-file to [import into draw.io diagrams](https://drawio-app.com/import-from-csv-to-drawio/)
+
+![New-AdvancedVCSADiagram](./img/PsMmDiagram-draw.png)
+
+````PowerShell
+Set-Location .\PsMmaDiagram\bin
+$Parameters = @{
+    InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
+    Title       = 'DrawIO ESXiHost Inventory'
+    DrawIO      = $true
+}
+.\New-VCSADiagram.ps1 @Parameters 
+````
 
 [Top](#)

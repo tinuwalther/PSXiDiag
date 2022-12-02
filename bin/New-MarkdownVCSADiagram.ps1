@@ -23,7 +23,7 @@
     Import-Csv with the default Delimiter and create the Mermaid-Diagram with the content of the CSV and the Title 'Markdown ESXiHost Inventory' as Markdown.
 
 .EXAMPLE
-    .\New-MarkdownVCSADiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'Markdown ESXiHost Inventory' -Title 'ESXiHost Inventory'
+    .\New-MarkdownVCSADiagram.ps1 -InputObject (Get-Content ..\data\Inventory.json | ConvertFrom-Json) -Title 'Markdown ESXiHost Inventory'
 
     Import from a JSON-File and create the Mermaid-Diagram with the content of the CSV and the Title 'HTML ESXiHost Inventory' as Html.
 
