@@ -62,27 +62,34 @@ $header = @"
 ## **********************************************************
 ## Configuration
 ## **********************************************************
-# labels: {"label1" : "%name%", "label2" : "%type%: %name%", "label3" : "%name% - %version% - %model%"}
+# labels: {"label1" : "%name%", "label2" : "%type%: %name%", "label3" : "%name% - %version%<br>%model%"}
 # labelname: labeltype
-# style: whiteSpace=wrap;html=1;rounded=1;fillColor=#034f84;strokeColor=#000000;
+# style: shape=%shape%;whiteSpace=wrap;html=1;rounded=1;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;fillColor=%fill%;strokeColor=#000000;
 # namespace: csvimport-
 # connect: {"from": "refs", "to": "id", "style": "curved=0;endArrow=none;endFill=0;fontSize=11;"}
 # width: auto
 # height: auto
 # padding: 40
-# ignore: refs,labeltype
-# nodespacing: 60
-# levelspacing: 100
+# ignore: refs,shape,labeltype,fill
+# nodespacing: 40
+# levelspacing: 40
 # edgespacing: 40
-# layout: smart
+# layout: auto
 ## **********************************************************
 ## CSV Data
 ## **********************************************************
-id,refs,type,name,model,version,labeltype
+id,refs,type,name,model,version,labeltype,fill,shape
 "@
     #endregion
 
     try{
+
+        $shape = 'entity'
+        $color_vcsa     = '#198754'
+        $color_cluster  = '#ef2539'
+        $color_model    = '#343a40'
+        $color_location = '#FA6800'
+        $color_esxi     = '#0050EF'
 
         #region Group vCenter
         $GroupVC = $InputObject | Group-Object vCenterServer | Select-Object -ExpandProperty Name
@@ -98,9 +105,9 @@ id,refs,type,name,model,version,labeltype
 
                 $header | Set-Content $OutFile -Encoding utf8 -Force
 
-                #id,refs,type,name,model,version,labeltype
-                #1,"2,3",vCenterServer,vCSA021,"Appliance","7.0.3",label1
-                "$($vcNo),"""",vCenterServer,$($vCenter),Appliance,"""",label1" | Add-Content $OutFile -Encoding utf8
+                #id,refs,type,name,model,version,labeltype,fill,shape
+                #1,"2,3",vCenterServer,vCSA021,"Appliance","7.0.3",label1,#034f84
+                "$($vcNo),"""",vCenterServer,VC$($vcNo)_$($vCenter),Appliance,"""",label1,$color_vcsa,$($shape)" | Add-Content $OutFile -Encoding utf8
 
                 #region Group Cluster
                 $InputObject | Where-Object vCenterServer -match $_ | Group-Object Cluster | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -112,9 +119,9 @@ id,refs,type,name,model,version,labeltype
 
                         Write-Verbose "Cluster: $($vcNo)$($ClusterNo) -> $($_)"
 
-                        #id,refs,type,name,model,version,labeltype
-                        #2,"4,5,6",Cluster,Windows,"","",label2
-                        "$($vcNo)$($ClusterNo),$($vcNo),Cluster,$($RootCluster),"""","""",label2" | Add-Content $OutFile -Encoding utf8
+                        #id,refs,type,name,model,version,labeltype,fill,shape
+                        #2,"4,5,6",Cluster,Windows,"","",label1,#034f84
+                        "$($vcNo)$($ClusterNo),$($vcNo),Cluster,VC$($vcNo)C$($ClusterNo)_$($RootCluster),"""","""",label1,$color_cluster,$($shape)" | Add-Content $OutFile -Encoding utf8
         
                         #region Group Model
                         $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Group-Object Model | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -125,9 +132,9 @@ id,refs,type,name,model,version,labeltype
                             
                             Write-Verbose "Model: $($vcNo)$($ClusterNo)$($ModelNo) -> $($_)"
 
-                            #id,refs,type,name,model,version,labeltype
-                            #4,"7",Model,ProLiant DL380 Gen10,"","Gen10",label1
-                            "$($vcNo)$($ClusterNo)$($ModelNo),$($vcNo)$($ClusterNo),Model,$($RootModel),"""","""",label1" | Add-Content $OutFile -Encoding utf8
+                            #id,refs,type,name,model,version,labeltype,fill,shape
+                            #4,"7",Model,ProLiant DL380 Gen10,"","Gen10",label1,#034f84
+                            "$($vcNo)$($ClusterNo)$($ModelNo),$($vcNo)$($ClusterNo),Model,VC$($vcNo)C$($ClusterNo)_$($RootModel),"""","""",label1,$color_model,$($shape)" | Add-Content $OutFile -Encoding utf8
                                     
                             #region Group PhysicalLocation
                             $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Where-Object Model -match $RootModel | Group-Object PhysicalLocation | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -139,9 +146,9 @@ id,refs,type,name,model,version,labeltype
 
                                 $ObjectCount = $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Where-Object Model -match $RootModel | Where-Object PhysicalLocation -match $PhysicalLocation | Select-Object -ExpandProperty HostName
 
-                                #id,refs,type,name,model,version,labeltype
-                                #7,"10,11",PhysicalLocation,Ost,"","",label2
-                                "$($vcNo)$($ClusterNo)$($ModelNo)$($PhysicalLocationNo),$($vcNo)$($ClusterNo)$($ModelNo),PhysicalLocation,$($PhysicalLocation),"""","""",label2" | Add-Content $OutFile -Encoding utf8
+                                #id,refs,type,name,model,version,labeltype,fill,shape
+                                #7,"10,11",PhysicalLocation,Ost,"","",label1,#034f84
+                                "$($vcNo)$($ClusterNo)$($ModelNo)$($PhysicalLocationNo),$($vcNo)$($ClusterNo)$($ModelNo),PhysicalLocation,VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation),"""","""",label1,$color_location,$($shape)" | Add-Content $OutFile -Encoding utf8
 
                                 #region Group HostName
                                 $InputObject | Where-Object vCenterServer -match $vCenter | Where-Object Cluster -match $RootCluster | Where-Object Model -match $RootModel | Where-Object PhysicalLocation -match $PhysicalLocation | Group-Object HostName | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -162,9 +169,9 @@ id,refs,type,name,model,version,labeltype
                                         $prefix = '-'
                                     }
 
-                                    #id,refs,type,name,model,version,labeltype
-                                    #10,"",ESXiHost,"ESXi7912","ProLiant DL380 Gen10","6.7",label3
-                                    "$($vcNo)$($ClusterNo)$($ModelNo)$($PhysicalLocationNo)$($HostNameNo),$($vcNo)$($ClusterNo)$($ModelNo)$($PhysicalLocationNo),ESXiHost,""$($prefix) $($ESXiHost)"",$($RootModel),$($HostObject.Version),label3" | Add-Content $OutFile -Encoding utf8
+                                    #id,refs,type,name,model,version,labeltype,fill,shape
+                                    #10,"",ESXiHost,"ESXi7912","ProLiant DL380 Gen10","6.7",label3,#034f84
+                                    "$($vcNo)$($ClusterNo)$($ModelNo)$($PhysicalLocationNo)$($HostNameNo),$($vcNo)$($ClusterNo)$($ModelNo)$($PhysicalLocationNo),ESXiHost,""$($prefix) $($ESXiHost)"",$($RootModel),$($HostObject.Version),label3,$($color_esxi),$($shape)" | Add-Content $OutFile -Encoding utf8
                                 }
                                 #endregion HostName
                                 $HostNameNo = 0

@@ -1,28 +1,27 @@
 ## **********************************************************
 ## Configuration
 ## **********************************************************
-## labels: %name%
-# labels: {"label1" : "%name%", "label2" : "%type%: %name%", "label3" : "%name% - %version% - %model%"}
+# labels: {"label1" : "%name%", "label2" : "%type%: %name%", "label3" : "%name% - %version%<br>%model%"}
 # labelname: labeltype
-# style: whiteSpace=wrap;html=1;rounded=1;fillColor=#034f84;strokeColor=#000000;
+# style: shape=%shape%;whiteSpace=wrap;html=1;rounded=1;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;fillColor=%fill%;strokeColor=#000000;
 # namespace: csvimport-
 # connect: {"from": "refs", "to": "id", "style": "curved=0;endArrow=none;endFill=0;fontSize=11;"}
 # width: auto
 # height: auto
 # padding: 40
-# ignore: refs,labeltype
-# nodespacing: 60
-# levelspacing: 100
+# ignore: refs,shape,labeltype,fill
+# nodespacing: 40
+# levelspacing: 40
 # edgespacing: 40
-# layout: smart
+# layout: auto
 ## **********************************************************
 ## CSV Data
 ## **********************************************************
-id,refs,type,name,model,version,labeltype
-3,"",vCenterServer,vCSA021,Appliance,"",label1
-31,3,Cluster,Oracle,"","",label2
-311,31,Model,ProLiant DL380 Gen10,"","",label1
-3111,311,PhysicalLocation,Nord,"","",label2
-31111,3111,ESXiHost,"+ ESXi8911",ProLiant DL380 Gen10,6.7,label3
-3112,311,PhysicalLocation,Ost,"","",label2
-31121,3112,ESXiHost,"+ ESXi7912",ProLiant DL380 Gen10,6.7,label3
+id,refs,type,name,model,version,labeltype,fill,shape
+3,"",vCenterServer,VC3_vCSA021,Appliance,"",label1,#198754,entity
+31,3,Cluster,VC3C1_Oracle,"","",label1,#ef2539,entity
+311,31,Model,VC3C1_ProLiant DL380 Gen10,"","",label1,#343a40,entity
+3111,311,PhysicalLocation,VC3C1_Nord,"","",label1,#FA6800,entity
+31111,3111,ESXiHost,"+ ESXi8911",ProLiant DL380 Gen10,6.7,label3,#0050EF,entity
+3112,311,PhysicalLocation,VC3C1_Ost,"","",label1,#FA6800,entity
+31121,3112,ESXiHost,"+ ESXi7912",ProLiant DL380 Gen10,6.7,label3,#0050EF,entity

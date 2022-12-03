@@ -1,36 +1,35 @@
 ## **********************************************************
 ## Configuration
 ## **********************************************************
-## labels: %name%
-# labels: {"label1" : "%name%", "label2" : "%type%: %name%", "label3" : "%name% - %version% - %model%"}
+# labels: {"label1" : "%name%", "label2" : "%type%: %name%", "label3" : "%name% - %version%<br>%model%"}
 # labelname: labeltype
-# style: whiteSpace=wrap;html=1;rounded=1;fillColor=#034f84;strokeColor=#000000;
+# style: shape=%shape%;whiteSpace=wrap;html=1;rounded=1;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;fillColor=%fill%;strokeColor=#000000;
 # namespace: csvimport-
 # connect: {"from": "refs", "to": "id", "style": "curved=0;endArrow=none;endFill=0;fontSize=11;"}
 # width: auto
 # height: auto
 # padding: 40
-# ignore: refs,labeltype
-# nodespacing: 60
-# levelspacing: 100
+# ignore: refs,shape,labeltype,fill
+# nodespacing: 40
+# levelspacing: 40
 # edgespacing: 40
-# layout: smart
+# layout: auto
 ## **********************************************************
 ## CSV Data
 ## **********************************************************
-id,refs,type,name,model,version,labeltype
-4,"",vCenterServer,vCSA100,Appliance,"",label1
-41,4,Cluster,Linux,"","",label2
-411,41,Model,Synergy 480 Gen10,"","",label1
-4111,411,PhysicalLocation,Nord,"","",label2
-41111,4111,ESXiHost,"+ ESXi8051",Synergy 480 Gen10,7.0.3,label3
-41112,4111,ESXiHost,"+ ESXi8052",Synergy 480 Gen10,7.0.3,label3
-41113,4111,ESXiHost,"+ ESXi8053",Synergy 480 Gen10,7.0.3,label3
-4112,411,PhysicalLocation,Ost,"","",label2
-41121,4112,ESXiHost,"+ ESXi7051",Synergy 480 Gen10,7.0.3,label3
-42,4,Cluster,Windows,"","",label2
-421,42,Model,ProLiant DL380 Gen9,"","",label1
-4211,421,PhysicalLocation,Nord,"","",label2
-42111,4211,ESXiHost,"+ ESXi8998",ProLiant DL380 Gen9,7.0.3,label3
-4212,421,PhysicalLocation,Ost,"","",label2
-42121,4212,ESXiHost,"+ ESXi7999",ProLiant DL380 Gen9,7.0.3,label3
+id,refs,type,name,model,version,labeltype,fill,shape
+4,"",vCenterServer,VC4_vCSA100,Appliance,"",label1,#198754,entity
+41,4,Cluster,VC4C1_Linux,"","",label1,#ef2539,entity
+411,41,Model,VC4C1_Synergy 480 Gen10,"","",label1,#343a40,entity
+4111,411,PhysicalLocation,VC4C1_Nord,"","",label1,#FA6800,entity
+41111,4111,ESXiHost,"+ ESXi8051",Synergy 480 Gen10,7.0.3,label3,#0050EF,entity
+41112,4111,ESXiHost,"+ ESXi8052",Synergy 480 Gen10,7.0.3,label3,#0050EF,entity
+41113,4111,ESXiHost,"+ ESXi8053",Synergy 480 Gen10,7.0.3,label3,#0050EF,entity
+4112,411,PhysicalLocation,VC4C1_Ost,"","",label1,#FA6800,entity
+41121,4112,ESXiHost,"+ ESXi7051",Synergy 480 Gen10,7.0.3,label3,#0050EF,entity
+42,4,Cluster,VC4C2_Windows,"","",label1,#ef2539,entity
+421,42,Model,VC4C2_ProLiant DL380 Gen9,"","",label1,#343a40,entity
+4211,421,PhysicalLocation,VC4C2_Nord,"","",label1,#FA6800,entity
+42111,4211,ESXiHost,"+ ESXi8998",ProLiant DL380 Gen9,7.0.3,label3,#0050EF,entity
+4212,421,PhysicalLocation,VC4C2_Ost,"","",label1,#FA6800,entity
+42121,4212,ESXiHost,"+ ESXi7999",ProLiant DL380 Gen9,7.0.3,label3,#0050EF,entity

@@ -1,33 +1,32 @@
 ## **********************************************************
 ## Configuration
 ## **********************************************************
-## labels: %name%
-# labels: {"label1" : "%name%", "label2" : "%type%: %name%", "label3" : "%name% - %version% - %model%"}
+# labels: {"label1" : "%name%", "label2" : "%type%: %name%", "label3" : "%name% - %version%<br>%model%"}
 # labelname: labeltype
-# style: whiteSpace=wrap;html=1;rounded=1;fillColor=#034f84;strokeColor=#000000;
+# style: shape=%shape%;whiteSpace=wrap;html=1;rounded=1;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;fillColor=%fill%;strokeColor=#000000;
 # namespace: csvimport-
 # connect: {"from": "refs", "to": "id", "style": "curved=0;endArrow=none;endFill=0;fontSize=11;"}
 # width: auto
 # height: auto
 # padding: 40
-# ignore: refs,labeltype
-# nodespacing: 60
-# levelspacing: 100
+# ignore: refs,shape,labeltype,fill
+# nodespacing: 40
+# levelspacing: 40
 # edgespacing: 40
-# layout: smart
+# layout: auto
 ## **********************************************************
 ## CSV Data
 ## **********************************************************
-id,refs,type,name,model,version,labeltype
-2,"",vCenterServer,vCSA020,Appliance,"",label1
-21,2,Cluster,Oracle,"","",label2
-211,21,Model,ProLiant DL380 Gen10,"","",label1
-2111,211,PhysicalLocation,Nord,"","",label2
-21111,2111,ESXiHost,"+ ESXi8901",ProLiant DL380 Gen10,6.7,label3
-21112,2111,ESXiHost,"+ ESXi8903",ProLiant DL380 Gen10,6.7,label3
-2112,211,PhysicalLocation,Ost,"","",label2
-21121,2112,ESXiHost,"+ ESXi7902",ProLiant DL380 Gen10,6.7,label3
-21122,2112,ESXiHost,"+ ESXi7903",ProLiant DL380 Gen10,6.7,label3
-2113,211,PhysicalLocation,West,"","",label2
-21131,2113,ESXiHost,"+ ESXi1204",ProLiant DL380 Gen10,6.7,label3
-21132,2113,ESXiHost,"+ ESXi1902",ProLiant DL380 Gen10,6.7,label3
+id,refs,type,name,model,version,labeltype,fill,shape
+2,"",vCenterServer,VC2_vCSA020,Appliance,"",label1,#198754,entity
+21,2,Cluster,VC2C1_Oracle,"","",label1,#ef2539,entity
+211,21,Model,VC2C1_ProLiant DL380 Gen10,"","",label1,#343a40,entity
+2111,211,PhysicalLocation,VC2C1_Nord,"","",label1,#FA6800,entity
+21111,2111,ESXiHost,"+ ESXi8901",ProLiant DL380 Gen10,6.7,label3,#0050EF,entity
+21112,2111,ESXiHost,"+ ESXi8903",ProLiant DL380 Gen10,6.7,label3,#0050EF,entity
+2112,211,PhysicalLocation,VC2C1_Ost,"","",label1,#FA6800,entity
+21121,2112,ESXiHost,"+ ESXi7902",ProLiant DL380 Gen10,6.7,label3,#0050EF,entity
+21122,2112,ESXiHost,"+ ESXi7903",ProLiant DL380 Gen10,6.7,label3,#0050EF,entity
+2113,211,PhysicalLocation,VC2C1_West,"","",label1,#FA6800,entity
+21131,2113,ESXiHost,"+ ESXi1204",ProLiant DL380 Gen10,6.7,label3,#0050EF,entity
+21132,2113,ESXiHost,"+ ESXi1902",ProLiant DL380 Gen10,6.7,label3,#0050EF,entity
