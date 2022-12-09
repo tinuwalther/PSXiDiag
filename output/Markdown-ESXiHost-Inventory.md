@@ -24,8 +24,6 @@ VC1C1_ProLiant XL170r Gen9 : - West, 2 ESXi Hosts
 VC1C1_ProLiant XL170r Gen9 -- VC1C1_West
 VC1C1_West : + ESXi1201, ESXi 6.5, ProLiant XL170r Gen9
 VC1C1_West : + ESXi1202, ESXi 6.5, ProLiant XL170r Gen9
-VC1C1_West : o ESXi1201, ESXi 7.0.3, ProLiant XL170r Gen9
-VC1C1_West : o ESXi1202, ESXi 7.0.3, ProLiant XL170r Gen9
 VC1_vCSA010 -- VC1C2_Transfer
 VC1_vCSA010 : + Transfer
 VC1C2_Transfer : + XH620 V3
@@ -141,6 +139,6 @@ VC4C2_Ost : + ESXi7999, ESXi 7.0.3, ProLiant DL380 Gen9
 
 ---
 
-I ♥ PS > Diagram created with PowerShell and Mermaid at 09.12.2022 11:18:08
+I ♥ PS > Diagram created with PowerShell and Mermaid at 09.12.2022 17:34:42
 
 ---

@@ -70,10 +70,23 @@ begin{
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($function)$($params)" -Join ' ')
 
     $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
-    $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
 
-    $OutFile = Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).md"
+    $OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).md") -replace '\s', '-'
     Write-Verbose $OutFile
+
+    enum OSType {
+        Linux
+        Mac
+        Windows
+    }
+
+    if($PSVersionTable.PSVersion.Major -lt 6){
+        $CurrentOS = [OSType]::Windows
+    }else{
+        if($IsMacOS)  {$CurrentOS = [OSType]::Mac}
+        if($IsLinux)  {$CurrentOS = [OSType]::Linux}
+        if($IsWindows){$CurrentOS = [OSType]::Windows}
+    }
 }
 
 process{
@@ -192,7 +205,11 @@ process{
         "I $([char]9829) PS > Diagram created with PowerShell and Mermaid at $((Get-Date).ToString())`n" | Add-Content $OutFile -Encoding utf8
         "---" | Add-Content $OutFile -Encoding utf8
         
-        Start-Process $($OutFile)
+        if($CurrentOS -eq [OSType]::Windows){
+            Start-Process $($OutFile)
+        }else{
+            Start-Process code "$($OutFile)"
+        }
 
     }catch{
         Write-Warning $('ScriptName:', $($_.InvocationInfo.ScriptName), 'LineNumber:', $($_.InvocationInfo.ScriptLineNumber), 'Message:', $($_.Exception.Message) -Join ' ')

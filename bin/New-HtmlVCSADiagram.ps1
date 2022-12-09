@@ -39,7 +39,12 @@
 
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(
+        Mandatory=$true,
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true,
+        Position = 0
+    )]
     [Object]$InputObject,
 
     [Parameter(Mandatory=$false)]
@@ -67,6 +72,20 @@ begin{
         $params = "$($params) -$($item) $($PSBoundParameters[$item])"
     }
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($function)$($params)" -Join ' ')
+
+    enum OSType {
+        Linux
+        Mac
+        Windows
+    }
+
+    if($PSVersionTable.PSVersion.Major -lt 6){
+        $CurrentOS = [OSType]::Windows
+    }else{
+        if($IsMacOS)  {$CurrentOS = [OSType]::Mac}
+        if($IsLinux)  {$CurrentOS = [OSType]::Linux}
+        if($IsWindows){$CurrentOS = [OSType]::Windows}
+    }
 }
 
 process{
@@ -76,7 +95,7 @@ process{
     $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
     $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
 
-    $OutFile = Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html"
+    $OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html") -replace '\s', '-'
     Write-Verbose $OutFile
 
     #region HTML Definition
@@ -462,7 +481,11 @@ $footer = @"
         }
         #endregion Group vCenter
 
-        Start-Process $($OutFile)
+        if($CurrentOS -eq [OSType]::Windows){
+            Start-Process $($OutFile)
+        }else{
+            Start-Process "file://$($OutFile)"
+        }
 
     }catch{
         Write-Warning $('ScriptName:', $($_.InvocationInfo.ScriptName), 'LineNumber:', $($_.InvocationInfo.ScriptLineNumber), 'Message:', $($_.Exception.Message) -Join ' ')

@@ -45,7 +45,21 @@ param (
     [Switch]$DrawIo
 )
 
-Write-Host "Running Scrip:", $MyInvocation.MyCommand -ForegroundColor Green
+enum OSType {
+    Linux
+    Mac
+    Windows
+}
+
+if($PSVersionTable.PSVersion.Major -lt 6){
+    $CurrentOS = [OSType]::Windows
+}else{
+    if($IsMacOS)  {$CurrentOS = [OSType]::Mac}
+    if($IsLinux)  {$CurrentOS = [OSType]::Linux}
+    if($IsWindows){$CurrentOS = [OSType]::Windows}
+}
+
+Write-Host "Running Scrip:", $MyInvocation.MyCommand, "on $($CurrentOS)" -ForegroundColor Green
 
 if($Html){
     $CommandToExecute = $(Join-Path -Path $PSScriptRoot -ChildPath 'New-HtmlVCSADiagram.ps1')
@@ -57,8 +71,4 @@ if($Html){
     $CommandToExecute = $(Join-Path -Path $PSScriptRoot -ChildPath 'New-MarkdownVCSADiagram.ps1')
 }
 
-$Parameter = @{
-    InputObject = $InputObject
-    Title       = $Title
-}
-& $CommandToExecute @Parameter 
+& $CommandToExecute -InputObject $InputObject -Title $Title

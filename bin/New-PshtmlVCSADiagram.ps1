@@ -81,6 +81,20 @@ begin{
         $params = "$($params) -$($item) $($PSBoundParameters[$item])"
     }
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($function)$($params)" -Join ' ')
+
+    enum OSType {
+        Linux
+        Mac
+        Windows
+    }
+
+    if($PSVersionTable.PSVersion.Major -lt 6){
+        $CurrentOS = [OSType]::Windows
+    }else{
+        if($IsMacOS)  {$CurrentOS = [OSType]::Mac}
+        if($IsLinux)  {$CurrentOS = [OSType]::Linux}
+        if($IsWindows){$CurrentOS = [OSType]::Windows}
+    }
 }
 
 process{
@@ -91,7 +105,7 @@ process{
     $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', $function -Join ' ')
-    $OutFile = Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html"
+    $OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html") -replace '\s', '-'
     Write-Verbose $OutFile
     
     # Specify assets-path
@@ -351,7 +365,11 @@ process{
     $Html | Set-Content $OutFile -Encoding utf8
     #endregion html
 
-    Start-Process $($OutFile)
+    if($CurrentOS -eq [OSType]::Windows){
+        Start-Process $($OutFile)
+    }else{
+        Start-Process "file://$($OutFile)"
+    }
 }
 
 end{

@@ -48,7 +48,20 @@ begin{
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($function)$($params)" -Join ' ')
 
     $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
-    $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
+
+    enum OSType {
+        Linux
+        Mac
+        Windows
+    }
+
+    if($PSVersionTable.PSVersion.Major -lt 6){
+        $CurrentOS = [OSType]::Windows
+    }else{
+        if($IsMacOS)  {$CurrentOS = [OSType]::Mac}
+        if($IsLinux)  {$CurrentOS = [OSType]::Linux}
+        if($IsWindows){$CurrentOS = [OSType]::Windows}
+    }
 }
 
 process{
@@ -103,7 +116,7 @@ id,refs,type,name,model,version,labeltype,fill,shape
             if(-not([String]::IsNullOrEmpty($vCenter))){
                 
                 Write-Verbose "vCenter: $($vcNo) -> $($_)"
-                $OutFile = Join-Path -Path $($PSScriptRoot).Replace('bin','data') -ChildPath "$($Title)-$($vCenter).csv"
+                $OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','data') -ChildPath "$($Title)-$($vCenter).csv") -replace '\s', '-'
                 Write-Verbose $OutFile
 
                 $header | Set-Content $OutFile -Encoding utf8 -Force
