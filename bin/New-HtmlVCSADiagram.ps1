@@ -76,7 +76,7 @@ process{
     $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
     $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
 
-    $OutFile = Join-Path -Path $($PSScriptRoot).Trim('bin') -ChildPath "$($Title).html"
+    $OutFile = Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html"
     Write-Verbose $OutFile
 
     #region HTML Definition
@@ -408,7 +408,7 @@ $footer = @"
 
                             $ModelNo ++
                             $RootModel = $_
-                            $FixModel  = $RootModel -replace '-'
+                            $FixModel  = $RootModel -replace '-' -replace '\(' -replace '\)'
 
                             "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)" | Add-Content $OutFile -Encoding utf8
         
@@ -428,8 +428,8 @@ $footer = @"
                                 #region Group HostName
                                 $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Group-Object $Column.Field05 | Select-Object -ExpandProperty Name | ForEach-Object {
                                     
-                                    $HostObject = $InputObject | Where-Object HostName -match $($_)
-                                    $ESXiHost   = $($HostObject.HostName).Split('.')[0]
+                                    $HostObject = $InputObject | Where-Object $Column.Field05 -match $($_)
+                                    $ESXiHost   = $($HostObject.$($Column.Field05)).Split('.')[0]
 
                                     if($HostObject.$($Column.Field06) -eq 'Connected'){
                                         $prefix = '+'

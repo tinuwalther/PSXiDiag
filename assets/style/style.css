@@ -159,3 +159,97 @@ a:link {
 a:active {
   color: lightgreen;
 }
+
+/*
+  overwrite navbar from bootstrap.min.css
+*/
+.nav-link.disabled{
+  color:#6c757d;
+  pointer-events:none;
+  cursor:default
+}
+
+.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover{
+  border-color:#e9ecef #e9ecef #dee2e6
+}
+
+.nav-tabs .nav-link.disabled{
+  color:#6c757d;
+  background-color:transparent;
+  border-color:transparent
+}
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active{
+  color:#495057;
+  background-color:#fff;
+  border-color:#dee2e6 #dee2e6 #fff
+}
+
+.nav-pills .show>.nav-link{
+  color:lightgreen;
+  background-color:#007bff
+}
+
+@media (min-width:992px){
+  .navbar-light .navbar-brand{
+    color:#000000e6
+  }
+  .navbar-light .navbar-brand:focus,.navbar-light .navbar-brand:hover{
+    color:rgba(0,0,0,.9)
+  }
+  .navbar-light .navbar-nav .nav-link{
+    color:green
+  }
+  .navbar-light .navbar-nav .nav-link:focus,.navbar-light .navbar-nav .nav-link:hover{
+    color:rgba(0,0,0,.7)
+  }
+  .navbar-light .navbar-nav .nav-link.disabled{
+    color:rgba(0,0,0,.3)
+  }
+  .navbar-light .navbar-nav .show>.nav-link{
+    color:green
+  }
+  .navbar-light .navbar-toggler{
+    color:rgba(0,0,0,.5);
+    border-color:rgba(0,0,0,.1)
+  }
+  .navbar-light .navbar-text{
+    color:rgba(0,0,0,.5)
+  }
+  .navbar-light .navbar-text a{
+    color:rgba(0,0,0,.9)
+  }
+  .navbar-light .navbar-text a:focus,.navbar-light .navbar-text a:hover{
+    color:rgba(0,0,0,.9)
+  }
+  .navbar-dark .navbar-brand{
+    color:#fff
+  }
+  .navbar-dark .navbar-brand:focus,.navbar-dark .navbar-brand:hover{
+    color:#fff
+  }
+  .navbar-dark .navbar-nav .nav-link{
+    color:green
+  }
+  .navbar-dark .navbar-nav .nav-link:focus,.navbar-dark .navbar-nav .nav-link:hover{
+    color:rgba(255,255,255,.75)
+  }
+  .navbar-dark .navbar-nav .nav-link.disabled{
+    color:rgba(255,255,255,.25)
+  }
+  .navbar-dark .navbar-nav .active>.nav-link,.navbar-dark .navbar-nav .nav-link.active,.navbar-dark .navbar-nav .nav-link.show,.navbar-dark .navbar-nav .show>.nav-link{
+    color:lightgreen
+  }
+  .navbar-dark .navbar-toggler{
+    color:rgba(255,255,255,.5);
+    border-color:rgba(255,255,255,.1)
+  }
+  .navbar-dark .navbar-text{
+    color:rgba(255,255,255,.5)
+  }
+  .navbar-dark .navbar-text a{
+    color:#fff
+  }
+  .navbar-dark .navbar-text a:focus,.navbar-dark .navbar-text a:hover{
+    color:#fff
+  }
+}

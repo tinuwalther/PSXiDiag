@@ -64,17 +64,20 @@ $header = @"
 ## **********************************************************
 # labels: {"label1" : "%name%", "label2" : "%type%: %name%", "label3" : "%name% - %version%<br>%model%"}
 # labelname: labeltype
-# style: shape=%shape%;whiteSpace=wrap;html=1;rounded=1;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;fillColor=%fill%;strokeColor=#000000;
+# style: shape=%shape%;whiteSpace=wrap;html=1;rounded=1;fillColor=%fill%;opacity=80;
 # namespace: csvimport-
 # connect: {"from": "refs", "to": "id", "style": "curved=0;endArrow=none;endFill=0;fontSize=11;"}
-# width: auto
-# height: auto
-# padding: 40
+# width: 160
+# height: 70
+# padding: 20
 # ignore: refs,shape,labeltype,fill
-# nodespacing: 40
-# levelspacing: 40
-# edgespacing: 40
-# layout: auto
+# nodespacing: 20
+# levelspacing: 20
+# edgespacing: 20
+## layout from https://jgraph.github.io/mxgraph/docs/js-api/files/layout/mxFastOrganicLayout-js.html
+## layout: auto
+## layout: [{"layout":"mxHierarchicalLayout","config":{"orientation":"south"}}]
+# layout: [{"layout":"mxFastOrganicLayout","config":{"orientation":"south"}}]
 ## **********************************************************
 ## CSV Data
 ## **********************************************************
