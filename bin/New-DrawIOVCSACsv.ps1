@@ -201,12 +201,10 @@ id,refs,type,name,model,version,labeltype,fill,shape
                 }
                 $ClusterNo = 0
                 #endregion Group Cluster
+                Write-Host $OutFile
             }
         }
         #endregion Group vCenter
-
-        #Start-Process $($OutFile)
-
     }catch{
         Write-Warning $('ScriptName:', $($_.InvocationInfo.ScriptName), 'LineNumber:', $($_.InvocationInfo.ScriptLineNumber), 'Message:', $($_.Exception.Message) -Join ' ')
         $error.Clear()
@@ -221,6 +219,4 @@ end{
         '{1:0}h {2:0}m {3:0}s {4:000}ms' -f $_.Days, $_.Hours, $_.Minutes, $_.Seconds, $_.Milliseconds
     }
     Write-Verbose $('Finished in:', $Formatted -Join ' ')
-
-    return $($OutFile)
 }
