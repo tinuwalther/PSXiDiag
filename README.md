@@ -7,7 +7,16 @@ PSXiDiag builds VMware ESXiHost Inventory Diagrams with PowerShell and save it a
  - [PSHTML Class Diagram](#pshtml-class-diagram)
  - [Draw.IO Diagram](#drawio-diagram)
 
+The following fields are required for each diagram:
+
+HostName|Version|Manufacturer|Model|vCenterServer|Cluster|PhysicalLocation|ConnectionState
+-|-|-|-|-|-|-|-
+ESXi7912.my.company.ch|6.7|HPE|ProLiant DL380 Gen10|vCSA021.my.company.ch|Oracle|Ost|Connected
+ESXi8911.my.company.ch|7.0.3|HPE|ProLiant DL380 Gen10|vCSA021.my.company.ch|Windows|Nord|Connected
+
 ## Markdown Class Diagram
+
+---
 
 Build a simple Class Diagram from an object-array of VMware ESXiHosts as Markdown-File.
 
@@ -16,7 +25,7 @@ Build a simple Class Diagram from an object-array of VMware ESXiHosts as Markdow
 Import the data from a CSV-file and create a Mermaid-Class-Diagram with the content of the object and save it as Markdown.
 
 ````PowerShell
-Set-Location .\PsMwaDiagram\bin
+Set-Location .\PSXiDiag\bin
 $Parameters = @{
     InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
     Title       = 'Markdown ESXiHost Inventory'
@@ -28,6 +37,8 @@ $Parameters = @{
 
 ## HTML Class Diagram
 
+---
+
 Build a simple Class Diagram from an object-array of VMware ESXiHosts as HTML-File.
 
 ![HTML-PsMwaDiagram](./img/PsMwaDiagram-html.png)
@@ -37,7 +48,7 @@ Import the data from a CSV-file and create a Mermaid-Class-Diagram with the cont
 CSS and Html is inside the Html-Page and the Computer must have access to the Internet to mermaid.min.js to format the Diagrams.
 
 ````PowerShell
-Set-Location .\PsMwaDiagram\bin
+Set-Location .\PSXiDiag\bin
 $Parameters = @{
     InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
     Title       = 'HTML ESXiHost Inventory'
@@ -49,6 +60,8 @@ $Parameters = @{
 [Top](#)
 
 ## PSHTML Class Diagram
+
+---
 
 [PSHTML is a cross platform powershell module that allows to renders HTML using powershell syntax](https://pshtml.readthedocs.io/en/latest/)
 
@@ -65,7 +78,7 @@ Import the data from a CSV-file and create a Mermaid-Class-Diagram with the cont
 All libraries are included in the project in the assets-folder and no access to the Internet is needed.
 
 ````PowerShell
-Set-Location .\PsMwaDiagram\bin
+Set-Location .\PSXiDiag\bin
 $Parameters = @{
     InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
     Title       = 'PSHTML ESXiHost Inventory'
@@ -78,6 +91,8 @@ $Parameters = @{
 
 ## Draw.io Diagram
 
+---
+
 Build an input-file from an object-array of VMware ESXiHosts for import in to DrawIO.
 
 Create CSV-File(s) to [import into draw.io](https://drawio-app.com/import-from-csv-to-drawio/). The CSV-File(s) will be stored under ..\data.
@@ -85,7 +100,7 @@ Create CSV-File(s) to [import into draw.io](https://drawio-app.com/import-from-c
 ![Draw-PsMwaDiagram](./img/PsMwaDiagram-draw.png)
 
 ````PowerShell
-Set-Location .\PsMwaDiagram\bin
+Set-Location .\PSXiDiag\bin
 $Parameters = @{
     InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
     Title       = 'DrawIO ESXiHost Inventory'
