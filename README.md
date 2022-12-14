@@ -1,6 +1,6 @@
-# PsMwaDiagram
+# PSXiDiag
 
-PsMwaDiagram builds Diagrams with PowerShell and save it as Markdown-, HTML- or as CSV-File for Draw.IO.
+PSXiDiag builds VMware ESXiHost Inventory Diagrams with PowerShell and save it as Markdown-, HTML- or as CSV-File for Draw.IO.
 
  - [Markdown Class Diagram](#markdown-class-diagram)
  - [HTML Class Diagram](#html-class-diagram)
@@ -9,7 +9,7 @@ PsMwaDiagram builds Diagrams with PowerShell and save it as Markdown-, HTML- or 
 
 ## Markdown Class Diagram
 
-Build a simple Class Diagram from an object of VMware ESXiHosts as Markdown-File.
+Build a simple Class Diagram from an object-array of VMware ESXiHosts as Markdown-File.
 
 ![Markdown-PsMwaDiagram](./img/PsMwaDiagram-md.png)
 
@@ -28,7 +28,7 @@ $Parameters = @{
 
 ## HTML Class Diagram
 
-Build a simple Class Diagram from an object of VMware ESXiHosts as HTML-File.
+Build a simple Class Diagram from an object-array of VMware ESXiHosts as HTML-File.
 
 ![HTML-PsMwaDiagram](./img/PsMwaDiagram-html.png)
 
@@ -56,7 +56,7 @@ $Parameters = @{
 Install-Module PSHTML
 ````
 
-Build a simple Class Diagram from an object of VMware ESXiHosts. It use PSHTML and BootStrap for the layout of the Page.
+Build a simple Class Diagram from an object-array of VMware ESXiHosts. It use PSHTML and BootStrap for the layout of the Page.
 
 ![PSHTML-PsMwaDiagram](./img/PsMwaDiagram-pshtml.png)
 
@@ -77,6 +77,8 @@ $Parameters = @{
 [Top](#)
 
 ## Draw.io Diagram
+
+Build an input-file from an object-array of VMware ESXiHosts for import in to DrawIO.
 
 Create CSV-File(s) to [import into draw.io](https://drawio-app.com/import-from-csv-to-drawio/). The CSV-File(s) will be stored under ..\data.
 
