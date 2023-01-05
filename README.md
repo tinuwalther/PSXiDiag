@@ -1,6 +1,8 @@
 # PSXiDiag
 
-PSXiDiag builds VMware ESXiHost Inventory Diagrams with PowerShell and save it as Markdown-, HTML- or as CSV-File for Draw.IO.
+We currently have ~130 ESXi Hosts across 8 vCenters in our environemnt. Whenerver I'm done with the visualization of it, it's already wrong and I can start again. Why doesn't PowerShell do this for me? That's why I wrote this framework.
+
+PSXiDiag builds VMware ESXiHost Inventory Diagrams with PowerShell and save it as Markdown-, or HTML-File with Mermaid Diagrams or as CSV-File for Draw.IO-Import.
 
  - [Markdown Class Diagram](#markdown-class-diagram)
  - [HTML Class Diagram](#html-class-diagram)
