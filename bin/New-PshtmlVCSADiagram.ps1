@@ -109,7 +109,7 @@ process{
     Write-Verbose $OutFile
     
     # Specify assets-path
-    $AssetsPath = $($PSScriptRoot).Replace('bin','assets')
+    $AssetsPath = '../assets' #$AssetsPath = $($PSScriptRoot).Replace('bin','assets')
     Write-Verbose $AssetsPath
 
     $ContinerStyleFluid  = 'container-fluid'

@@ -136,8 +136,10 @@ process{
 
                         $ClusterNo ++
                         $RootCluster = $_
+                        # Markdown don't like some characters
                         $FixCluster  = $RootCluster -replace '-' -replace '\(' -replace '\)'
 
+                        # One vCenter has relations to clusters
                         "VC$($vcNo)_$($vCenter) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixCluster)" | Add-Content $OutFile -Encoding utf8
                         "VC$($vcNo)_$($vCenter) : + $($RootCluster)" | Add-Content $OutFile -Encoding utf8
         
@@ -148,8 +150,10 @@ process{
 
                             $ModelNo ++
                             $RootModel = $_
+                            # Markdown don't like some characters
                             $FixModel  = $RootModel -replace '-' -replace '\(' -replace '\)'
 
+                            # A cluster contains hardware model(s)
                             "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)" | Add-Content $OutFile -Encoding utf8
         
                             "VC$($vcNo)C$($ClusterNo)_$($FixCluster) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixModel)" | Add-Content $OutFile -Encoding utf8
@@ -161,6 +165,7 @@ process{
                                 $PhysicalLocation = $_
                                 $ObjectCount = $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Select-Object -ExpandProperty $Column.Field05
 
+                                # A hardware model can be in one or more physical locations
                                 "VC$($vcNo)C$($ClusterNo)_$($FixModel) : - $($PhysicalLocation), $($ObjectCount.count) ESXi Hosts" | Add-Content $OutFile -Encoding utf8
 
                                 "VC$($vcNo)C$($ClusterNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation)" | Add-Content $OutFile -Encoding utf8
@@ -171,6 +176,7 @@ process{
                                     $HostObject = $InputObject | Where-Object $Column.Field05 -match $($_)
                                     $ESXiHost   = $($HostObject.$($Column.Field05)).Split('.')[0]
 
+                                    # Visualize the status of the ESXiHost
                                     if($HostObject.$($Column.Field06) -eq 'Connected'){
                                         $prefix = '+'
                                     }elseif($HostObject.$($Column.Field06) -match 'New'){
@@ -179,6 +185,7 @@ process{
                                         $prefix = '-'
                                     }
 
+                                    # Each physical location contains ESXiHosts
                                     "VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation) : $($prefix) $($ESXiHost), ESXi $($HostObject.Version), $($RootModel)" | Add-Content $OutFile -Encoding utf8
                                 }
                                 #endregion HostName

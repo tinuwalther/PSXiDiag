@@ -47,7 +47,7 @@ Build a simple Class Diagram from an object-array of VMware ESXiHosts as HTML-Fi
 
 Import the data from a CSV-file and create a Mermaid-Class-Diagram with the content of the object save it as Html.
 
-CSS and Html is inside the Html-Page and the Computer must have access to the Internet to mermaid.min.js to format the Diagrams.
+CSS and Html is inside the Html-Page and the Computer must have access to the Internet to mermaid.min.js to format the Diagrams. This file can be used to send as email.
 
 ````PowerShell
 Set-Location .\PSXiDiag\bin
@@ -77,7 +77,7 @@ Build a simple Class Diagram from an object-array of VMware ESXiHosts. It use PS
 
 Import the data from a CSV-file and create a Mermaid-Class-Diagram with the content of the object as Html with PSHTML.
 
-All libraries are included in the project in the assets-folder and no access to the Internet is needed.
+All libraries are included in the project in the assets-folder and no access to the Internet is needed, but the whole project must be installed on the target(s) where you open the file.
 
 ````PowerShell
 Set-Location .\PSXiDiag\bin
