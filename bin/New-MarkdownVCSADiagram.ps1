@@ -136,7 +136,7 @@ process{
 
                         $ClusterNo ++
                         $RootCluster = $_
-                        $FixCluster  = $RootCluster -replace '-'
+                        $FixCluster  = $RootCluster -replace '-' -replace '\(' -replace '\)'
 
                         "VC$($vcNo)_$($vCenter) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixCluster)" | Add-Content $OutFile -Encoding utf8
                         "VC$($vcNo)_$($vCenter) : + $($RootCluster)" | Add-Content $OutFile -Encoding utf8
@@ -148,7 +148,7 @@ process{
 
                             $ModelNo ++
                             $RootModel = $_
-                            $FixModel  = $RootModel -replace '-'
+                            $FixModel  = $RootModel -replace '-' -replace '\(' -replace '\)'
 
                             "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)" | Add-Content $OutFile -Encoding utf8
         
