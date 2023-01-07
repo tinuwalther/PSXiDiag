@@ -95,7 +95,13 @@ process{
     $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
     $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
 
+    # for file only
     $OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html") -replace '\s', '-'
+
+    # for Pode Server
+    # $PodePath = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'views'
+    # $PodeView = (("$($Title).html") -replace '\s', '-')
+    # $OutFile  = Join-Path -Path $($PodePath) -ChildPath $($PodeView)
     Write-Verbose $OutFile
 
     #region HTML Definition

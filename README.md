@@ -4,10 +4,11 @@ We currently have ~130 ESXi Hosts across 8 vCenters in our environemnt. Whenerve
 
 PSXiDiag builds VMware ESXiHost Inventory Diagrams with PowerShell and save it as Markdown-, or HTML-File with Mermaid Diagrams or as CSV-File for Draw.IO-Import.
 
- - [Markdown Class Diagram](#markdown-class-diagram)
- - [HTML Class Diagram](#html-class-diagram)
- - [PSHTML Class Diagram](#pshtml-class-diagram)
- - [Draw.IO Diagram](#drawio-diagram)
+- [PSXiDiag](#psxidiag)
+  - [Markdown Class Diagram](#markdown-class-diagram)
+  - [HTML Class Diagram](#html-class-diagram)
+  - [PSHTML Class Diagram](#pshtml-class-diagram)
+  - [Draw.io Diagram](#drawio-diagram)
 
 The following fields are required for each diagram:
 
@@ -68,10 +69,10 @@ $Parameters = @{
 [PSHTML is a cross platform powershell module that allows to renders HTML using powershell syntax](https://pshtml.readthedocs.io/en/latest/)
 
 ````PowerShell
-Install-Module PSHTML
+Install-Module PSHTML, Pode
 ````
 
-Build a simple Class Diagram from an object-array of VMware ESXiHosts. It use PSHTML and BootStrap for the layout of the Page.
+Build a simple Class Diagram from an object-array of VMware ESXiHosts. It use PSHTML and BootStrap for the layout of the Page and Pode web server.
 
 ![PSHTML-PsMwaDiagram](./img/PsMwaDiagram-pshtml.png)
 

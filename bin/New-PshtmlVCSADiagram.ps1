@@ -102,14 +102,20 @@ process{
     #Fields = HostName;Version;Manufacturer;Model;vCenterServer;Cluster;PhysicalLocation;ConnectionState
     
     $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
-    $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
+    $Page = ($($MyInvocation.MyCommand.Name) -replace '.ps1') + ' for Pode web server'
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', $function -Join ' ')
-    $OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html") -replace '\s', '-'
+    # for file only
+    #$OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html") -replace '\s', '-'
+
+    # for Pode Server
+    $PodePath = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'views'
+    $PodeView = (("$($Title).html") -replace '\s', '-')
+    $OutFile  = Join-Path -Path $($PodePath) -ChildPath $($PodeView)
     Write-Verbose $OutFile
     
     # Specify assets-path
-    $AssetsPath = '../assets' #$AssetsPath = $($PSScriptRoot).Replace('bin','assets')
+    $AssetsPath = '/assets' #'../assets' #$AssetsPath = $($PSScriptRoot).Replace('bin','assets')
     Write-Verbose $AssetsPath
 
     $ContinerStyleFluid  = 'container-fluid'
@@ -365,11 +371,13 @@ process{
     $Html | Set-Content $OutFile -Encoding utf8
     #endregion html
 
-    if($CurrentOS -eq [OSType]::Windows){
-        Start-Process $($OutFile)
-    }else{
-        Start-Process "file://$($OutFile)"
-    }
+    # if($CurrentOS -eq [OSType]::Windows){
+    #     Start-Process $($OutFile)
+    # }else{
+    #     Start-Process "file://$($OutFile)"
+    # }
+    $PodePath = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'Start-PodeServer.ps1'
+    Start-PodeServer -FilePath $($PodePath)
 }
 
 end{
