@@ -4,11 +4,14 @@
  - [vCenter vCSA020](#vcenter-vcsa020)
  - [vCenter vCSA021](#vcenter-vcsa021)
  - [vCenter vCSA100](#vcenter-vcsa100)
+
 ---
 
 ## [vCenter vCSA010](https://vCSA010.my.company.ch/ui)
 
 ---
+
+Total ESXiHosts in vCSA010: 9 (ESXi Versions: 6.5 = 4, 6.7 = 5)
 
 ````mermaid
 classDiagram
@@ -53,11 +56,14 @@ VC1C3_West : o ESXi1209, ESXi 6.7, Synergy 480 Gen10
 
 [Top](#)
 
+
 ---
 
 ## [vCenter vCSA020](https://vCSA020.my.company.ch/ui)
 
 ---
+
+Total ESXiHosts in vCSA020: 6 (ESXi Versions: 6.7 = 6)
 
 ````mermaid
 classDiagram
@@ -81,11 +87,14 @@ VC2C1_West : + ESXi1902, ESXi 6.7, ProLiant DL380 Gen10
 
 [Top](#)
 
+
 ---
 
 ## [vCenter vCSA021](https://vCSA021.my.company.ch/ui)
 
 ---
+
+Total ESXiHosts in vCSA021: 2 (ESXi Versions: 6.7 = 2)
 
 ````mermaid
 classDiagram
@@ -103,11 +112,14 @@ VC3C1_Ost : + ESXi7912, ESXi 6.7, ProLiant DL380 Gen10
 
 [Top](#)
 
+
 ---
 
 ## [vCenter vCSA100](https://vCSA100.my.company.ch/ui)
 
 ---
+
+Total ESXiHosts in vCSA100: 6 (ESXi Versions: 7.0.3 = 6)
 
 ````mermaid
 classDiagram
@@ -137,8 +149,10 @@ VC4C2_Ost : + ESXi7999, ESXi 7.0.3, ProLiant DL380 Gen9
 
 [Top](#)
 
+Total ESXiHosts: 23 (ESXi Versions: 6.5 = 4, 6.7 = 13, 7.0.3 = 6)
+
 ---
 
-I ♥ PS > Diagram created with PowerShell and Mermaid at 05.01.2023 19:20:29
+I ♥ PS > Diagram created with PowerShell and Mermaid at 09.01.2023 21:01:16
 
 ---

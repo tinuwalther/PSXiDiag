@@ -197,11 +197,10 @@ process{
                         #region ESXiHosts
                         $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object vCenterServer | ForEach-Object {
                             p { 
-                                "Total ESXiHosts in $($vCenter): $($_.Count)" 
                                 $CountOfVersion = $_.Group.Version | Group-Object | ForEach-Object {
                                     "$($_.Name) = $($_.Count)"
                                 }
-                                " (ESXi Versions: $($CountOfVersion -join ', '))"
+                                "Total ESXiHosts in $($vCenter): $($_.Count) (ESXi Versions: $($CountOfVersion -join ', '))"
                             } -Style "color:#f8f9fa"
                         }
                         #endregion
@@ -301,11 +300,10 @@ process{
         div -id "Content" -Class "$($ContinerStyleFluid)" -Style "background-color:#034f84" {
             article -id "ESXiHosts" -Content {
                 p {
-                    "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count)" 
                     $CountOfVersion = $InputObject | Group-Object Version | ForEach-Object {
                         "$($_.Name) = $($_.Count)"
                     }
-                    " (ESXi Versions: $($CountOfVersion -join ', '))"
+                    "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count) (ESXi Versions: $($CountOfVersion -join ', '))"
                 } -Style "color:#f8f9fa"
             }
         }

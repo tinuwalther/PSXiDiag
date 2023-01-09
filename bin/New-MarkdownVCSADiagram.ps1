@@ -120,10 +120,19 @@ process{
                 Write-Verbose "vCenter: $($_)"
 
                 #region section header
-                "---`n" | Add-Content $OutFile -Encoding utf8
+                "`n---`n" | Add-Content $OutFile -Encoding utf8
                 "## [vCenter $($vCenter)](https://$($_)/ui)`n" | Add-Content $OutFile -Encoding utf8
                 "---`n" | Add-Content $OutFile -Encoding utf8
         
+                #region ESXiHosts
+                $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object vCenterServer | ForEach-Object {
+                    $CountOfVersion = $_.Group.Version | Group-Object | ForEach-Object {
+                        "$($_.Name) = $($_.Count)"
+                    }
+                    "Total ESXiHosts in $($vCenter): $($_.Count) (ESXi Versions: $($CountOfVersion -join ', '))`n" | Add-Content $OutFile -Encoding utf8
+                }
+                #endregion
+
                 "````````mermaid" | Add-Content $OutFile -Encoding utf8
                 "classDiagram"    | Add-Content $OutFile -Encoding utf8
                 #endregion
@@ -203,10 +212,18 @@ process{
                 #endregion Group Cluster
 
                 "`````````n" | Add-Content $OutFile -Encoding utf8
+
                 "[Top](#)`n" | Add-Content $OutFile -Encoding utf8
             }
         }
         #endregion Group vCenter
+
+        #region ESXiHosts
+        $CountOfVersion = $InputObject | Group-Object Version | ForEach-Object {
+            "$($_.Name) = $($_.Count)"
+        }
+        "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count) (ESXi Versions: $($CountOfVersion -join ', '))`n" | Add-Content $OutFile -Encoding utf8
+        #endregion
 
         "---`n" | Add-Content $OutFile -Encoding utf8
         "I $([char]9829) PS > Diagram created with PowerShell and Mermaid at $((Get-Date).ToString())`n" | Add-Content $OutFile -Encoding utf8

@@ -102,7 +102,7 @@ process{
     # $PodePath = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'views'
     # $PodeView = (("$($Title).html") -replace '\s', '-')
     # $OutFile  = Join-Path -Path $($PodePath) -ChildPath $($PodeView)
-    Write-Verbose $OutFile
+    Write-Verbose "OutFile: $($OutFile)"
 
     #region HTML Definition
     function New-CSS{
@@ -394,8 +394,7 @@ $footer = @"
                 Write-Verbose $_
             }
         }
-        '</ul>' | Add-Content $OutFile -Encoding utf8
-        '</div>' | Add-Content $OutFile -Encoding utf8
+        '</ul></div>' | Add-Content $OutFile -Encoding utf8
         #endregion
 
         #region Group vCenter
@@ -403,23 +402,20 @@ $footer = @"
 
             $vcNo ++
             $vCenter = $($_).Split('.')[0]
-            $vCenterFullName = $_
             if(-not([String]::IsNullOrEmpty($vCenter))){
                 Write-Verbose "vCenter: $($_)"
 
                 #region article
-                #'<button type="button" class="collapsible">Open Collapsible</button>'| Add-Content $OutFile -Encoding utf8
                 '<article>' | Add-Content $OutFile -Encoding utf8 -Force
                 "<h3 id='$($vCenter)'><a href='https://$($_)/ui' target='_blank'>vCenter $($vCenter)</a></h3><br><hr><br>" | Add-Content $OutFile -Encoding utf8
 
                 #region ESXiHosts
                 '<article><div>'   | Add-Content $OutFile -Encoding utf8
                 $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object vCenterServer | ForEach-Object {
-                    "Total ESXiHosts in $($vCenter): $($_.Count)"  | Add-Content $OutFile -Encoding utf8
                     $CountOfVersion = $_.Group.Version | Group-Object | ForEach-Object {
                         "$($_.Name) = $($_.Count)"
                     }
-                    " (ESXi Versions: $($CountOfVersion -join ', '))" | Add-Content $OutFile -Encoding utf8
+                    "Total ESXiHosts in $($vCenter): $($_.Count) (ESXi Versions: $($CountOfVersion -join ', '))" | Add-Content $OutFile -Encoding utf8
                 }
                 '</div></article>' | Add-Content $OutFile -Encoding utf8
                 #endregion
@@ -489,29 +485,25 @@ $footer = @"
                             $ModelNo = 0
                         }
                         #endregion Group Model
-                        #$ModelNo = 0
+
                     }
                 }
-
-                $ClusterNo = 0
                 #endregion Group Cluster
+                $ClusterNo = 0
 
-                #'</div><p><a href="#">Top</a></p>' | Add-Content $OutFile -Encoding utf8
                 "</article>" | Add-Content $OutFile -Encoding utf8 -Force
                 #endregion article
             }
 
         }
-        #$InputObject | Sort-Object $Column.Field01 | ConvertTo-Html | Add-Content $OutFile -Encoding utf8
         #endregion Group vCenter
 
         #region ESXiHosts
-        '<article><div><hr>'   | Add-Content $OutFile -Encoding utf8
-        "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count)" | Add-Content $OutFile -Encoding utf8
+        '<article><div><hr>' | Add-Content $OutFile -Encoding utf8
         $CountOfVersion = $InputObject | Group-Object Version | ForEach-Object {
             "$($_.Name) = $($_.Count)"
         }
-        "(ESXi Versions: $($CountOfVersion -join ', '))" | Add-Content $OutFile -Encoding utf8
+        "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count) (ESXi Versions: $($CountOfVersion -join ', '))" | Add-Content $OutFile -Encoding utf8
         '</div></article>' | Add-Content $OutFile -Encoding utf8
         #endregion
 
