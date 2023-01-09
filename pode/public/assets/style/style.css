@@ -84,10 +84,6 @@ footer {
   text-align: center;
 }
 
-p {
-  font-family: "QuickSand", sans-serif;
-}
-
 h1 {
   font-family: "QuickSand", sans-serif;
   margin-top: 40px;
@@ -110,6 +106,11 @@ h4 {
   font-family: "QuickSand", sans-serif;
   margin-top: 10px;
   margin-bottom: 60px;
+}
+
+p {
+  font-family: "QuickSand", sans-serif;
+  text-align: center; 
 }
 
 img {

@@ -403,6 +403,7 @@ $footer = @"
 
             $vcNo ++
             $vCenter = $($_).Split('.')[0]
+            $vCenterFullName = $_
             if(-not([String]::IsNullOrEmpty($vCenter))){
                 Write-Verbose "vCenter: $($_)"
 
@@ -410,8 +411,23 @@ $footer = @"
                 #'<button type="button" class="collapsible">Open Collapsible</button>'| Add-Content $OutFile -Encoding utf8
                 '<article>' | Add-Content $OutFile -Encoding utf8 -Force
                 "<h3 id='$($vCenter)'><a href='https://$($_)/ui' target='_blank'>vCenter $($vCenter)</a></h3><br><hr><br>" | Add-Content $OutFile -Encoding utf8
+
+                #region ESXiHosts
+                '<article><div>'   | Add-Content $OutFile -Encoding utf8
+                $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object vCenterServer | ForEach-Object {
+                    "Total ESXiHosts in $($vCenter): $($_.Count)"  | Add-Content $OutFile -Encoding utf8
+                    $CountOfVersion = $_.Group.Version | Group-Object | ForEach-Object {
+                        "$($_.Name) = $($_.Count)"
+                    }
+                    " (ESXi Versions: $($CountOfVersion -join ', '))" | Add-Content $OutFile -Encoding utf8
+                }
+                '</div></article>' | Add-Content $OutFile -Encoding utf8
+                #endregion
+
+                #region Mermaid
                 '<div class="mermaid">' | Add-Content $OutFile -Encoding utf8
                 'classDiagram' | Add-Content $OutFile -Encoding utf8
+                #endregion
 
                 #region Group Cluster
                 $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object $Column.Field02 | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -484,8 +500,20 @@ $footer = @"
                 "</article>" | Add-Content $OutFile -Encoding utf8 -Force
                 #endregion article
             }
+
         }
+        #$InputObject | Sort-Object $Column.Field01 | ConvertTo-Html | Add-Content $OutFile -Encoding utf8
         #endregion Group vCenter
+
+        #region ESXiHosts
+        '<article><div><hr>'   | Add-Content $OutFile -Encoding utf8
+        "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count)" | Add-Content $OutFile -Encoding utf8
+        $CountOfVersion = $InputObject | Group-Object Version | ForEach-Object {
+            "$($_.Name) = $($_.Count)"
+        }
+        "(ESXi Versions: $($CountOfVersion -join ', '))" | Add-Content $OutFile -Encoding utf8
+        '</div></article>' | Add-Content $OutFile -Encoding utf8
+        #endregion
 
         if($CurrentOS -eq [OSType]::Windows){
             Start-Process $($OutFile)
