@@ -25,6 +25,9 @@
 .PARAMETER Title
     Specify a valid Title for the Website.
     
+.PARAMETER AssetsPath
+    Specify a valid AssetsPath for the Website.
+    
 .EXAMPLE
     .\New-PshtmlVCSADiagram.ps1 -InputObject (Import-Csv -Path ..\data\inventory.csv -Delimiter ';') -Title 'PSHTML ESXiHost Inventory'
 
@@ -70,7 +73,10 @@ param (
     [String]$RelationShip = '--',
 
     [Parameter(Mandatory=$true)]
-    [String]$Title
+    [String]$Title,
+
+    [Parameter(Mandatory=$false)]
+    [String]$AssetsPath = '/assets' #'../assets' #$AssetsPath = $($PSScriptRoot).Replace('bin','assets')
 )
 
 
@@ -115,7 +121,7 @@ process{
     Write-Verbose $OutFile
     
     # Specify assets-path
-    $AssetsPath = '/assets' #'../assets' #$AssetsPath = $($PSScriptRoot).Replace('bin','assets')
+    #$AssetsPath = '/assets' #'../assets' #$AssetsPath = $($PSScriptRoot).Replace('bin','assets')
     Write-Verbose $AssetsPath
 
     $ContinerStyleFluid  = 'container-fluid'
