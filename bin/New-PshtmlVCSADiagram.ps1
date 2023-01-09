@@ -108,7 +108,7 @@ process{
     #Fields = HostName;Version;Manufacturer;Model;vCenterServer;Cluster;PhysicalLocation;ConnectionState
     
     $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
-    $Page = ($($MyInvocation.MyCommand.Name) -replace '.ps1') + ' for Pode web server'
+    $Page = ($($MyInvocation.MyCommand.Name) -replace '.ps1') + ' for Pode server'
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', $function -Join ' ')
     # for file only
@@ -118,11 +118,9 @@ process{
     $PodePath = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'views'
     $PodeView = (("$($Title).html") -replace '\s', '-')
     $OutFile  = Join-Path -Path $($PodePath) -ChildPath $($PodeView)
-    Write-Verbose $OutFile
+    Write-Verbose "OutFile: $($OutFile)"
     
-    # Specify assets-path
-    #$AssetsPath = '/assets' #'../assets' #$AssetsPath = $($PSScriptRoot).Replace('bin','assets')
-    Write-Verbose $AssetsPath
+    Write-Verbose "AssetsPath: $($AssetsPath)"
 
     $ContinerStyleFluid  = 'container-fluid'
 
@@ -158,10 +156,6 @@ process{
             #region <!-- Navbar links -->
             div -class "collapse navbar-collapse" -id "collapsibleNavbar" -Content {
                 ul -class "navbar-nav" -content {
-                    #FixedLinks
-                    # li -class "nav-item" -content {
-                    #     a -class "nav-link" -href "https://pshtml.readthedocs.io/" -Target _blank -content { "PSHTML" }
-                    # }
                     #DynamicLinks
                     $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
                         $vCenter = $($_).Split('.')[0]
@@ -404,13 +398,14 @@ process{
     $Html | Set-Content $OutFile -Encoding utf8
     #endregion html
 
-    # if($CurrentOS -eq [OSType]::Windows){
-    #     Start-Process $($OutFile)
-    # }else{
-    #     Start-Process "file://$($OutFile)"
-    # }
-    $PodePath = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'Start-PodeServer.ps1'
-    Start-PodeServer -FilePath $($PodePath)
+    if($CurrentOS -eq [OSType]::Windows){
+        # Start Browser
+        Start-Process "microsoft-edge:http://localhost:5989/" -WindowStyle maximized
+    }else{
+        # Start Browser
+        Start-Process "http://localhost:5989/"
+    }
+
 }
 
 end{
