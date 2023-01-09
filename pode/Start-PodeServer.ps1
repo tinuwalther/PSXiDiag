@@ -55,7 +55,7 @@ if($CurrentOS -eq [OSType]::Windows){
     }
 }elseif($CurrentOS -eq [OSType]::Mac){
     Start-PodeServer {
-        Write-Host "Running on Mac" - -ForegroundColor Cyan
+        Write-Host "Running on Mac" -ForegroundColor Cyan
         Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
         Add-PodeEndpoint -Address * -Port 5989 -Protocol Http
