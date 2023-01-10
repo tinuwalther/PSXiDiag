@@ -96,23 +96,24 @@ process{
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', $function -Join ' ')
 
     try{
+        $MarkdownOut = @()
 
         #region Markdown Header
-        "# $($Title)`n" | Set-Content $OutFile -Encoding utf8 -Force
+        $MarkdownOut += "# $($Title)`n"
         #endregion
 
         #region vCenterServer Nav Links
         $GroupVC = $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name
-        $GroupVC | ForEach-Object {
+        $MarkdownOut += $GroupVC | ForEach-Object {
             $vCenter = $($_).Split('.')[0]
             if(-not([String]::IsNullOrEmpty($vCenter))){
-                " - [vCenter $($vCenter)](`#vcenter-$(($vCenter).ToLower()))" | Add-Content $OutFile -Encoding utf8
+                " - [vCenter $($vCenter)](`#vcenter-$(($vCenter).ToLower()))" 
             }
         }
         #endregion
 
         #region Group vCenter
-        $GroupVC | ForEach-Object {
+        $MarkdownOut += $GroupVC | ForEach-Object {
 
             $vcNo ++
             $vCenter = $($_).Split('.')[0]
@@ -120,21 +121,21 @@ process{
                 Write-Verbose "vCenter: $($_)"
 
                 #region section header
-                "`n---`n" | Add-Content $OutFile -Encoding utf8
-                "## [vCenter $($vCenter)](https://$($_)/ui)`n" | Add-Content $OutFile -Encoding utf8
-                "---`n" | Add-Content $OutFile -Encoding utf8
+                "`n---`n" 
+                "## [vCenter $($vCenter)](https://$($_)/ui)`n" 
+                "---`n" 
         
                 #region ESXiHosts
                 $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object vCenterServer | ForEach-Object {
                     $CountOfVersion = $_.Group.Version | Group-Object | ForEach-Object {
                         "$($_.Name) = $($_.Count)"
                     }
-                    "Total ESXiHosts in $($vCenter): $($_.Count) (ESXi Versions: $($CountOfVersion -join ', '))`n" | Add-Content $OutFile -Encoding utf8
+                    "Total ESXiHosts in $($vCenter): $($_.Count) (ESXi Versions: $($CountOfVersion -join ', '))`n" 
                 }
                 #endregion
 
-                "````````mermaid" | Add-Content $OutFile -Encoding utf8
-                "classDiagram"    | Add-Content $OutFile -Encoding utf8
+                "````````mermaid" 
+                "classDiagram"    
                 #endregion
 
                 #region Group Cluster
@@ -149,8 +150,8 @@ process{
                         $FixCluster  = $RootCluster -replace '-' -replace '\(' -replace '\)'
 
                         # One vCenter has relations to clusters
-                        "VC$($vcNo)_$($vCenter) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixCluster)" | Add-Content $OutFile -Encoding utf8
-                        "VC$($vcNo)_$($vCenter) : + $($RootCluster)" | Add-Content $OutFile -Encoding utf8
+                        "VC$($vcNo)_$($vCenter) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixCluster)" 
+                        "VC$($vcNo)_$($vCenter) : + $($RootCluster)" 
         
                         #region Group Model
                         $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Group-Object Model | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -163,9 +164,9 @@ process{
                             $FixModel  = $RootModel -replace '-' -replace '\(' -replace '\)'
 
                             # A cluster contains hardware model(s)
-                            "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)" | Add-Content $OutFile -Encoding utf8
+                            "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)" 
         
-                            "VC$($vcNo)C$($ClusterNo)_$($FixCluster) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixModel)" | Add-Content $OutFile -Encoding utf8
+                            "VC$($vcNo)C$($ClusterNo)_$($FixCluster) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixModel)" 
                                     
                             #region Group PhysicalLocation
                             $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object Model -match $RootModel | Group-Object $Column.Field04 | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -175,9 +176,9 @@ process{
                                 $ObjectCount = $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Select-Object -ExpandProperty $Column.Field05
 
                                 # A hardware model can be in one or more physical locations
-                                "VC$($vcNo)C$($ClusterNo)_$($FixModel) : - $($PhysicalLocation), $($ObjectCount.count) ESXi Hosts" | Add-Content $OutFile -Encoding utf8
+                                "VC$($vcNo)C$($ClusterNo)_$($FixModel) : - $($PhysicalLocation), $($ObjectCount.count) ESXi Hosts" 
 
-                                "VC$($vcNo)C$($ClusterNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation)" | Add-Content $OutFile -Encoding utf8
+                                "VC$($vcNo)C$($ClusterNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation)" 
 
                                 #region Group HostName
                                 $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Group-Object $Column.Field05 | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -195,7 +196,7 @@ process{
                                     }
 
                                     # Each physical location contains ESXiHosts
-                                    "VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation) : $($prefix) $($ESXiHost), ESXi $($HostObject.Version), $($RootModel)" | Add-Content $OutFile -Encoding utf8
+                                    "VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation) : $($prefix) $($ESXiHost), ESXi $($HostObject.Version), $($RootModel)" 
                                 }
                                 #endregion HostName
                                 
@@ -211,9 +212,9 @@ process{
                 $ClusterNo = 0
                 #endregion Group Cluster
 
-                "`````````n" | Add-Content $OutFile -Encoding utf8
+                "`````````n" 
 
-                "[Top](#)`n" | Add-Content $OutFile -Encoding utf8
+                "[Top](#)`n" 
             }
         }
         #endregion Group vCenter
@@ -222,13 +223,17 @@ process{
         $CountOfVersion = $InputObject | Group-Object Version | ForEach-Object {
             "$($_.Name) = $($_.Count)"
         }
-        "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count) (ESXi Versions: $($CountOfVersion -join ', '))`n" | Add-Content $OutFile -Encoding utf8
+        $MarkdownOut += "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count) (ESXi Versions: $($CountOfVersion -join ', '))`n" 
         #endregion
 
-        "---`n" | Add-Content $OutFile -Encoding utf8
-        "I $([char]9829) PS > Diagram created with PowerShell and Mermaid at $((Get-Date).ToString())`n" | Add-Content $OutFile -Encoding utf8
-        "---" | Add-Content $OutFile -Encoding utf8
+        #region footer
+        $MarkdownOut += "---`n" 
+        $MarkdownOut += "I $([char]9829) PS > Diagram created with PowerShell and Mermaid at $((Get-Date).ToString())`n" 
+        $MarkdownOut += "---" 
+        #endregion
         
+        $MarkdownOut | Set-Content $OutFile -Encoding utf8
+
         if($CurrentOS -eq [OSType]::Windows){
             Start-Process $($OutFile)
         }else{

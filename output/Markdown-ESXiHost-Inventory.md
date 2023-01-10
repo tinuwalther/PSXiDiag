@@ -153,6 +153,6 @@ Total ESXiHosts: 23 (ESXi Versions: 6.5 = 4, 6.7 = 13, 7.0.3 = 6)
 
 ---
 
-I ♥ PS > Diagram created with PowerShell and Mermaid at 09.01.2023 21:01:16
+I ♥ PS > Diagram created with PowerShell and Mermaid at 10.01.2023 10:31:21
 
 ---
