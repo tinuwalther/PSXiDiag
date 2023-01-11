@@ -375,26 +375,27 @@ $footer = @"
 
     try{
 
+        $HtmlOut = @()
         #region HTML Header
-        '<!doctype html><html lang="en">'  | Set-Content $OutFile -Encoding utf8
-        $HtmlDefinition.head | Add-Content $OutFile -Encoding utf8 -Force
-        "<body>" | Add-Content $OutFile -Encoding utf8 -Force
-        $HtmlDefinition.header | Add-Content $OutFile -Encoding utf8 -Force
+        $HtmlOut += '<!doctype html><html lang="en">'
+        $HtmlOut += $HtmlDefinition.head
+        $HtmlOut += "<body>"
+        $HtmlOut += $HtmlDefinition.header
         #endregion
 
         #region vCenterServer Nav Links
-        '<div class="topnav">' | Add-Content $OutFile -Encoding utf8
-        '<ul>' | Add-Content $OutFile -Encoding utf8
-        '<li><a class="active" href="#"><b>HOME</b></a></li>' | Add-Content $OutFile -Encoding utf8
+        $HtmlOut += '<div class="topnav">'
+        $HtmlOut += '<ul>'
+        $HtmlOut += '<li><a class="active" href="#"><b>HOME</b></a></li>'
         $GroupVC = $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name
         $GroupVC | ForEach-Object {
             $vCenter = $($_).Split('.')[0]
             if(-not([String]::IsNullOrEmpty($vCenter))){
-                "<li><a href='#$($vCenter)'><b>$vCenter</b></a></li>" | Add-Content $OutFile -Encoding utf8 -Force
+                $HtmlOut += "<li><a href='#$($vCenter)'><b>$vCenter</b></a></li>"
                 Write-Verbose $_
             }
         }
-        '</ul></div>' | Add-Content $OutFile -Encoding utf8
+        $HtmlOut += '</ul></div>'
         #endregion
 
         #region Group vCenter
@@ -406,23 +407,23 @@ $footer = @"
                 Write-Verbose "vCenter: $($_)"
 
                 #region article
-                '<article>' | Add-Content $OutFile -Encoding utf8 -Force
-                "<h3 id='$($vCenter)'><a href='https://$($_)/ui' target='_blank'>vCenter $($vCenter)</a></h3><br><hr><br>" | Add-Content $OutFile -Encoding utf8
+                $HtmlOut += '<article>'
+                $HtmlOut += "<h3 id='$($vCenter)'><a href='https://$($_)/ui' target='_blank'>vCenter $($vCenter)</a></h3><br><hr><br>"
 
                 #region ESXiHosts
-                '<article><div>'   | Add-Content $OutFile -Encoding utf8
+                $HtmlOut += '<article><div>'  
                 $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object vCenterServer | ForEach-Object {
                     $CountOfVersion = $_.Group.Version | Group-Object | ForEach-Object {
                         "$($_.Name) = $($_.Count)"
                     }
-                    "Total ESXiHosts in $($vCenter): $($_.Count) (ESXi Versions: $($CountOfVersion -join ', '))" | Add-Content $OutFile -Encoding utf8
+                    $HtmlOut += "Total ESXiHosts in $($vCenter): $($_.Count) (ESXi Versions: $($CountOfVersion -join ', '))"
                 }
-                '</div></article>' | Add-Content $OutFile -Encoding utf8
+                $HtmlOut += '</div></article>'
                 #endregion
 
                 #region Mermaid
-                '<div class="mermaid">' | Add-Content $OutFile -Encoding utf8
-                'classDiagram' | Add-Content $OutFile -Encoding utf8
+                $HtmlOut += '<div class="mermaid">'
+                $HtmlOut += 'classDiagram'
                 #endregion
 
                 #region Group Cluster
@@ -435,8 +436,8 @@ $footer = @"
                         $RootCluster = $_
                         $FixCluster  = $RootCluster -replace '-'
 
-                        "VC$($vcNo)_$($vCenter) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixCluster)" | Add-Content $OutFile -Encoding utf8
-                        "VC$($vcNo)_$($vCenter) : + $($RootCluster)" | Add-Content $OutFile -Encoding utf8
+                        $HtmlOut += "VC$($vcNo)_$($vCenter) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixCluster)"
+                        $HtmlOut += "VC$($vcNo)_$($vCenter) : + $($RootCluster)"
         
                         #region Group Model
                         $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Group-Object $Column.Field03 | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -447,9 +448,9 @@ $footer = @"
                             $RootModel = $_
                             $FixModel  = $RootModel -replace '-' -replace '\(' -replace '\)'
 
-                            "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)" | Add-Content $OutFile -Encoding utf8
+                            $HtmlOut += "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)"
         
-                            "VC$($vcNo)C$($ClusterNo)_$($FixCluster) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixModel)" | Add-Content $OutFile -Encoding utf8
+                            $HtmlOut +=  "VC$($vcNo)C$($ClusterNo)_$($FixCluster) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($FixModel)"
                                     
                             #region Group PhysicalLocation
                             $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Group-Object $Column.Field04 | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -458,9 +459,9 @@ $footer = @"
                                 $PhysicalLocation = $_
                                 $ObjectCount = $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Select-Object -ExpandProperty $Column.Field05
 
-                                "VC$($vcNo)C$($ClusterNo)_$($FixModel) : - $($PhysicalLocation), $($ObjectCount.count) ESXi Hosts" | Add-Content $OutFile -Encoding utf8
+                                $HtmlOut += "VC$($vcNo)C$($ClusterNo)_$($FixModel) : - $($PhysicalLocation), $($ObjectCount.count) ESXi Hosts"
 
-                                "VC$($vcNo)C$($ClusterNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation)" | Add-Content $OutFile -Encoding utf8
+                                $HtmlOut += "VC$($vcNo)C$($ClusterNo)_$($FixModel) $($RelationShip) VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation)"
 
                                 #region Group HostName
                                 $InputObject | Where-Object $Column.Field01 -match $vCenter | Where-Object $Column.Field02 -match $RootCluster | Where-Object $Column.Field03 -match $RootModel | Where-Object $Column.Field04 -match $PhysicalLocation | Group-Object $Column.Field05 | Select-Object -ExpandProperty Name | ForEach-Object {
@@ -476,7 +477,7 @@ $footer = @"
                                         $prefix = '-'
                                     }
 
-                                    "VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation) : $($prefix) $($ESXiHost), ESXi $($HostObject.Version), $($RootModel)" | Add-Content $OutFile -Encoding utf8
+                                    $HtmlOut += "VC$($vcNo)C$($ClusterNo)_$($PhysicalLocation) : $($prefix) $($ESXiHost), ESXi $($HostObject.Version), $($RootModel)"
                                 }
                                 #endregion HostName
                                 
@@ -491,7 +492,7 @@ $footer = @"
                 #endregion Group Cluster
                 $ClusterNo = 0
 
-                "</article>" | Add-Content $OutFile -Encoding utf8 -Force
+                $HtmlOut += "</article>"
                 #endregion article
             }
 
@@ -499,13 +500,15 @@ $footer = @"
         #endregion Group vCenter
 
         #region ESXiHosts
-        '<article><div><hr>' | Add-Content $OutFile -Encoding utf8
+        $HtmlOut += '<article><div><hr>'
         $CountOfVersion = $InputObject | Group-Object Version | ForEach-Object {
             "$($_.Name) = $($_.Count)"
         }
-        "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count) (ESXi Versions: $($CountOfVersion -join ', '))" | Add-Content $OutFile -Encoding utf8
-        '</div></article>' | Add-Content $OutFile -Encoding utf8
+        $HtmlOut += "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count) (ESXi Versions: $($CountOfVersion -join ', '))"
+        $HtmlOut += '</div></article>'
         #endregion
+
+        $HtmlOut | Set-Content $OutFile -Encoding utf8
 
         if($CurrentOS -eq [OSType]::Windows){
             Start-Process $($OutFile)
@@ -521,7 +524,7 @@ $footer = @"
 }
 
 end{
-    $HtmlDefinition.footer | Add-Content $OutFile -Encoding utf8
+    $HtmlDefinition.footer
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', $function -Join ' ')
     $TimeSpan  = New-TimeSpan -Start $StartTime -End (Get-Date)
