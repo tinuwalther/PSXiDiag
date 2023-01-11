@@ -230,7 +230,7 @@ process{
 
                                         $ModelNo ++
                                         $RootModel = $_
-                                        $FixModel  = $RootModel -replace '-'
+                                        $FixModel  = $RootModel -replace '-' -replace '\(' -replace '\)'
 
                                         "VC$($vcNo)C$($ClusterNo)_$($FixCluster) : + $($RootModel)`n"
                     
