@@ -2,10 +2,22 @@
     <link href="\assets\style\style.css" rel="stylesheet" />
     <style>
         header{
-            margin:10; background: #212529 !important;  text-align: center; font-family: "QuickSand", sans-serif;
+            margin:10; background: #033b63 !important;  text-align: center; font-family: "QuickSand", sans-serif;
         }
         body { 
-            margin:0; background: #033b63 !important;  text-align: center; font-family: "QuickSand", sans-serif;
+            margin:0; background: #212529 !important;  text-align: center; font-family: "QuickSand", sans-serif;
+        }
+        div {
+            text-align: center; color: #e9ecef;
+        }
+        article { 
+            padding: 120px; background: #034f84
+        }
+        table {
+            padding: 16px; color: #e9ecef; background: #034f84; text-align: left; 
+        }
+        footer {
+            color: green; text-align: left
         }
     </style>
 </head>
@@ -20,12 +32,23 @@ This is an index example page written in markdown.
 
 <body>
 
-## HTML
+<div><article>
 
-Open the [HTML](http://pspode:5989/html) page.
+## Child pages
 
-## PSHTML
+<center><table>
 
-Open the [PSHTML](http://pspode:5989/pshtml) page.
+Title|Link
+-|-
+Open the default page|[HTML-ESXiHost-Inventory](http://pspode:5989/html)
+Open the advanced page|[PSHTML-ESXiHost-Inventory](http://pspode:5989/pshtml)
+
+</table></center>
+
+</div></article>
 
 </body>
+
+<footer>
+I ♥ PS > I'm running on Pode server ...
+</footer>

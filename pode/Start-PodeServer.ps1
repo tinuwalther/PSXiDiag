@@ -45,10 +45,10 @@ if($CurrentOS -eq [OSType]::Windows){
                 Write-PodeViewResponse -Path 'index.md'
             }
             Add-PodeRoute -Method Get -Path '/html' -ScriptBlock {
-                Write-PodeViewResponse -Path 'html/Html-ESXiHost-Inventory.html'
+                Write-PodeViewResponse -Path 'html/HTML-ESXiHost-Inventory'
             }
             Add-PodeRoute -Method Get -Path '/pshtml' -ScriptBlock {
-                Write-PodeViewResponse -Path 'pshtml/PSHTML-ESXiHost-Inventory.html'
+                Write-PodeViewResponse -Path 'pshtml/PSHTML-ESXiHost-Inventory'
             }
         } 
     }else{
