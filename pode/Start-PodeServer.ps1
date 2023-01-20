@@ -39,10 +39,16 @@ if($CurrentOS -eq [OSType]::Windows){
             Write-Host "Running on Windows with elevated Privileges" -ForegroundColor Red
             Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
-            Add-PodeEndpoint -Address * -Port 5989 -Protocol Http
+            Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'pspode'
 
             Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
-                Write-PodeViewResponse -Path 'Pshtml-ESXiHost-Inventory'
+                Write-PodeViewResponse -Path 'index.md'
+            }
+            Add-PodeRoute -Method Get -Path '/html' -ScriptBlock {
+                Write-PodeViewResponse -Path 'html/Html-ESXiHost-Inventory.html'
+            }
+            Add-PodeRoute -Method Get -Path '/pshtml' -ScriptBlock {
+                Write-PodeViewResponse -Path 'pshtml/PSHTML-ESXiHost-Inventory.html'
             }
         } 
     }else{
