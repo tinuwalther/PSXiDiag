@@ -50,6 +50,7 @@ if($CurrentOS -eq [OSType]::Windows){
             Add-PodeRoute -Method Get -Path '/pshtml' -ScriptBlock {
                 Write-PodeViewResponse -Path 'pshtml/PSHTML-ESXiHost-Inventory'
             }
+            
         } 
     }else{
         Write-Host "Running on Windows and start new session with elevated Privileges" -ForegroundColor Green
@@ -67,8 +68,14 @@ if($CurrentOS -eq [OSType]::Windows){
         Add-PodeEndpoint -Address * -Port 5989 -Protocol Http
 
         Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
-            Write-PodeViewResponse -Path 'Pshtml-ESXiHost-Inventory'
+            Write-PodeViewResponse -Path 'index.md'
         }
-        
+        Add-PodeRoute -Method Get -Path '/html' -ScriptBlock {
+            Write-PodeViewResponse -Path 'html/HTML-ESXiHost-Inventory'
+        }
+        Add-PodeRoute -Method Get -Path '/pshtml' -ScriptBlock {
+            Write-PodeViewResponse -Path 'pshtml/PSHTML-ESXiHost-Inventory'
+        }
+    
     }
 }
