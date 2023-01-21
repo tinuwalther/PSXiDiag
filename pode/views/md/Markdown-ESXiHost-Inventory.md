@@ -1,3 +1,5 @@
+<html><script src="\assets\mermaid\mermaid.min.js"  ></script>
+
 # Markdown ESXiHost Inventory
 
  - [vCenter vCSA010](#vcenter-vcsa010)
@@ -156,3 +158,4 @@ Total ESXiHosts: 23 (ESXi Versions: 6.5 = 4, 6.7 = 13, 7.0.3 = 6)
 I ♥ PS > Diagram created with PowerShell and Mermaid at 10.01.2023 10:31:21
 
 ---
+</html>
