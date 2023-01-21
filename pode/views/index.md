@@ -2,19 +2,19 @@
     <link href="\assets\style\style.css" rel="stylesheet" />
     <style>
         header{
-            height: 20%; margin:10; background: #033b63 !important;  text-align: center; font-family: "QuickSand", sans-serif;
+            width: "200"; height: "20"; margin:10; background: #033b63;  text-align: center; font-family: "QuickSand", sans-serif; 
         }
         body{
-            height: 90%; margin:0; background: #212529 !important;  text-align: center; font-family: "QuickSand", sans-serif;
+            margin:0; background: #212529 !important; text-align: center; font-family: "QuickSand", sans-serif;
         }
         div {
             text-align: center; color: #e9ecef;
         }
         article{
-            padding: 1%; width: 98%; height: 68%; background: #034f84;
+            padding: 1%; height: 10; background: #212529;
         }
         table{
-            padding: 16px; color: #e9ecef; background: #034f84; text-align: left;
+            padding: 16px; color: #e9ecef; text-align: left;
         }
         footer{
             height: 2%; color: green; text-align: left
