@@ -16,8 +16,8 @@
         table{
             padding: 16px; color: #e9ecef; text-align: left;
         }
-        footer{
-            height: 2%; color: green; text-align: left
+        posh{
+            color: lightgreen;
         }
     </style>
 </head>
@@ -36,6 +36,8 @@ This is an index example page written in markdown.
 
 ## Child pages
 
+<posh>I ♥ PS > I'm running on Pode server ...</posh>
+
 <center><table>
 
 Title|Link
@@ -49,5 +51,3 @@ Open the advanced page|[PSHTML-ESXiHost-Inventory](http://pspode:5989/pshtml)
 </div></article>
 
 </body>
-
-<footer>I ♥ PS > I'm running on Pode server ...</footer>
