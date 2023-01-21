@@ -14,6 +14,28 @@
 [CmdletBinding()]
 param ()
 
+#region functions
+function Test-IsAdministrator {
+    $user = [Security.Principal.WindowsIdentity]::GetCurrent();
+    (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+}
+
+function Set-PodeRoutes {
+    [CmdletBinding()]
+    param()
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+
+    Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
+        Write-PodeViewResponse -Path 'Pshtml-ESXiHost-Inventory'
+    }
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+
+}
+#endregion
+
+#region Main
 enum OSType {
     Linux
     Mac
@@ -27,12 +49,9 @@ if($PSVersionTable.PSVersion.Major -lt 6){
     if($IsLinux)  {$CurrentOS = [OSType]::Linux}
     if($IsWindows){$CurrentOS = [OSType]::Windows}
 }
+#endregion
 
-function Test-IsAdministrator {
-    $user = [Security.Principal.WindowsIdentity]::GetCurrent();
-    (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-}
-
+#region Pode server
 if($CurrentOS -eq [OSType]::Windows){
     if(Test-IsAdministrator) {
         Start-PodeServer {
@@ -41,9 +60,7 @@ if($CurrentOS -eq [OSType]::Windows){
 
             Add-PodeEndpoint -Address * -Port 5989 -Protocol Http
 
-            Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
-                Write-PodeViewResponse -Path 'Pshtml-ESXiHost-Inventory'
-            }
+            Set-PodeRoutes
         } 
     }else{
         Write-Host "Running on Windows and start new session with elevated Privileges" -ForegroundColor Green
@@ -60,9 +77,8 @@ if($CurrentOS -eq [OSType]::Windows){
 
         Add-PodeEndpoint -Address * -Port 5989 -Protocol Http
 
-        Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
-            Write-PodeViewResponse -Path 'Pshtml-ESXiHost-Inventory'
-        }
+        Set-PodeRoutes
         
     }
 }
+#endregion
