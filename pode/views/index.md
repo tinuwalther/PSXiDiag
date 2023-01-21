@@ -2,22 +2,22 @@
     <link href="\assets\style\style.css" rel="stylesheet" />
     <style>
         header{
-            height: 16%; margin:10; background: #033b63 !important;  text-align: center; font-family: "QuickSand", sans-serif;
+            height: 20%; margin:10; background: #033b63 !important;  text-align: center; font-family: "QuickSand", sans-serif;
         }
         body{
-            margin:0; background: #212529 !important;  text-align: center; font-family: "QuickSand", sans-serif;
+            height: 90%; margin:0; background: #212529 !important;  text-align: center; font-family: "QuickSand", sans-serif;
         }
         div {
             text-align: center; color: #e9ecef;
         }
         article{
-            padding: 1%; width: 98%; height: 68.5%; background: #034f84;
+            padding: 1%; width: 98%; height: 68%; background: #034f84;
         }
         table{
             padding: 16px; color: #e9ecef; background: #034f84; text-align: left;
         }
         footer{
-            color: green; text-align: left
+            height: 2%; color: green; text-align: left
         }
     </style>
 </head>
