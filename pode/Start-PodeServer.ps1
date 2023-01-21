@@ -16,8 +16,22 @@ param ()
 
 #region functions
 function Test-IsAdministrator {
-    $user = [Security.Principal.WindowsIdentity]::GetCurrent();
-    (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$true)]
+        [OSType]$OS
+    )
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+    if($OS -eq [OSType]::Windows){
+        $user = [Security.Principal.WindowsIdentity]::GetCurrent()
+        $ret  = (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+    }elseif($OS -eq [OSType]::Mac){
+        $ret = ((id -u) -eq 0)
+    }
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+    return $ret
 }
 
 function Set-PodeRoutes {
@@ -53,12 +67,13 @@ if($PSVersionTable.PSVersion.Major -lt 6){
 
 #region Pode server
 if($CurrentOS -eq [OSType]::Windows){
-    if(Test-IsAdministrator) {
+    if(Test-IsAdministrator -OS $CurrentOS) {
         Start-PodeServer {
-            Write-Host "Running on Windows with elevated Privileges" -ForegroundColor Red
+            Write-Host "Running on Windows with elevated Privileges since $(Get-Date)" -ForegroundColor Red
             Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
-            Add-PodeEndpoint -Address * -Port 5989 -Protocol Http
+            Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'pspode'
+            New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
 
             Set-PodeRoutes
         } 
@@ -72,10 +87,16 @@ if($CurrentOS -eq [OSType]::Windows){
     }
 }elseif($CurrentOS -eq [OSType]::Mac){
     Start-PodeServer {
-        Write-Host "Running on Mac" -ForegroundColor Cyan
+        if(Test-IsAdministrator -OS $CurrentOS) {
+            $IsRoot = 'with elevated Privileges'
+        }else{
+            $IsRoot = 'as User'
+        }
+        Write-Host "Running on Mac $($IsRoot) since $(Get-Date)" -ForegroundColor Cyan
         Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
-        Add-PodeEndpoint -Address * -Port 5989 -Protocol Http
+        Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'pspode'
+        New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
 
         Set-PodeRoutes
         

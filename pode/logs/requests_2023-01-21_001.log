@@ -1,0 +1,8 @@
+127.0.0.1 - - [21.Jan..2023:14:25:09 +01:00] "GET / HTTP/1.1" 200 7993 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0"
+127.0.0.1 - - [21.Jan..2023:14:25:09 +01:00] "GET /assets/BootStrap/bootstrap.min.css HTTP/1.1" 200 159495 "http://pspode:5989/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0"
+127.0.0.1 - - [21.Jan..2023:14:25:09 +01:00] "GET /assets/style/style.css HTTP/1.1" 200 5691 "http://pspode:5989/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0"
+127.0.0.1 - - [21.Jan..2023:14:25:09 +01:00] "GET /assets/BootStrap/bootstrap.js HTTP/1.1" 200 139600 "http://pspode:5989/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0"
+127.0.0.1 - - [21.Jan..2023:14:25:09 +01:00] "GET /assets/Jquery/jquery.min.js HTTP/1.1" 200 88147 "http://pspode:5989/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0"
+127.0.0.1 - - [21.Jan..2023:14:25:10 +01:00] "GET /assets/mermaid/mermaid.min.js HTTP/1.1" 200 1095120 "http://pspode:5989/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0"
+127.0.0.1 - - [21.Jan..2023:14:25:10 +01:00] "GET /mermaid.initialize({startOnLoad:true}) HTTP/1.1" 404 1140 "http://pspode:5989/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0"
+127.0.0.1 - - [21.Jan..2023:14:25:10 +01:00] "GET /favicon.ico HTTP/1.1" 404 1113 "http://pspode:5989/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0"
