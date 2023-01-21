@@ -1,3 +1,4 @@
+<html>
 <head>
     <link href="\assets\style\style.css" rel="stylesheet" />
     <style>
@@ -24,7 +25,7 @@
 
 <header>
 
-# PSXiDiag Index Page
+# #PSXiDiag Index Page
 
 This is an index example page written in markdown.
 
@@ -51,3 +52,4 @@ Open the advanced page|[PSHTML-ESXiHost-Inventory](http://pspode:5989/pshtml)
 </div></article>
 
 </body>
+</html>
