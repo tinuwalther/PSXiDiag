@@ -15,10 +15,11 @@
 param ()
 
 #region functions
-function Test-IsAdministrator {
+function Test-IsElevated {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [OSType]$OS
     )
 
@@ -30,7 +31,39 @@ function Test-IsAdministrator {
         $ret = ((id -u) -eq 0)
     }
 
+    Write-Verbose $ret
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+    return $ret
+}
+
+function Set-HostEntry{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [String] $Name,
+
+        [Parameter(Mandatory=$false)]
+        [Switch]$Elevated
+    )
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+
+    $PsNetHostsTable = Get-PsNetHostsTable
+    if($PsNetHostsTable.ComputerName -contains $Name){
+        $ret = $true
+    }else{
+        if($Elevated) {
+            Write-Host "Try to add $($Name) to hosts-file" -ForegroundColor Green
+            Add-PsNetHostsEntry -IPAddress 127.0.0.1 -Hostname $($Name) -FullyQualifiedName "$($Name).local"
+        }else{
+            Write-Host "Try to add $($Name) to hosts-file need elevated Privileges" -ForegroundColor Yellow
+            $ret = $false
+        }
+    }
+    Write-Verbose $(($PsNetHostsTable | Where-Object ComputerName -match $($Name)) | Out-String)
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+
     return $ret
 }
 
@@ -41,7 +74,7 @@ function Set-PodeRoutes {
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
     Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
-        Write-PodeViewResponse -Path 'Pshtml-ESXiHost-Inventory'
+        Write-PodeViewResponse -Path 'PSHTML-ESXiHost-Inventory'
     }
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
@@ -67,7 +100,8 @@ if($PSVersionTable.PSVersion.Major -lt 6){
 
 #region Pode server
 if($CurrentOS -eq [OSType]::Windows){
-    if(Test-IsAdministrator -OS $CurrentOS) {
+    if(Test-IsElevated -OS $CurrentOS) {
+        $null = Set-HostEntry -Name 'pspode' -Elevated
         Start-PodeServer {
             Write-Host "Running on Windows with elevated Privileges since $(Get-Date)" -ForegroundColor Red
             Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
@@ -76,6 +110,7 @@ if($CurrentOS -eq [OSType]::Windows){
             New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
 
             Set-PodeRoutes
+            
         } 
     }else{
         Write-Host "Running on Windows and start new session with elevated Privileges" -ForegroundColor Green
@@ -87,10 +122,12 @@ if($CurrentOS -eq [OSType]::Windows){
     }
 }elseif($CurrentOS -eq [OSType]::Mac){
     Start-PodeServer {
-        if(Test-IsAdministrator -OS $CurrentOS) {
+        if(Test-IsElevated -OS $CurrentOS) {
             $IsRoot = 'with elevated Privileges'
+            $null = Set-HostEntry -Name 'pspode' -Elevated
         }else{
             $IsRoot = 'as User'
+            $null = Set-HostEntry -Name 'pspode'
         }
         Write-Host "Running on Mac $($IsRoot) since $(Get-Date)" -ForegroundColor Cyan
         Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
@@ -99,7 +136,7 @@ if($CurrentOS -eq [OSType]::Windows){
         New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
 
         Set-PodeRoutes
-        
+    
     }
 }
 #endregion
