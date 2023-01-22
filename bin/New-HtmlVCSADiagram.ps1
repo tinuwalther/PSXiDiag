@@ -508,6 +508,7 @@ $footer = @"
         $HtmlOut += '</div></article>'
         #endregion
 
+        $HtmlOut += $HtmlDefinition.footer
         $HtmlOut | Set-Content $OutFile -Encoding utf8
 
         if($CurrentOS -eq [OSType]::Windows){
