@@ -111,7 +111,7 @@ if($CurrentOS -eq [OSType]::Windows){
 
             Set-PodeRoutes
             
-        } 
+        } -RootPath $($PSScriptRoot).Replace('bin','pode')
     }else{
         Write-Host "Running on Windows and start new session with elevated Privileges" -ForegroundColor Green
         if($PSVersionTable.PSVersion.Major -lt 6){
@@ -137,6 +137,6 @@ if($CurrentOS -eq [OSType]::Windows){
 
         Set-PodeRoutes
     
-    }
+    } -RootPath $($PSScriptRoot).Replace('bin','pode')
 }
 #endregion
