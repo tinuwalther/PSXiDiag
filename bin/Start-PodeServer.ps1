@@ -111,7 +111,7 @@ if($PSVersionTable.PSVersion.Major -lt 6){
 if($CurrentOS -eq [OSType]::Windows){
     if(Test-IsElevated -OS $CurrentOS) {
         $null = Set-HostEntry -Name 'pspode' -Elevated
-        Start-PodeServer {
+        Start-PodeServer -ScriptBlock {
             Write-Host "Running on Windows with elevated Privileges since $(Get-Date)" -ForegroundColor Red
             Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
@@ -120,7 +120,7 @@ if($CurrentOS -eq [OSType]::Windows){
 
             Set-PodeRoutes
             
-        } 
+        } -RootPath $($PSScriptRoot).Replace('bin','pode')
     }else{
         Write-Host "Running on Windows and start new session with elevated Privileges" -ForegroundColor Green
         if($PSVersionTable.PSVersion.Major -lt 6){
@@ -130,7 +130,7 @@ if($CurrentOS -eq [OSType]::Windows){
         }
     }
 }elseif($CurrentOS -eq [OSType]::Mac){
-    Start-PodeServer {
+    Start-PodeServer -ScriptBlock {
         if(Test-IsElevated -OS $CurrentOS) {
             $IsRoot = 'with elevated Privileges'
             $null = Set-HostEntry -Name 'pspode' -Elevated
@@ -146,6 +146,6 @@ if($CurrentOS -eq [OSType]::Windows){
 
         Set-PodeRoutes
     
-    }
+    } -RootPath $($PSScriptRoot).Replace('bin','pode')
 }
 #endregion
