@@ -1,11 +1,13 @@
-<html><script src="\assets\mermaid\mermaid.min.js"  ></script>
-
 # Markdown ESXiHost Inventory
 
  - [vCenter vCSA010](#vcenter-vcsa010)
  - [vCenter vCSA020](#vcenter-vcsa020)
  - [vCenter vCSA021](#vcenter-vcsa021)
  - [vCenter vCSA100](#vcenter-vcsa100)
+
+
+<html><script src="/assets/mermaid/mermaid.min.js"></script></html>
+
 
 ---
 
@@ -58,7 +60,6 @@ VC1C3_West : o ESXi1209, ESXi 6.7, Synergy 480 Gen10
 
 [Top](#)
 
-
 ---
 
 ## [vCenter vCSA020](https://vCSA020.my.company.ch/ui)
@@ -89,7 +90,6 @@ VC2C1_West : + ESXi1902, ESXi 6.7, ProLiant DL380 Gen10
 
 [Top](#)
 
-
 ---
 
 ## [vCenter vCSA021](https://vCSA021.my.company.ch/ui)
@@ -113,7 +113,6 @@ VC3C1_Ost : + ESXi7912, ESXi 6.7, ProLiant DL380 Gen10
 ````
 
 [Top](#)
-
 
 ---
 
@@ -155,7 +154,6 @@ Total ESXiHosts: 23 (ESXi Versions: 6.5 = 4, 6.7 = 13, 7.0.3 = 6)
 
 ---
 
-I ♥ PS > Diagram created with PowerShell and Mermaid at 10.01.2023 10:31:21
+I ♥ PS > Diagram created with PowerShell and Mermaid at 22.01.2023 12:19:19
 
 ---
-</html>

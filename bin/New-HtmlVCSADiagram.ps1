@@ -96,12 +96,13 @@ process{
     $Page = $($MyInvocation.MyCommand.Name) -replace '.ps1'
 
     # for file only
-    $OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html") -replace '\s', '-'
+    #$OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html") -replace '\s', '-'
 
     # for Pode Server
-    # $PodePath = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'views'
-    # $PodeView = (("$($Title).html") -replace '\s', '-')
-    # $OutFile  = Join-Path -Path $($PodePath) -ChildPath $($PodeView)
+    $PodeViews = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'views'
+    $PodeDir   = Join-Path -Path $PodeViews -ChildPath 'html'
+    $PodeFile  = (("$($Title).html") -replace '\s', '-')
+    $OutFile   = Join-Path -Path $($PodeDir) -ChildPath $($PodeFile)
     Write-Verbose "OutFile: $($OutFile)"
 
     #region HTML Definition
@@ -508,13 +509,8 @@ $footer = @"
         $HtmlOut += '</div></article>'
         #endregion
 
+        $HtmlOut += $HtmlDefinition.footer
         $HtmlOut | Set-Content $OutFile -Encoding utf8
-
-        if($CurrentOS -eq [OSType]::Windows){
-            Start-Process $($OutFile)
-        }else{
-            Start-Process "file://$($OutFile)"
-        }
 
     }catch{
         Write-Warning $('ScriptName:', $($_.InvocationInfo.ScriptName), 'LineNumber:', $($_.InvocationInfo.ScriptLineNumber), 'Message:', $($_.Exception.Message) -Join ' ')
@@ -524,8 +520,6 @@ $footer = @"
 }
 
 end{
-    $HtmlDefinition.footer
-
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', $function -Join ' ')
     $TimeSpan  = New-TimeSpan -Start $StartTime -End (Get-Date)
     $Formatted = $TimeSpan | ForEach-Object {

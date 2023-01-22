@@ -115,9 +115,10 @@ process{
     #$OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).html") -replace '\s', '-'
 
     # for Pode Server
-    $PodePath = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'views'
-    $PodeView = (("$($Title).html") -replace '\s', '-')
-    $OutFile  = Join-Path -Path $($PodePath) -ChildPath $($PodeView)
+    $PodeViews = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'views'
+    $PodeDir   = Join-Path -Path $PodeViews -ChildPath 'pshtml'
+    $PodeFile  = (("$($Title).html") -replace '\s', '-')
+    $OutFile   = Join-Path -Path $($PodeDir) -ChildPath $($PodeFile)
     Write-Verbose "OutFile: $($OutFile)"
     
     Write-Verbose "AssetsPath: $($AssetsPath)"
@@ -395,15 +396,6 @@ process{
     }
     $Html | Set-Content $OutFile -Encoding utf8
     #endregion html
-
-    if($CurrentOS -eq [OSType]::Windows){
-        # Start Browser
-        Start-Process "microsoft-edge:http://localhost:5989/" -WindowStyle maximized
-    }else{
-        # Start Browser
-        Start-Process "http://localhost:5989/"
-    }
-
 }
 
 end{

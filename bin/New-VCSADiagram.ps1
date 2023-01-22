@@ -6,22 +6,22 @@
     New-VCSADiagram - Create a Mermaid Class Diagram.
 
 .EXAMPLE
-    .\PSXiDiag\bin\New-VCSADiagram.ps1 -InputObject (Import-Csv -Path .\PSXiDiag\data\inventory.csv -Delimiter ';') -Title 'Markdown ESXiHost Inventory'
+    .\bin\New-VCSADiagram.ps1 -InputObject (Import-Csv -Path .\data\inventory.csv -Delimiter ';') -Title 'Markdown ESXiHost Inventory'
 
     Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the Object and the Title 'Markdown ESXiHost Inventory' as Markdown.
 
 .EXAMPLE
-    .\PSXiDiag\bin\New-VCSADiagram.ps1 -InputObject (Import-Csv -Path .\PSXiDiag\data\inventory.csv -Delimiter ';') -Title 'HTML ESXiHost Inventory' -Html
+    .\bin\New-VCSADiagram.ps1 -InputObject (Import-Csv -Path .\data\inventory.csv -Delimiter ';') -Title 'HTML ESXiHost Inventory' -Html
 
     Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the Object and the Title 'HTML ESXiHost Inventory' as Html.
 
 .EXAMPLE
-    .\PSXiDiag\bin\New-VCSADiagram.ps1 -InputObject (Import-Csv -Path .\PSXiDiag\data\inventory.csv -Delimiter ';') -Title 'PSHTML ESXiHost Inventory' -Pshtml
+    .\bin\New-VCSADiagram.ps1 -InputObject (Import-Csv -Path .\data\inventory.csv -Delimiter ';') -Title 'PSHTML ESXiHost Inventory' -Pshtml
 
     Import-Csv with the Semicolon-Delimiter and create the Mermaid-Diagram with the content of the Object and the Title 'PSHTML ESXiHost Inventory' as Html.
 
 .EXAMPLE
-    .\PSXiDiag\bin\New-VCSADiagram.ps1 -InputObject (Import-Csv -Path .\PSXiDiag\data\inventory.csv -Delimiter ';') -Title 'DrawIO ESXiHost Inventory' -DrawIO
+    .\bin\New-VCSADiagram.ps1 -InputObject (Import-Csv -Path .\data\inventory.csv -Delimiter ';') -Title 'DrawIO ESXiHost Inventory' -DrawIO
 
     Import-Csv with the Semicolon-Delimiter and create the Draw.IO CSV with the content of the Object and the Title 'DrawIO ESXiHost Inventory' as CSV.
 

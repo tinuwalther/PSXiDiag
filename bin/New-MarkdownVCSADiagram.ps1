@@ -69,11 +69,6 @@ begin{
     }
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($function)$($params)" -Join ' ')
 
-    $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
-
-    $OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).md") -replace '\s', '-'
-    Write-Verbose $OutFile
-
     enum OSType {
         Linux
         Mac
@@ -95,6 +90,17 @@ process{
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Process ]', $function -Join ' ')
 
+    $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
+
+    #$OutFile = (Join-Path -Path $($PSScriptRoot).Replace('bin','output') -ChildPath "$($Title).md") -replace '\s', '-'
+
+    # for Pode Server
+    $PodeViews = Join-Path -Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'views'
+    $PodeDir   = Join-Path -Path $PodeViews -ChildPath 'md'
+    $PodeFile  = (("$($Title).md") -replace '\s', '-')
+    $OutFile   = Join-Path -Path $($PodeDir) -ChildPath $($PodeFile)
+    Write-Verbose "OutFile: $($OutFile)"
+
     try{
         $MarkdownOut = @()
 
@@ -111,6 +117,10 @@ process{
             }
         }
         #endregion
+        
+        $MarkdownOut += "`n"
+        $MarkdownOut += '<html><script src="/assets/mermaid/mermaid.min.js"></script></html>'
+        $MarkdownOut += "`n"
 
         #region Group vCenter
         $MarkdownOut += $GroupVC | ForEach-Object {
@@ -121,7 +131,7 @@ process{
                 Write-Verbose "vCenter: $($_)"
 
                 #region section header
-                "`n---`n" 
+                "---`n" 
                 "## [vCenter $($vCenter)](https://$($_)/ui)`n" 
                 "---`n" 
         
@@ -233,12 +243,6 @@ process{
         #endregion
         
         $MarkdownOut | Set-Content $OutFile -Encoding utf8
-
-        if($CurrentOS -eq [OSType]::Windows){
-            Start-Process $($OutFile)
-        }else{
-            Start-Process code "$($OutFile)"
-        }
 
     }catch{
         Write-Warning $('ScriptName:', $($_.InvocationInfo.ScriptName), 'LineNumber:', $($_.InvocationInfo.ScriptLineNumber), 'Message:', $($_.Exception.Message) -Join ' ')
