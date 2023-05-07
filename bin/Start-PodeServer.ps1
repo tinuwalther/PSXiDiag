@@ -80,6 +80,61 @@ function Set-PodeRoutes {
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
 }
+
+function Invoke-FileWatcher{
+    <#
+        Returns:
+        - Changed
+        - Inventory.csv
+        - D:\github.com\PSXiDiag\pode\input\Inventory.csv
+        #>
+    [CmdletBinding()]
+    param()
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+
+    $WatchFolder = Join-Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'input'
+
+    Add-PodeFileWatcher -EventName Changed -Path $WatchFolder -ScriptBlock {
+        # file name and path
+        $FileEvent.Type     | Out-Default
+        $FileEvent.Name     | Out-Default
+        $FileEvent.FullPath | Out-Default
+
+        switch($FileEvent.Type){
+            'Changed' {
+                if($FileEvent.Name -match '\.csv'){
+
+                    $SqlTypeName  = 'PSXi'
+                    $SqlTableName = 'ESXHosts'
+                    $DBRoot       = Join-Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'db'
+                    $DBFullPath   = Join-Path $DBRoot -ChildPath ($FileEvent.Name -replace '.csv','.db')
+                    $DBFullPath | Out-Default
+
+                    $data = Import-Csv -Delimiter ';' -Path $FileEvent.FullPath -Encoding utf8
+                    $data | Add-Member NoteProperty Created $((Get-Date).AddDays(-2) -f 'yyyy-MM-dd HH:mm:ss.fff')
+                    if(Test-Path $DBFullPath){
+                        foreach($item in $data){
+                            $tsql = ''
+                            Invoke-MySQLiteQuery -Path $DBFullPath -Query $tsql    
+                        }
+                    }else{
+                        $data | ConvertTo-MySQLiteDB -Path $DBFullPath -TableName $SqlTableName -TypeName $SqlTypeName -Force -Primary Id
+                    }
+                    
+                    $out = Invoke-MySQLiteQuery -Path $DBFullPath -Query "Select * from $SqlTableName"
+                    $(($out | Select-Object -First 1) | Out-String) | OutDefault
+
+                }
+            }
+            default {
+                $FileEvent.Type | Out-Default
+            }
+        }
+    }
+    
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+}
 #endregion
 
 #region Main
@@ -110,6 +165,7 @@ if($CurrentOS -eq [OSType]::Windows){
             New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
 
             Set-PodeRoutes
+            Invoke-FileWatcher
             
         } -RootPath $($PSScriptRoot).Replace('bin','pode')
     }else{
@@ -136,6 +192,7 @@ if($CurrentOS -eq [OSType]::Windows){
         New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
 
         Set-PodeRoutes
+        Invoke-FileWatcher
     
     } -RootPath $($PSScriptRoot).Replace('bin','pode')
 }
