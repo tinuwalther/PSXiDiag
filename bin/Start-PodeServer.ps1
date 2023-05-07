@@ -105,7 +105,15 @@ function Invoke-FileWatcher{
         switch($FileEvent.Type){
             'Changed' {
                 if($FileEvent.Name -match '\.csv'){
-                    Invoke-InsertToSqlLiteDB -FileName $FileEvent.Name -File $FileEvent.FullPath
+                    $DBRoot       = Join-Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'db'
+                    $DBFullPath   = Join-Path $DBRoot -ChildPath ($FileEvent.Name -replace '.csv','.db')
+                    if(Test-Path $DBFullPath){
+                        "$DBFullPath already available" | Out-Default
+                        Update-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName 'ESXHosts'
+                    }else{
+                        "$DBFullPath not available" | Out-Default
+                        New-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName 'ESXHosts'
+                    }
                 }
             }
             default {
@@ -117,61 +125,81 @@ function Invoke-FileWatcher{
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 }
 
-function Invoke-InsertToSqlLiteDB{
+function Update-SqlLiteDB{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
-        [ValidateNotNullOrEmpty()]
-        [String]$FileName,
+        [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
+        [System.IO.FileInfo]$CSVFile,
 
         [Parameter(Mandatory=$true)]
         [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
-        [System.IO.FileInfo]$File
+        [System.IO.FileInfo]$DBFile,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$SqlTableName
     )
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
-    $SqlTypeName  = 'PSXi'
-    $SqlTableName = 'ESXHosts'
-    $DBRoot       = Join-Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'db'
-    $DBFullPath   = Join-Path $DBRoot -ChildPath ($FileName -replace '.csv','.db')
+    $sqlite = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "Select * from $SqlTableName"
+    $data   = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
+    $data | Add-Member NoteProperty Created $((Get-Date).AddDays(-2) -f 'yyyy-MM-dd HH:mm:ss.fff')
 
-    if(Test-Path $DBFullPath){
-
-        $data   = Import-Csv -Delimiter ';' -Path $File.FullName -Encoding utf8
-        $sqlite = Invoke-MySQLiteQuery -Path $DBFullPath -Query "Select * from $SqlTableName"
-
-        if(
-            ($data | Select-Object -last 1 -ExpandProperty Id) -eq
-            ($sqlite | Select-Object -Last 1 -ExpandProperty Id)
-        ){
-            Write-Warning "Records already exists"
-        }else{
-            Write-Host "Records not exists"
-            $data | Add-Member NoteProperty Created $((Get-Date).AddDays(-2) -f 'yyyy-MM-dd HH:mm:ss.fff')
-            $data | foreach-object -begin { 
-                $MySQLiteDB = Open-MySQLiteDB -Path $DBFullPath
-            } -process { 
-                $SqliteQuery = "Insert into $($SqlTableName) Values(
-                    '$($_.Id)',
-                    '$($_.HostName)',
-                    '$($_.Version)',
-                    '$($_.Manufacturer)',
-                    '$($_.Model)',
-                    '$($_.vCenterServer)',
-                    '$($_.Cluster)',
-                    '$($_.PhysicalLocation)',
-                    '$($_.ConnectionState)',
-                    '$($_.Created)'
-                )"
-                Invoke-MySQLiteQuery -connection $MySQLiteDB -keepalive -query $SqliteQuery
-            } -end { 
-                Close-MySQLiteDB $MySQLiteDB
-            }
-        }
+    if(
+        ($data | Select-Object -last 1 -ExpandProperty Id) -eq
+        ($sqlite | Select-Object -Last 1 -ExpandProperty Id)
+    ){
+        Write-Warning "Records already exists"
     }else{
-        $data | ConvertTo-MySQLiteDB -Path $DBFullPath -TableName $SqlTableName -TypeName $SqlTypeName -Force -Primary Id
+        Write-Host "Add new Records"
+        $data | foreach-object -begin { 
+            $MySQLiteDB = Open-MySQLiteDB -Path $DBFullPath
+        } -process { 
+            $SqliteQuery = "Insert into $($SqlTableName) Values(
+                '$($_.Id)',
+                '$($_.HostName)',
+                '$($_.Version)',
+                '$($_.Manufacturer)',
+                '$($_.Model)',
+                '$($_.vCenterServer)',
+                '$($_.Cluster)',
+                '$($_.PhysicalLocation)',
+                '$($_.ConnectionState)',
+                '$($_.Created)'
+            )"
+            Invoke-MySQLiteQuery -connection $MySQLiteDB -keepalive -query $SqliteQuery
+        } -end { 
+            Close-MySQLiteDB $MySQLiteDB
+        }
     }
+    
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+}
+
+function New-SqlLiteDB{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
+        [System.IO.FileInfo]$CSVFile,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$DBFile,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$SqlTableName
+    )
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+
+    $SqlTypeName  = 'PSXi'    
+    $data   = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
+    $data | Add-Member NoteProperty Created $((Get-Date).AddDays(-5) -f 'yyyy-MM-dd HH:mm:ss.fff')
+    $data | ConvertTo-MySQLiteDB -Path $DBFile -TableName $SqlTableName -TypeName $SqlTypeName -Force -Primary Id
     
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 }

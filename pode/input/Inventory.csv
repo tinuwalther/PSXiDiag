@@ -15,10 +15,9 @@
 37;ESXi1209.my.company.ch;6.7;HPE;Synergy 480 Gen10;vCSA010.my.company.ch;Windows;West;New
 38;ESXi8220.my.company.ch;6.7;HP;ProLiant XL170r Gen9;vCSA010.my.company.ch;Windows;Nord;Connected
 39;ESXi8218.my.company.ch;6.7;HPE;Synergy 480 Gen10;vCSA010.my.company.ch;Windows;Nord;New
-40;ESXi1994.my.company.ch;6.7;Huawei;XH620 V3;vCSA010.my.company.ch;Transfer;West;Connected
-41;ESXi8901.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;Nord;Connected
-42;ESXi7902.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;Ost;Connected
-43;ESXi7903.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;Ost;Connected
-44;ESXi1902.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;West;Connected
-45;ESXi8903.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;Nord;Connected
-46;ESXi1204.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;West;Connected
+40;ESXi8901.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;Nord;Connected
+41;ESXi7902.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;Ost;Connected
+42;ESXi7903.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;Ost;Connected
+43;ESXi1902.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;West;Connected
+44;ESXi8903.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;Nord;Connected
+45;ESXi1204.my.company.ch;6.7;HPE;ProLiant DL380 Gen10;vCSA020.my.company.ch;Oracle;West;Connected
