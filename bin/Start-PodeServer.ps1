@@ -98,9 +98,7 @@ function Invoke-FileWatcher{
 
     Add-PodeFileWatcher -EventName Changed -Path $WatchFolder -ScriptBlock {
         # file name and path
-        $FileEvent.Type     | Out-Default
-        $FileEvent.Name     | Out-Default
-        $FileEvent.FullPath | Out-Default
+        "$($FileEvent.Name) -> $($FileEvent.Type) -> $($FileEvent.FullPath)" | Out-Default
 
         switch($FileEvent.Type){
             'Changed' {
@@ -108,10 +106,10 @@ function Invoke-FileWatcher{
                     $DBRoot       = Join-Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'db'
                     $DBFullPath   = Join-Path $DBRoot -ChildPath ($FileEvent.Name -replace '.csv','.db')
                     if(Test-Path $DBFullPath){
-                        "$DBFullPath already available" | Out-Default
+                        #"$DBFullPath already available" | Out-Default
                         Update-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName 'ESXHosts'
                     }else{
-                        "$DBFullPath not available" | Out-Default
+                        #"$DBFullPath not available" | Out-Default
                         New-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName 'ESXHosts'
                     }
                 }
@@ -145,20 +143,36 @@ function Update-SqlLiteDB{
 
     $sqlite = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "Select * from $SqlTableName"
     $data   = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
-    $data | Add-Member NoteProperty Created $((Get-Date).AddDays(-2) -f 'yyyy-MM-dd HH:mm:ss.fff')
 
     if(
-        ($data | Select-Object -last 1 -ExpandProperty Id) -eq
-        ($sqlite | Select-Object -Last 1 -ExpandProperty Id)
+        ($data | Select-Object -last 1 -ExpandProperty HostName) -eq
+        ($sqlite | Select-Object -Last 1 -ExpandProperty HostName)
     ){
-        Write-Warning "Records already exists"
+        "Update $($DBFile) on table $($SqlTableName)" | Out-Default
+        $data | foreach-object -begin { 
+            $MySQLiteDB = Open-MySQLiteDB -Path $DBFullPath
+        } -process { 
+            $SqliteQuery = "Update $($SqlTableName)
+            Set
+                'Version'          = '$($_.Version)',
+                'Manufacturer'     = '$($_.Manufacturer)',
+                'Model'            = '$($_.Model)',
+                'vCenterServer'    = '$($_.vCenterServer)',
+                'Cluster'          = '$($_.Cluster)',
+                'PhysicalLocation' = '$($_.PhysicalLocation)',
+                'ConnectionState'  = '$($_.ConnectionState)',
+                'Created'          = '$(Get-Date)'
+            WHERE HostName LIKE '$($_.HostName)'"
+            Invoke-MySQLiteQuery -connection $MySQLiteDB -keepalive -query $SqliteQuery
+        } -end { 
+            Close-MySQLiteDB $MySQLiteDB
+        }
     }else{
-        Write-Host "Add new Records"
+        "Insert into $($DBFile) on table $($SqlTableName)" | Out-Default
         $data | foreach-object -begin { 
             $MySQLiteDB = Open-MySQLiteDB -Path $DBFullPath
         } -process { 
             $SqliteQuery = "Insert into $($SqlTableName) Values(
-                '$($_.Id)',
                 '$($_.HostName)',
                 '$($_.Version)',
                 '$($_.Manufacturer)',
@@ -167,7 +181,7 @@ function Update-SqlLiteDB{
                 '$($_.Cluster)',
                 '$($_.PhysicalLocation)',
                 '$($_.ConnectionState)',
-                '$($_.Created)'
+                '$(Get-Date)'
             )"
             Invoke-MySQLiteQuery -connection $MySQLiteDB -keepalive -query $SqliteQuery
         } -end { 
@@ -196,10 +210,11 @@ function New-SqlLiteDB{
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
+    "Create $($DBFile) with table $($SqlTableName)" | Out-Default
     $SqlTypeName  = 'PSXi'    
-    $data   = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
-    $data | Add-Member NoteProperty Created $((Get-Date).AddDays(-5) -f 'yyyy-MM-dd HH:mm:ss.fff')
-    $data | ConvertTo-MySQLiteDB -Path $DBFile -TableName $SqlTableName -TypeName $SqlTypeName -Force -Primary Id
+    $data = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
+    $data | Add-Member NoteProperty Created $((Get-Date (Get-Date).AddDays(-5)))
+    $data | ConvertTo-MySQLiteDB -Path $DBFile -TableName $SqlTableName -TypeName $SqlTypeName -Force -Primary HostName
     
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 }
@@ -229,10 +244,10 @@ if($CurrentOS -eq [OSType]::Windows){
             Write-Host "Running on Windows with elevated Privileges since $(Get-Date)" -ForegroundColor Red
             Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
-            Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'pspode'
-            New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
+            #Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'pspode'
+            #New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
 
-            Set-PodeRoutes
+            #Set-PodeRoutes
             Invoke-FileWatcher
             
         } -RootPath $($PSScriptRoot).Replace('bin','pode')
@@ -256,10 +271,10 @@ if($CurrentOS -eq [OSType]::Windows){
         Write-Host "Running on Mac $($IsRoot) since $(Get-Date)" -ForegroundColor Cyan
         Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
-        Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'pspode'
-        New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
+        #Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'pspode'
+        #New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
 
-        Set-PodeRoutes
+        #Set-PodeRoutes
         Invoke-FileWatcher
     
     } -RootPath $($PSScriptRoot).Replace('bin','pode')
