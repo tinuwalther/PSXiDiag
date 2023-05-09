@@ -144,6 +144,24 @@ function Update-SqlLiteDB{
     $sqlite = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "Select * from $SqlTableName"
     $data   = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
 
+    $Compare = Compare-Object -ReferenceObject $sqlite -DifferenceObject $data -IncludeEqual -PassThru
+    foreach($item in $Compare){
+        switch($item.SideIndicator){
+            '<=' { 
+                # Only in SQLiteDB, remove it from SQLiteDB
+                "$($item.HostName) only in ReferenceObject" 
+            }  
+            '=>' { 
+                # Only in CSVFile, add it to SQLiteDB
+                "$($item.HostName) only in DifferenceObject" 
+            } 
+            '==' { 
+                # Update all properties
+                "$($item.HostName) is in sync"
+            }
+        }
+    }
+
     if(
         ($data | Select-Object -last 1 -ExpandProperty HostName) -eq
         ($sqlite | Select-Object -Last 1 -ExpandProperty HostName)
