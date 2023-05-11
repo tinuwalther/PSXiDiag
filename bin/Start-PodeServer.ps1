@@ -1,4 +1,4 @@
-#Requires -Modules Pode, PSHTML, mySQLite 
+#Requires -Modules Pode, Pode.Web, PSHTML, mySQLite 
 <#
 .SYNOPSIS
     Start Pode server
@@ -74,9 +74,21 @@ function Set-PodeRoutes {
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
-    Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
-        Write-PodeViewResponse -Path 'PSHTML-ESXiHost-Inventory'
+    New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
+    New-PodeLoggingMethod -Terminal | Enable-PodeErrorLogging
+
+    Use-PodeWebTemplates -Title "PSXi App" -Theme Auto
+    # Add dynamic pages
+
+    $PodeRoot = $($PSScriptRoot).Replace('bin','pode')
+    foreach($item in (Get-ChildItem (Join-Path $PodeRoot -ChildPath 'pages'))){
+        . "$($item.FullName)"
     }
+    Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'psxi'
+
+    # Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
+    #     Write-PodeViewResponse -Path 'PSHTML-ESXiHost-Inventory'
+    # }
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
@@ -107,7 +119,9 @@ function Invoke-FileWatcher{
                     $DBFullPath   = Join-Path $DBRoot -ChildPath ($FileEvent.Name -replace '.csv','.db')
                     if(Test-Path $DBFullPath){
                         #"$DBFullPath already available" | Out-Default
-                        Update-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName 'ESXHosts'
+                        $TempDBFullPath = Join-Path $DBRoot -ChildPath 'Temp.db'
+                        New-SqlLiteDB    -CSVFile $FileEvent.FullPath -DBFile $TempDBFullPath -SqlTableName 'ESXHosts'
+                        Update-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath     -SqlTableName 'ESXHosts'
                     }else{
                         #"$DBFullPath not available" | Out-Default
                         New-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName 'ESXHosts'
@@ -128,11 +142,11 @@ function Update-SqlLiteDB{
     param(
         [Parameter(Mandatory=$true)]
         [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
-        [System.IO.FileInfo]$CSVFile,
+        [System.IO.FileInfo]$DBFile,
 
         [Parameter(Mandatory=$true)]
         [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
-        [System.IO.FileInfo]$DBFile,
+        [System.IO.FileInfo]$TempDBFile,
 
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
@@ -141,26 +155,26 @@ function Update-SqlLiteDB{
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
-    $sqlite = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "Select * from $SqlTableName"
-    $data   = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
+    # $Compare = Compare-Object -ReferenceObject $sqlite -DifferenceObject $data -IncludeEqual -PassThru
+    # foreach($item in $Compare){
+    #     switch($item.SideIndicator){
+    #         '<=' { 
+    #             # Only in SQLiteDB, remove it from SQLiteDB
+    #             "$($item.HostName) only in ReferenceObject" 
+    #         }  
+    #         '=>' { 
+    #             # Only in CSVFile, add it to SQLiteDB
+    #             "$($item.HostName) only in DifferenceObject" 
+    #         } 
+    #         '==' { 
+    #             # Update all properties
+    #             "$($item.HostName) is in sync"
+    #         }
+    #     }
+    # }
 
-    $Compare = Compare-Object -ReferenceObject $sqlite -DifferenceObject $data -IncludeEqual -PassThru
-    foreach($item in $Compare){
-        switch($item.SideIndicator){
-            '<=' { 
-                # Only in SQLiteDB, remove it from SQLiteDB
-                "$($item.HostName) only in ReferenceObject" 
-            }  
-            '=>' { 
-                # Only in CSVFile, add it to SQLiteDB
-                "$($item.HostName) only in DifferenceObject" 
-            } 
-            '==' { 
-                # Update all properties
-                "$($item.HostName) is in sync"
-            }
-        }
-    }
+    $data   = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
+    $sqlite = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "Select * from $($SqlTableName)"
 
     if(
         ($data | Select-Object -last 1 -ExpandProperty HostName) -eq
@@ -168,7 +182,7 @@ function Update-SqlLiteDB{
     ){
         "Update $($DBFile) on table $($SqlTableName)" | Out-Default
         $data | foreach-object -begin { 
-            $MySQLiteDB = Open-MySQLiteDB -Path $DBFullPath
+            $MySQLiteDB = Open-MySQLiteDB -Path $DBFile.FullName
         } -process { 
             $SqliteQuery = "Update $($SqlTableName)
             Set
@@ -188,7 +202,7 @@ function Update-SqlLiteDB{
     }else{
         "Insert into $($DBFile) on table $($SqlTableName)" | Out-Default
         $data | foreach-object -begin { 
-            $MySQLiteDB = Open-MySQLiteDB -Path $DBFullPath
+            $MySQLiteDB = Open-MySQLiteDB -Path $DBFile.FullName
         } -process { 
             $SqliteQuery = "Insert into $($SqlTableName) Values(
                 '$($_.HostName)',
@@ -229,8 +243,8 @@ function New-SqlLiteDB{
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
     "Create $($DBFile) with table $($SqlTableName)" | Out-Default
-    $SqlTypeName  = 'PSXi'    
-    $data = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
+    $SqlTypeName  = 'psxi'
+    $data = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8 | Sort-Object HostName
     $data | Add-Member NoteProperty Created $((Get-Date (Get-Date).AddDays(-5)))
     $data | ConvertTo-MySQLiteDB -Path $DBFile -TableName $SqlTableName -TypeName $SqlTypeName -Force -Primary HostName
     
@@ -257,16 +271,13 @@ if($PSVersionTable.PSVersion.Major -lt 6){
 #region Pode server
 if($CurrentOS -eq [OSType]::Windows){
     if(Test-IsElevated -OS $CurrentOS) {
-        $null = Set-HostEntry -Name 'pspode' -Elevated
+        $null = Set-HostEntry -Name 'psxi' -Elevated
         Start-PodeServer {
             Write-Host "Running on Windows with elevated Privileges since $(Get-Date)" -ForegroundColor Red
             Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
-            #Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'pspode'
-            #New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
-
-            #Set-PodeRoutes
             Invoke-FileWatcher
+            Set-PodeRoutes
             
         } -RootPath $($PSScriptRoot).Replace('bin','pode')
     }else{
@@ -281,19 +292,16 @@ if($CurrentOS -eq [OSType]::Windows){
     Start-PodeServer {
         if(Test-IsElevated -OS $CurrentOS) {
             $IsRoot = 'with elevated Privileges'
-            $null = Set-HostEntry -Name 'pspode' -Elevated
+            $null = Set-HostEntry -Name 'psxi' -Elevated
         }else{
             $IsRoot = 'as User'
-            $null = Set-HostEntry -Name 'pspode'
+            $null = Set-HostEntry -Name 'psxi'
         }
         Write-Host "Running on Mac $($IsRoot) since $(Get-Date)" -ForegroundColor Cyan
         Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
-        #Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'pspode'
-        #New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
-
-        #Set-PodeRoutes
         Invoke-FileWatcher
+        #Set-PodeRoutes
     
     } -RootPath $($PSScriptRoot).Replace('bin','pode')
 }
