@@ -20,12 +20,14 @@
             $SQLite_DB   = Invoke-MySQLiteQuery -connection $MySQLiteDB -Query $SqliteQuery
             foreach($item in $SQLite_DB.vCenterServer){
                 $i ++
-                New-PodeWebTable -Id $i -Name "VC$($i)" -DisplayName "vCenter $($item)" -SimpleSort -SimpleFilter -Click -AsCard -Compact -ArgumentList @($item, $PodeDB, $SqlTableName) -ScriptBlock {
+                $vCenter = ($item -split '\.')[0]
+                New-PodeWebTable -Id $i -Name "VC$($i)" -DisplayName "vCenter $($vCenter)" -SimpleSort -SimpleFilter -Click -AsCard -Compact -ArgumentList @($item, $PodeDB, $SqlTableName) -ScriptBlock {
                     param($item, $PodeDB, $SqlTableName)
                     $MySQLiteDB  = Open-MySQLiteDB -Path $PodeDB
                     $SqliteQuery = "Select * from $($SqlTableName) Where vCenterServer Like '%$($item)%'"
                     $Properties = @(
                         'HostName'	
+                        'Version'
                         'Manufacturer'
                         'Model'
                         'Cluster'
