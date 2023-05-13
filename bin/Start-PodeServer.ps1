@@ -78,17 +78,26 @@ function Set-PodeRoutes {
     New-PodeLoggingMethod -Terminal | Enable-PodeErrorLogging
 
     Use-PodeWebTemplates -Title "PSXi App" -Theme Auto
-    # Add dynamic pages
 
+    Add-PodeRoute -Method Get -Path '/diag' -ScriptBlock {
+        Write-PodeViewResponse -Path 'PSHTML-ESXiHost-Inventory'
+    }
+
+    # Add Navbar
+    $Properties = @{
+        Name = 'ESXiHost-Diagram'
+        Url  = '/diag'
+        Icon = 'chart-tree'
+    }
+    $navgithub  = New-PodeWebNavLink @Properties -NewTab
+    Set-PodeWebNavDefault -Items $navgithub
+
+    # Add dynamic pages
     $PodeRoot = $($PSScriptRoot).Replace('bin','pode')
     foreach($item in (Get-ChildItem (Join-Path $PodeRoot -ChildPath 'pages'))){
         . "$($item.FullName)"
     }
     Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'psxi'
-
-    # Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
-    #     Write-PodeViewResponse -Path 'PSHTML-ESXiHost-Inventory'
-    # }
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
@@ -98,8 +107,8 @@ function Invoke-FileWatcher{
     <#
         Returns:
         - Changed
-        - Inventory.csv
-        - D:\github.com\PSXiDiag\pode\input\Inventory.csv
+        - classic_ESXiHosts.csv
+        - D:\github.com\PSXiDiag\pode\input\classic_ESXiHosts.csv
         #>
     [CmdletBinding()]
     param()
@@ -116,15 +125,16 @@ function Invoke-FileWatcher{
             'Changed' {
                 if($FileEvent.Name -match '\.csv'){
                     $DBRoot       = Join-Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'db'
-                    $DBFullPath   = Join-Path $DBRoot -ChildPath ($FileEvent.Name -replace '.csv','.db')
+                    $DBFullPath   = Join-Path $DBRoot -ChildPath 'psxi.db'
+                    $TableName    = ($FileEvent.Name) -replace '.csv'
                     if(Test-Path $DBFullPath){
                         #"$DBFullPath already available" | Out-Default
-                        $TempDBFullPath = Join-Path $DBRoot -ChildPath 'Temp.db'
-                        New-SqlLiteDB    -CSVFile $FileEvent.FullPath -DBFile $TempDBFullPath -SqlTableName 'ESXHosts'
-                        Update-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath     -SqlTableName 'ESXHosts'
+                        #$TempDBFullPath = Join-Path $DBRoot -ChildPath 'temp.db'
+                        #New-SqlLiteDB    -CSVFile $FileEvent.FullPath -DBFile $TempDBFullPath -SqlTableName $TableName
+                        Update-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName
                     }else{
                         #"$DBFullPath not available" | Out-Default
-                        New-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName 'ESXHosts'
+                        New-SqlLiteDB -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName
                     }
                 }
             }
@@ -174,37 +184,37 @@ function Update-SqlLiteDB{
     # }
 
     $data   = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
-    $sqlite = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "Select * from $($SqlTableName)"
+    #$sqlite = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "Select * from $($SqlTableName)"
 
     if(
         ($data | Select-Object -last 1 -ExpandProperty HostName) -eq
         ($sqlite | Select-Object -Last 1 -ExpandProperty HostName)
     ){
-        "Update $($DBFile) on table $($SqlTableName)" | Out-Default
-        $data | foreach-object -begin { 
-            $MySQLiteDB = Open-MySQLiteDB -Path $DBFile.FullName
-        } -process { 
-            $SqliteQuery = "Update $($SqlTableName)
-            Set
-                'Version'          = '$($_.Version)',
-                'Manufacturer'     = '$($_.Manufacturer)',
-                'Model'            = '$($_.Model)',
-                'vCenterServer'    = '$($_.vCenterServer)',
-                'Cluster'          = '$($_.Cluster)',
-                'PhysicalLocation' = '$($_.PhysicalLocation)',
-                'ConnectionState'  = '$($_.ConnectionState)',
-                'Created'          = '$(Get-Date)'
-            WHERE HostName LIKE '$($_.HostName)'"
-            Invoke-MySQLiteQuery -connection $MySQLiteDB -keepalive -query $SqliteQuery
-        } -end { 
-            Close-MySQLiteDB $MySQLiteDB
-        }
+        # "Update $($DBFile) on table $($SqlTableName)" | Out-Default
+        # $data | foreach-object -begin { 
+        #     $db = Open-MySQLiteDB -Path $DBFile.FullName
+        # } -process { 
+        #     $SqliteQuery = "Update $($SqlTableName)
+        #     Set
+        #         'Version'          = '$($_.Version)',
+        #         'Manufacturer'     = '$($_.Manufacturer)',
+        #         'Model'            = '$($_.Model)',
+        #         'vCenterServer'    = '$($_.vCenterServer)',
+        #         'Cluster'          = '$($_.Cluster)',
+        #         'PhysicalLocation' = '$($_.PhysicalLocation)',
+        #         'ConnectionState'  = '$($_.ConnectionState)',
+        #         'Created'          = '$(Get-Date)'
+        #     WHERE HostName LIKE '$($_.HostName)'"
+        #     Invoke-MySQLiteQuery -connection $db -keepalive -query $SqliteQuery
+        # } -end { 
+        #     Close-MySQLiteDB $db
+        # }
     }else{
         "Insert into $($DBFile) on table $($SqlTableName)" | Out-Default
         $data | foreach-object -begin { 
-            $MySQLiteDB = Open-MySQLiteDB -Path $DBFile.FullName
+            $db = Open-MySQLiteDB $DBFile.FullName
         } -process { 
-            $SqliteQuery = "Insert into $($SqlTableName) Values(
+            $SqlQuery = "Insert into $($SqlTableName) Values(
                 '$($_.HostName)',
                 '$($_.Version)',
                 '$($_.Manufacturer)',
@@ -213,12 +223,14 @@ function Update-SqlLiteDB{
                 '$($_.Cluster)',
                 '$($_.PhysicalLocation)',
                 '$($_.ConnectionState)',
-                '$(Get-Date)'
+                '$(Get-Date)',
+                '$((New-Guid).Guid)'
             )"
-            Invoke-MySQLiteQuery -connection $MySQLiteDB -keepalive -query $SqliteQuery
+            Invoke-MySQLiteQuery -connection $db -keepalive -query $SqlQuery
         } -end { 
-            Close-MySQLiteDB $MySQLiteDB
+            Close-MySQLiteDB $db
         }
+        #Invoke-MySQLiteQuery -Path $DBFile.FullName "Select * from $SqlTableName" | format-table
     }
     
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
@@ -233,7 +245,7 @@ function New-SqlLiteDB{
 
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [string]$DBFile,
+        [System.IO.FileInfo]$DBFile,
 
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
@@ -242,12 +254,18 @@ function New-SqlLiteDB{
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
-    "Create $($DBFile) with table $($SqlTableName)" | Out-Default
-    $SqlTypeName  = 'psxi'
-    $data = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8 | Sort-Object HostName
-    $data | Add-Member NoteProperty Created $((Get-Date (Get-Date).AddDays(-5)))
-    $data | ConvertTo-MySQLiteDB -Path $DBFile -TableName $SqlTableName -TypeName $SqlTypeName -Force -Primary HostName
+    "Create $($DBFile.BaseName) with table $($SqlTableName)" | Out-Default
+    # $SqlTypeName  = 'psxi'
+    # $data = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8 | Sort-Object HostName
+    # $data | Add-Member NoteProperty Created $((Get-Date (Get-Date).AddDays(-5)))
+    # $data | ConvertTo-MySQLiteDB -Path $DBFile -TableName $SqlTableName -TypeName $SqlTypeName -Force -Primary HostName
     
+    New-MySQLiteDB $DBFile -Comment "This is the PSXi Database" -PassThru -Force
+    $th = (Get-Content -Path $CSVFile.FullName -Encoding utf8 -TotalCount 1).Split(';') + 'Created'
+    New-MySQLiteDBTable -Path $DBFile.FullName -TableName $SqlTableName -ColumnNames $th -Force
+    # Add Primary Key
+    Invoke-MySQLiteQuery -Path $DBFile.FullName -query "ALTER TABLE $SqlTableName ADD Id [INTEGER PRIMARY KEY];"
+
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 }
 #endregion
@@ -288,21 +306,22 @@ if($CurrentOS -eq [OSType]::Windows){
             Start-Process "$psHome\pwsh.exe" -Verb Runas -ArgumentList $($MyInvocation.MyCommand.Name)
         }
     }
-}elseif($CurrentOS -eq [OSType]::Mac){
-    Start-PodeServer {
-        if(Test-IsElevated -OS $CurrentOS) {
-            $IsRoot = 'with elevated Privileges'
-            $null = Set-HostEntry -Name 'psxi' -Elevated
-        }else{
-            $IsRoot = 'as User'
-            $null = Set-HostEntry -Name 'psxi'
-        }
-        Write-Host "Running on Mac $($IsRoot) since $(Get-Date)" -ForegroundColor Cyan
-        Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
+}else{
+    # Start-PodeServer {
+    #     if(Test-IsElevated -OS $CurrentOS) {
+    #         $IsRoot = 'with elevated Privileges'
+    #         $null = Set-HostEntry -Name 'psxi' -Elevated
+    #     }else{
+    #         $IsRoot = 'as User'
+    #         $null = Set-HostEntry -Name 'psxi'
+    #     }
+    #     Write-Host "Running on Mac $($IsRoot) since $(Get-Date)" -ForegroundColor Cyan
+    #     Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
-        Invoke-FileWatcher
-        #Set-PodeRoutes
+    #     Invoke-FileWatcher
+    #     Set-PodeRoutes
     
-    } -RootPath $($PSScriptRoot).Replace('bin','pode')
+    # } -RootPath $($PSScriptRoot).Replace('bin','pode')
+    "Not supported OS" | Out-Default
 }
 #endregion
