@@ -18,4 +18,16 @@ If you click on this page, all ESXi Hosts of the Cloud will be grouped by vCente
 
 ![PSXiEsxInventory](./img/PSXiEsxInventory.png)
 
+In the Summary, you can see the total of vCenter, and the count of each ESXiHost versions.
+
+![PSXiEsxInventory](./img/PSXiSummaryEsxiHosts.png)
+
+You can search for the ESXiHost in the search box.
+
+![PSXiEsxInventory](./img/PSXiSearchEsxiHosts.png)
+
+Each vCenter has it own tab where you can find all ESXiHosts.
+
+![PSXiEsxInventory](./img/PSXivCenterTabs.png)
+
 [Top](#)
