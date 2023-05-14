@@ -4,7 +4,7 @@ We currently have ~150 ESXi Hosts across 12 vCenters in our environemnt. Whenerv
 
 - [PSXiDiag](#psxidiag)
   - [How it works](#how-it-works)
-  - [PSXi Home Page](#psxi-home-page)
+  - [PSXi Home Page](#psxi-homepage)
   - [PSXi ESXi Inventory](#psxi-esxi-inventory)
 
 ## How it works
@@ -15,15 +15,15 @@ The content of the CSV-file will be stored in a SQLite DB in seperated tabels fo
 
 ![PSXiHomePage](./pode/public/assets/img/PSXiPode.png)
 
-## PSXi Home Page
+## PSXi Homepage
 
-This is the Homepage of the PSXi App. It shows you the workflow of the data.
+This is the Homepage of the PSXi App. It shows you the summary of all vCenter, ESXiHosts and VMs.
 
 ![PSXiHomePage](./img/PSXiHomePage.png)
 
 ## PSXi ESXi Inventory
 
-If you click on this page, all ESXi Hosts of the Cloud will be grouped by vCenterServer. The datas are stored in a SQLite database.
+If you click on this page, all ESXi Hosts of the Cloud will be grouped by vCenterServer.
 
 ![PSXiEsxInventory](./img/PSXiEsxInventory.png)
 
