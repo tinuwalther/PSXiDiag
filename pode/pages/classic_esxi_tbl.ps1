@@ -37,15 +37,18 @@
             )
 
             New-PodeWebCard -Name Summary -DisplayName 'Summary of Classic' -Content @(
-                New-PodeWebText -Value "Total vCenter $($VIServer.count) | ESXiHosts "
+                New-PodeWebBadge -Colour Green -Value "$($VIServer.Count) vCenter"
+                $TotalCluster = $FullDB | Group-Object Cluster
+                New-PodeWebBadge -Colour Cyan -Value "$($TotalCluster.Count) Cluster"
+                $ESXiHosts = $FullDB | Group-Object HostName
+                New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
                 $FullDB | Group-Object Version | ForEach-Object {
-                    New-PodeWebText -Value "V $($_.Name)"
                     switch -Regex ($_.Name){
                         '6.7'   {$Colour = 'Yellow'}
                         '7.0'   {$Colour = 'Green'}
                         default {$Colour = 'Red'}
                     }
-                    New-PodeWebBadge -Colour $Colour -Value $($_.Count)
+                    New-PodeWebBadge -Colour $Colour -Value "V$($_.Name) ($($_.Count))"
                 }
             )
 
