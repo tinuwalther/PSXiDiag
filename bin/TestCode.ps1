@@ -14,7 +14,7 @@ function New-SQLiteTable{
     param($CSVFile, $DBFile, $SqlTableName)
     $th = (Get-Content -Path $CSVFile.FullName -Encoding utf8 -TotalCount 1).Split(';') + 'Created'
     New-MySQLiteDBTable -Path $DBFile.FullName -TableName $SqlTableName -ColumnNames $th -Force
-    Invoke-MySQLiteQuery -Path $DBFile.FullName -query "ALTER TABLE $SqlTableName ADD ID [INT];"
+    Invoke-MySQLiteQuery -Path $DBFile.FullName -query "ALTER TABLE $SqlTableName ADD ID [INTEGER PRIMARY KEY];"
     Invoke-MySQLiteQuery -Path $DBFile.FullName "Select * from $SqlTableName" | format-table
 }
 #endregion

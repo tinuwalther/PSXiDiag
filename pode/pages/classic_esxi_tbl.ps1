@@ -61,19 +61,19 @@
                 New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '1000px'
             )
 
-            New-PodeWebTabs -Tabs @(
+            #New-PodeWebTabs -Tabs @(
                 foreach($item in $VIServer){
                     $i ++
                     $vCenter = ($item -split '\.')[0]
-                    New-PodeWebTab -Id "Tab$($i)" -Name "vCenter $($vCenter)" -Layouts @(
+                    #New-PodeWebTab -Id "Tab$($i)" -Name "vCenter $($vCenter)" -Layouts @(
                         New-PodeWebTable -Id $i -Name "VC$($i)" -DisplayName "vCenter $($vCenter)" -SimpleSort -SimpleFilter -Click -AsCard -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlTableName) -ScriptBlock {
                             param($Properties, $item, $PodeDB, $SqlTableName)
                             $SqliteQuery = "Select * from $($SqlTableName) Where vCenterServer Like '%$($item)%'"
                             Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
                         }  
-                    )     
+                    #)     
                 }
-            )
+            #)
         }
     }else{
         Out-PodeWebError -Message "Could not find $($PodeDB)"

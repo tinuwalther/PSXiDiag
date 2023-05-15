@@ -30,6 +30,30 @@
         New-PodeWebBadge -Colour Light -Value "$($VMs) VMs"
     )
 
+    New-PodeWebForm -Id "Form$($i)" -Name "Search for ESXiHost" -AsCard -ShowReset -ArgumentList @($PodeDB) -ScriptBlock {
+        param($PodeDB)
+        $SqliteQuery = "Select * from classic_ESXiHosts Where HostName Like '%$($WebEvent.Data.Search)%'"
+        $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+        if([String]::IsNullOrEmpty($Result)){
+            $SqliteQuery = "Select * from cloud_ESXiHosts Where HostName Like '%$($WebEvent.Data.Search)%'"
+            $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+        }
+        $Properties = @(
+            'HostName'	
+            'Version'
+            'Manufacturer'
+            'Model'
+            'Cluster'
+            'PhysicalLocation'
+            'ConnectionState'
+            'Created'
+            'vCenterServer'
+        )
+        $Result | Select-Object $Properties | Out-PodeWebTable
+    } -Content @(
+        New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '1000px'
+    )
+
     New-PodeWebGrid -Cells @(
 
         if(Test-Path $PodeDB){
@@ -50,11 +74,11 @@
 
                     New-PodeWebCard -Name "$DisplayName Summary" -Content @(
                         $SqliteQuery = "SELECT COUNT(vCenterServer) AS 'Total vCenter', SUM(CountOfESXiHosts) AS 'Total ESXiHosts', SUM(CountOfVMs) AS 'Total VMs' FROM $item"
-                        $classic_summary = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                        $summary = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
                         New-PodeWebText -Value "Total"
-                        New-PodeWebBadge -Colour Green -Value "$($classic_summary.'Total vCenter') vCenter"
-                        New-PodeWebBadge -Colour Blue -Value "$($classic_summary.'Total ESXiHosts') ESXiHosts"
-                        New-PodeWebBadge -Colour Light -Value "$($classic_summary.'Total VMs') VMs"
+                        New-PodeWebBadge -Colour Green -Value "$($summary.'Total vCenter') vCenter"
+                        New-PodeWebBadge -Colour Blue -Value "$($summary.'Total ESXiHosts') ESXiHosts"
+                        New-PodeWebBadge -Colour Light -Value "$($summary.'Total VMs') VMs"
                     )
 
                     # New-PodeWebTable -Id "Total$($i)" -Name "Total$($i)" -DisplayName "Total $($DisplayName)" -SimpleSort -Click -NoExport -NoRefresh -AsCard -Compact -ArgumentList @($item, $PodeDB) -ScriptBlock {
