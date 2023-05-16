@@ -6,8 +6,6 @@ Add-PodeWebPage -Group 'Cloud' -Name 'Cloud ESXi Hosts Diagram' -Title 'Cloud ES
         New-PodeWebBreadcrumbItem -Name 'Cloud ESXi Host Diagram' -Url '/pages/PageName?value=Cloud ESXi Hosts Diagram' -Active
     )
 
-    New-PodeWebCard -NoTitle -NoHide -Content @(
-        New-PodeWebIFrame -Url '/diag'
-    )
+    New-PodeWebIFrame -Url '/cloud_ESXiHosts_diag'
 
 }

@@ -4,12 +4,19 @@ We currently have ~150 ESXi Hosts across 12 vCenters in our environemnt. Whenerv
 
 - [PSXiDiag](#psxidiag)
   - [How it works](#how-it-works)
-  - [PSXi Home Page](#psxi-homepage)
+  - [PSXi Homepage](#psxi-homepage)
   - [PSXi ESXi Inventory](#psxi-esxi-inventory)
+  - [Mermaid Diagram](#mermaid-diagram)
 
 ## How it works
 
-ScriptRunner runs scheduled PowerShell-Scripts to collect all the data of all vCenters and send it over WinRM as CSV-files to the Pode-Server. The Pode-Server has a FileWatcher where it check for new CSV-files.
+ScriptRunner runs scheduled PowerShell-Scripts to collect all the data of all vCenters and send it over WinRM as CSV-files to the Pode-Server. The Pode-Server has a FileWatcher where it check for new CSV-files in /pode/input.
+
+The file should be named:
+- cloud_ESXiHosts.csv
+- classic_ESXiHosts.csv
+- cloud_Summary.csv
+- classic_Summary.csv
 
 The content of the CSV-file will be stored in a SQLite DB in seperated tabels for Cloud and Classic. You can access over Pode.Web to the SQLite DB and get the properties of Cloud-/Classic ESXiHosts.
 
@@ -38,5 +45,13 @@ You can search for the ESXiHost in the search box.
 Each vCenter has it own tab where you can find all ESXiHosts.
 
 ![PSXiEsxInventory](./img/PSXivCenterTabs.png)
+
+## Mermaid Diagram
+
+For each zones, there has a Mermaid-Class-Diagram for the vCenters. 
+
+![PSXiEsxInventory](./img/PSXiDiagramESXi.png)
+
+The Diagram is an iFrame to another page and it will be automatically genereate, if you put a new CSV-file into the folder where the FileWatcher is configured.
 
 [Top](#)

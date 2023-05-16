@@ -89,9 +89,9 @@ function Set-PodeRoutes {
 
     # Add Navbar
     $Properties = @{
-        Name = 'ESXiHost-Diagram'
-        Url  = '/diag'
-        Icon = 'chart-tree'
+        Name = 'Tinus GitHub'
+        Url  = 'https://github.com/tinuwalther'
+        Icon = 'account-star-outline'
     }
     $navgithub  = New-PodeWebNavLink @Properties -NewTab
     Set-PodeWebNavDefault -Items $navgithub
@@ -146,25 +146,7 @@ function Invoke-FileWatcher{
                             '_ESXiHosts' {
                                 "Add content 'ESXiHost' to the table" | Out-PodeHost
                                 Update-ESXiHostTable -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName
-                                # switch -Regex ($FileEvent.FullPath){
-                                #     'classic*' { $Title = 'Classic'}
-                                #     'cloud*'   { $Title = 'Cloud'}
-                                # }
-                                # $file2Exec  = Join-Path $PSScriptRoot -ChildPath "New-PshtmlESXiDiag.ps1"
-                                # $title2Exec = "$($Title)-ESXiHost-Diagram"
-                                # $data = Import-Csv -Delimiter ';' -Path $FileEvent.FullPath -Encoding utf8
-
-                                # $file2Exec  | Out-PodeHost
-                                # $title2Exec | Out-PodeHost
-
-                                # . "$file2Exec -InputObject $data -Title $title2Exec"
-
-                                # $InstallArgs = @{}
-                                # $InstallArgs.FilePath     = "pwsh.exe"
-                                # $InstallArgs.ArgumentList = @()
-                                # $InstallArgs.ArgumentList += "-file '$exec'"
-                                # Start-Process @InstallArgs -Wait
-                                                        
+                                Invoke-PshtmlESXiDiagram -DBFile $($DBFullPath) -ScriptFile $(Join-Path $PSScriptRoot -ChildPath "New-PshtmlESXiDiag.ps1") -SqlTableName $TableName
                             }
                             '_summary' {
                                 "Add content 'Summary' to the table" | Out-PodeHost
@@ -282,6 +264,32 @@ function New-SqlLiteDB{
         New-MySQLiteDB $DBFile.FullName -Comment "This is the PSXi Database" -PassThru -force
     }
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+}
+
+function Invoke-PshtmlESXiDiagram{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
+        [System.IO.FileInfo]$DBFile,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
+        [System.IO.FileInfo]$ScriptFile,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$SqlTableName
+    )
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+    $InstallArgs = @{}
+    $InstallArgs.FilePath     = "pwsh.exe"
+    $InstallArgs.ArgumentList = @()
+    $InstallArgs.ArgumentList += "-file $($ScriptFile.FullName) -DBFile $DBFile -SqlTableName $SqlTableName"
+    Start-Process @InstallArgs -Wait -NoNewWindow
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+
 }
 #endregion
 

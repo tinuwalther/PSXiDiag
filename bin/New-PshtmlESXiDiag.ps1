@@ -57,7 +57,12 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$true)]
-    [Object]$InputObject,
+    [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
+    [System.IO.FileInfo]$DBFile,
+
+    [Parameter(Mandatory=$true)]
+    [ValidateNotNullOrEmpty()]
+    [string]$SqlTableName,
 
     [Parameter(Mandatory=$false)]
     [PSCustomObject]$Column = @{
@@ -71,9 +76,6 @@ param (
 
     [Parameter(Mandatory=$false)]
     [String]$RelationShip = '--',
-
-    [Parameter(Mandatory=$true)]
-    [String]$Title,
 
     [Parameter(Mandatory=$false)]
     [String]$AssetsPath = '/assets' #'../assets' #$AssetsPath = $($PSScriptRoot).Replace('bin','assets')
@@ -106,7 +108,14 @@ begin{
 process{
 
     #Fields = HostName;Version;Manufacturer;Model;vCenterServer;Cluster;PhysicalLocation;ConnectionState
-    
+    switch -Regex ($SqlTableName){
+        'classic*' { $Title = 'Classic-ESXiHost-Diagram'}
+        'cloud*'   { $Title = 'Cloud-ESXiHost-Diagram'}
+    }
+
+    $SqliteQuery = "Select * from $($SqlTableName)"
+    $InputObject = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query $SqliteQuery
+
     $vcNo = 0; $ClusterNo = 0; $ModelNo = 0
     $Page = ($($MyInvocation.MyCommand.Name) -replace '.ps1') + ' for Pode server'
 
@@ -126,13 +135,8 @@ process{
 
     #region header
     $HeaderTitle        = $Page
-    $HeaderCaption      = $($Title)
     #endregion
 
-    #region body
-    $BodyDescription    = "PsMmaDiagram builds Mermaid Diagrams with PSHTML and PowerShell as HTML-Files from an object of VMware ESXiHosts"
-    #endregion
-    
     #region footer
     $FooterSummary      = "Report saved as $($OutFile)"
     #endregion
@@ -339,16 +343,6 @@ process{
         #region body
         body {
 
-            #region <!-- header -->
-            # header  {
-            #     div -id "j1" -class 'jumbotron text-center' -Style "padding:15; background-color:#033b63" -content {
-            #         p { h1 $HeaderTitle }
-            #         p { h2 $HeaderCaption }  
-            #         p { $BodyDescription }  
-            #     }
-            # }
-            #endregion header
-
             #region <!-- section -->
             section -id "section" -Content {  
 
@@ -395,15 +389,6 @@ process{
     }
     $Html | Set-Content $OutFile -Encoding utf8
     #endregion html
-
-    if($CurrentOS -eq [OSType]::Windows){
-        # Start Browser
-        Start-Process "microsoft-edge:http://localhost:5989/" -WindowStyle maximized
-    }else{
-        # Start Browser
-        Start-Process "http://localhost:5989/"
-    }
-
 }
 
 end{
