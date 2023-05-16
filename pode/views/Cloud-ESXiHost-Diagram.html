@@ -1,0 +1,77 @@
+<html ><head ><meta charset="UTF-8"  /><meta name="author" content="Martin Walther"  /><meta name="keywords" content="PSHTML, PowerShell, Mermaid Diagram"  /><meta name="description" content="PsMmaDiagram builds Mermaid Diagrams as HTML-Files with PSHTML from native PowerShell-Scripts"  /><link rel="stylesheet" href="\assets\BootStrap\bootstrap.min.css"  /><link rel="stylesheet" href="\assets\style\style.css"  /><script src="\assets\BootStrap\bootstrap.js"  ></script><script src="\assets\Jquery\jquery.min.js"  ></script><script src="\assets\mermaid\mermaid.min.js"  ></script><script src="mermaid.initialize({startOnLoad:true})"  ></script><title >New-PshtmlESXiDiag for Pode server</title></head><Body ><Section Id="section"  ><nav Class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top"  ><a href="#" Class="navbar-brand" Target="_self"  >HOME</a><button Class="navbar-toggler" data-target="#collapsibleNavbar" data-toggle="collapse" type="button"  ><span Class="navbar-toggler-icon"  ></span></button><div Class="collapse navbar-collapse" Id="collapsibleNavbar"  ><ul Class="navbar-nav"  ><li Class="nav-item"  ><a href="#vCSA100" Class="nav-link" Target="_self"  >vCSA100</a></li><li Class="nav-item"  ><a href="#vCSA210" Class="nav-link" Target="_self"  >vCSA210</a></li><li Class="nav-item"  ><a href="#vCSA220" Class="nav-link" Target="_self"  >vCSA220</a></li><li Class="nav-item"  ><a href="#vCSA221" Class="nav-link" Target="_self"  >vCSA221</a></li></ul></div></nav><div Style="background-color:#034f84" Class="container-fluid"  ><div Style="background-color:#034f84" Class="container-fluid" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vCSA100"  ><a Target="_blank" href="https://vCSA100.my.cloud.ch/ui/"  >vCenter vCSA100</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vCSA100: 6 (ESXi Versions: 7.0.3 = 6)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
+VC1_vCSA100 -- VC1C1_Linux
+VC1_vCSA100 : + Linux
+VC1C1_Linux : + Synergy 480 Gen10
+VC1C1_Linux -- VC1C1_Synergy 480 Gen10
+VC1C1_Synergy 480 Gen10 : - Nord, 3 ESXi Hosts
+VC1C1_Synergy 480 Gen10 -- VC1C1_Nord
+VC1C1_Nord : + ESXi8051, ESXi 7.0.3, Synergy 480 Gen10
+VC1C1_Nord : + ESXi8052, ESXi 7.0.3, Synergy 480 Gen10
+VC1C1_Nord : + ESXi8053, ESXi 7.0.3, Synergy 480 Gen10
+VC1C1_Synergy 480 Gen10 : - Ost, 1 ESXi Hosts
+VC1C1_Synergy 480 Gen10 -- VC1C1_Ost
+VC1C1_Ost : + ESXi7051, ESXi 7.0.3, Synergy 480 Gen10
+VC1_vCSA100 -- VC1C2_Windows
+VC1_vCSA100 : + Windows
+VC1C2_Windows : + ProLiant DL380 Gen9
+VC1C2_Windows -- VC1C2_ProLiant DL380 Gen9
+VC1C2_ProLiant DL380 Gen9 : - Nord, 1 ESXi Hosts
+VC1C2_ProLiant DL380 Gen9 -- VC1C2_Nord
+VC1C2_Nord : + ESXi8998, ESXi 7.0.3, ProLiant DL380 Gen9
+VC1C2_ProLiant DL380 Gen9 : - Ost, 1 ESXi Hosts
+VC1C2_ProLiant DL380 Gen9 -- VC1C2_Ost
+VC1C2_Ost : + ESXi7999, ESXi 7.0.3, ProLiant DL380 Gen9
+</div></article></div><div Style="background-color:#034f84" Class="container-fluid" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vCSA210"  ><a Target="_blank" href="https://vCSA210.my.cloud.ch/ui/"  >vCenter vCSA210</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vCSA210: 8 (ESXi Versions: 6.7 = 4, 7.0.3 = 4)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
+VC1_vCSA210 -- VC1C1_Linux
+VC1_vCSA210 : + Linux
+VC1C1_Linux : + Synergy 480 Gen10
+VC1C1_Linux -- VC1C1_Synergy 480 Gen10
+VC1C1_Synergy 480 Gen10 : - Nord, 2 ESXi Hosts
+VC1C1_Synergy 480 Gen10 -- VC1C1_Nord
+VC1C1_Nord : + ESXi8201, ESXi 7.0.3, Synergy 480 Gen10
+VC1C1_Nord : + ESXi8202, ESXi 7.0.3, Synergy 480 Gen10
+VC1C1_Synergy 480 Gen10 : - West, 2 ESXi Hosts
+VC1C1_Synergy 480 Gen10 -- VC1C1_West
+VC1C1_West : + ESXi1201, ESXi 7.0.3, Synergy 480 Gen10
+VC1C1_West : + ESXi1202, ESXi 7.0.3, Synergy 480 Gen10
+VC1_vCSA210 -- VC1C2_Windows
+VC1_vCSA210 : + Windows
+VC1C2_Windows : + Synergy 480 Gen10
+VC1C2_Windows -- VC1C2_Synergy 480 Gen10
+VC1C2_Synergy 480 Gen10 : - Nord, 2 ESXi Hosts
+VC1C2_Synergy 480 Gen10 -- VC1C2_Nord
+VC1C2_Nord : o ESXi8218, ESXi 6.7, Synergy 480 Gen10
+VC1C2_Nord : + ESXi8220, ESXi 6.7, Synergy 480 Gen10
+VC1C2_Synergy 480 Gen10 : - West, 2 ESXi Hosts
+VC1C2_Synergy 480 Gen10 -- VC1C2_West
+VC1C2_West : o ESXi1209, ESXi 6.7, Synergy 480 Gen10
+VC1C2_West : + ESXi1220, ESXi 6.7, Synergy 480 Gen10
+</div></article></div><div Style="background-color:#034f84" Class="container-fluid" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vCSA220"  ><a Target="_blank" href="https://vCSA220.my.cloud.ch/ui/"  >vCenter vCSA220</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vCSA220: 6 (ESXi Versions: 6.7 = 6)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
+VC1_vCSA220 -- VC1C1_Oracle
+VC1_vCSA220 : + Oracle
+VC1C1_Oracle : + ProLiant DL380 Gen10
+VC1C1_Oracle -- VC1C1_ProLiant DL380 Gen10
+VC1C1_ProLiant DL380 Gen10 : - Nord, 2 ESXi Hosts
+VC1C1_ProLiant DL380 Gen10 -- VC1C1_Nord
+VC1C1_Nord : + ESXi8901, ESXi 6.7, ProLiant DL380 Gen10
+VC1C1_Nord : + ESXi8903, ESXi 6.7, ProLiant DL380 Gen10
+VC1C1_ProLiant DL380 Gen10 : - Ost, 2 ESXi Hosts
+VC1C1_ProLiant DL380 Gen10 -- VC1C1_Ost
+VC1C1_Ost : + ESXi7902, ESXi 6.7, ProLiant DL380 Gen10
+VC1C1_Ost : + ESXi7903, ESXi 6.7, ProLiant DL380 Gen10
+VC1C1_ProLiant DL380 Gen10 : - West, 2 ESXi Hosts
+VC1C1_ProLiant DL380 Gen10 -- VC1C1_West
+VC1C1_West : + ESXi1204, ESXi 6.7, ProLiant DL380 Gen10
+VC1C1_West : + ESXi1902, ESXi 6.7, ProLiant DL380 Gen10
+</div></article></div><div Style="background-color:#034f84" Class="container-fluid" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vCSA221"  ><a Target="_blank" href="https://vCSA221.my.cloud.ch/ui/"  >vCenter vCSA221</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vCSA221: 2 (ESXi Versions: 6.7 = 2)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
+VC1_vCSA221 -- VC1C1_Oracle
+VC1_vCSA221 : + Oracle
+VC1C1_Oracle : + ProLiant DL380 Gen10
+VC1C1_Oracle -- VC1C1_ProLiant DL380 Gen10
+VC1C1_ProLiant DL380 Gen10 : - Nord, 1 ESXi Hosts
+VC1C1_ProLiant DL380 Gen10 -- VC1C1_Nord
+VC1C1_Nord : + ESXi8911, ESXi 6.7, ProLiant DL380 Gen10
+VC1C1_ProLiant DL380 Gen10 : - Ost, 1 ESXi Hosts
+VC1C1_ProLiant DL380 Gen10 -- VC1C1_Ost
+VC1C1_Ost : + ESXi7912, ESXi 6.7, ProLiant DL380 Gen10
+</div></article></div><hr /><div Style="background-color:#034f84" Class="container-fluid" Id="Content"  ><article Id="ESXiHosts"  ><p Style="color:#f8f9fa"  >Total ESXiHosts: 22 (ESXi Versions: 6.7 = 12, 7.0.3 = 10)</p></article></div></div></Section></Body><div Style="background-color:#343a40" Class="container-fluid"  ><footer ><div Class="container-fluid"  ><div Class="row align-items-center"  ><div Class="col-md"  ><p ><a Target="_self" href="#"  >I ♥ PS ></a></p></div><div Class="col-md"  ><p >Report saved as D:\github.com\PSXiDiag\pode\views\Cloud-ESXiHost-Diagram.html</p></div><div Class="col-md"  ><p >16.05.2023 18:51:23</p></div></div></div></footer></div></html>

@@ -1,119 +1,57 @@
-# PSXiDiag
+# PSXi
 
-We currently have ~130 ESXi Hosts across 8 vCenters in our environemnt. Whenerver I'm done with the visualization of it, it's already wrong and I can start again. Why doesn't PowerShell do this for me? That's why I wrote this framework.
-
-PSXiDiag builds VMware ESXiHost Inventory Diagrams with PowerShell and save it as Markdown-, or HTML-File with Mermaid Diagrams or as CSV-File for Draw.IO-Import.
+We currently have ~150 ESXi Hosts across 12 vCenters in our environemnt. Whenerver I'm done with the visualization of it, it's already wrong and I can start again. Why doesn't PowerShell do this for me? That's why I wrote this framework.
 
 - [PSXiDiag](#psxidiag)
-  - [Markdown Class Diagram](#markdown-class-diagram)
-  - [HTML Class Diagram](#html-class-diagram)
-  - [PSHTML Class Diagram](#pshtml-class-diagram)
-  - [Draw.io Diagram](#drawio-diagram)
+  - [How it works](#how-it-works)
+  - [PSXi Homepage](#psxi-homepage)
+  - [PSXi ESXi Inventory](#psxi-esxi-inventory)
+  - [Mermaid Diagram](#mermaid-diagram)
 
-The following fields are required for each diagram:
+## How it works
 
-HostName|Version|Manufacturer|Model|vCenterServer|Cluster|PhysicalLocation|ConnectionState
--|-|-|-|-|-|-|-
-ESXi7912.my.company.ch|6.7|HPE|ProLiant DL380 Gen10|vCSA021.my.company.ch|Oracle|Ost|Connected
-ESXi8911.my.company.ch|7.0.3|HPE|ProLiant DL380 Gen10|vCSA021.my.company.ch|Windows|Nord|Connected
+ScriptRunner runs scheduled PowerShell-Scripts to collect all the data of all vCenters and send it over WinRM as CSV-files to the Pode-Server. The Pode-Server has a FileWatcher where it check for new CSV-files in /pode/input.
 
-## Markdown Class Diagram
+The file should be named:
+- cloud_ESXiHosts.csv
+- classic_ESXiHosts.csv
+- cloud_Summary.csv
+- classic_Summary.csv
 
----
+The content of the CSV-file will be stored in a SQLite DB in seperated tabels for Cloud and Classic. You can access over Pode.Web to the SQLite DB and get the properties of Cloud-/Classic ESXiHosts.
 
-Build a simple Class Diagram from an object-array of VMware ESXiHosts as Markdown-File.
+![PSXiHomePage](./pode/public/assets/img/PSXiPode.png)
 
-![Markdown-PsMwaDiagram](./img/PsMwaDiagram-md.png)
+## PSXi Homepage
 
-Import the data from a CSV-file and create a Mermaid-Class-Diagram with the content of the object and save it as Markdown.
+This is the Homepage of the PSXi App. It shows you the summary of all vCenter, ESXiHosts and VMs.
 
-````PowerShell
-Set-Location .\PSXiDiag\bin
-$Parameters = @{
-    InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
-    Title       = 'Markdown ESXiHost Inventory'
-}
-.\New-VCSADiagram.ps1 @Parameters
-````
+![PSXiHomePage](./img/PSXiHomePage.png)
 
-[Top](#)
+## PSXi ESXi Inventory
 
-## HTML Class Diagram
+If you click on this page, all ESXi Hosts of the Cloud will be grouped by vCenterServer.
 
----
+![PSXiEsxInventory](./img/PSXiEsxInventory.png)
 
-Build a simple Class Diagram from an object-array of VMware ESXiHosts as HTML-File.
+In the Summary, you can see the total of vCenter, and the count of each ESXiHost versions.
 
-![HTML-PsMwaDiagram](./img/PsMwaDiagram-html.png)
+![PSXiEsxInventory](./img/PSXiSummaryEsxiHosts.png)
 
-Import the data from a CSV-file and create a Mermaid-Class-Diagram with the content of the object save it as Html.
+You can search for the ESXiHost in the search box.
 
-CSS and Html is inside the Html-Page and the Computer must have access to the Internet to mermaid.min.js to format the Diagrams. This file can be used to send as email.
+![PSXiEsxInventory](./img/PSXiSearchEsxiHosts.png)
 
-````PowerShell
-Set-Location .\PSXiDiag\bin
-$Parameters = @{
-    InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
-    Title       = 'HTML ESXiHost Inventory'
-    Html        = $true
-}
-.\New-VCSADiagram.ps1 @Parameters 
-````
+Each vCenter has it own tab where you can find all ESXiHosts.
 
-[Top](#)
+![PSXiEsxInventory](./img/PSXivCenterTabs.png)
 
-## PSHTML Class Diagram
+## Mermaid Diagram
 
----
+For each zones, there has a Mermaid-Class-Diagram for the vCenters. 
 
-[PSHTML is a cross platform powershell module that allows to renders HTML using powershell syntax](https://pshtml.readthedocs.io/en/latest/)
+![PSXiEsxInventory](./img/PSXiDiagramESXi.png)
 
-````PowerShell
-Install-Module PSHTML, Pode
-````
-
-Build a simple Class Diagram from an object-array of VMware ESXiHosts. It use PSHTML and BootStrap for the layout of the Page and Pode web server.
-
-![PSHTML-PsMwaDiagram](./img/PsMwaDiagram-pshtml.png)
-
-Import the data from a CSV-file and create a Mermaid-Class-Diagram with the content of the object as Html with PSHTML.
-
-All libraries are included in the project in the assets-folder and no access to the Internet is needed, but the whole project must be installed on the target(s) where you open the file.
-
-````PowerShell
-Set-Location .\PSXiDiag\bin
-$Parameters = @{
-    InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
-    Title       = 'PSHTML ESXiHost Inventory'
-    Pshtml      = $true
-}
-.\New-VCSADiagram.ps1 @Parameters 
-````
-
-[Top](#)
-
-## Draw.io Diagram
-
----
-
-Build an input-file from an object-array of VMware ESXiHosts for import in to DrawIO.
-
-Create CSV-File(s) to [import into draw.io](https://drawio-app.com/import-from-csv-to-drawio/). The CSV-File(s) will be stored under ..\data.
-
-![Draw-PsMwaDiagram](./img/PsMwaDiagram-draw.png)
-
-````PowerShell
-Set-Location .\PSXiDiag\bin
-$Parameters = @{
-    InputObject = Import-Csv -Path ..\data\inventory.csv -Delimiter ';'
-    Title       = 'DrawIO ESXiHost Inventory'
-    DrawIO      = $true
-}
-.\New-VCSADiagram.ps1 @Parameters 
-````
-
-Open Draw.IO -> Create New Diagram -> Choose Blank Diagram -> Arrange -> Insert -> Advanced -> CSV...
-
-Copy and paste the Content of the created CSV-File into the Form-Filed and press Import. Arrange the elements as you like.
+The Diagram is an iFrame to another page and it will be automatically genereate, if you put a new CSV-file into the folder where the FileWatcher is configured.
 
 [Top](#)
