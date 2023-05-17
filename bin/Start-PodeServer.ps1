@@ -112,14 +112,14 @@ function Invoke-FileWatcher{
         Returns:
         - Changed
         - classic_ESXiHosts.csv
-        - D:\github.com\PSXiDiag\pode\input\classic_ESXiHosts.csv
+        - D:\github.com\PSXiDiag\pode\upload\classic_ESXiHosts.csv
         #>
     [CmdletBinding()]
     param()
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
-    $WatchFolder = Join-Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'input'
+    $WatchFolder = Join-Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'upload'
 
     Add-PodeFileWatcher -EventName Changed -Path $WatchFolder -ScriptBlock {
         # file name and path
