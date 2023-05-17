@@ -183,7 +183,7 @@ process{
         $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
 
             #region <!-- Content -->
-            div -id "Content" -Class "$($ContinerStyleFluid)" -Style "background-color:#034f84" {
+            div -id "Content" -Class "$($ContinerStyleFluid)" -Style "background-color:#032f4f" {
 
                 #region  <!-- article -->
                 article -id "mermaid" -Content {
@@ -301,7 +301,7 @@ process{
 
         #region ESXiHosts
         hr
-        div -id "Content" -Class "$($ContinerStyleFluid)" -Style "background-color:#034f84" {
+        div -id "Content" -Class "$($ContinerStyleFluid)" -Style "background-color:#032f4f" {
             article -id "ESXiHosts" -Content {
                 p {
                     $CountOfVersion = $InputObject | Group-Object Version | ForEach-Object {
@@ -349,7 +349,7 @@ process{
                 Invoke-Command -ScriptBlock $navbar
 
                 #region <!-- column -->
-                div -Class "$($ContinerStyleFluid)" -Style "background-color:#034f84" {
+                div -Class "$($ContinerStyleFluid)" -Style "background-color:#032f4f" {
                 
                     Invoke-Command -ScriptBlock $article
 
