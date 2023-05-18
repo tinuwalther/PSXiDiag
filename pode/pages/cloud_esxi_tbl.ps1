@@ -1,4 +1,4 @@
-﻿Add-PodeWebPage -Group 'Cloud' -Name 'Cloud ESXi Hosts Table' -Title 'Cloud ESXi Host Inventory' -Icon 'server' -ScriptBlock {
+﻿Add-PodeWebPage -Group 'Cloud' -Name 'Cloud ESXi Host Table' -Title 'Cloud ESXi Host Inventory' -Icon 'server' -ScriptBlock {
     #region module
     if(-not(Get-InstalledModule -Name mySQLite -ea SilentlyContinue)){
         Install-Module -Name mySQLite -Force
@@ -26,7 +26,9 @@
 
             $MySQLiteDB   = Open-MySQLiteDB -Path $PodeDB
             if([String]::IsNullOrEmpty($MySQLiteDB)){
-                Out-PodeWebError -Message "Could not connect to $($PodeDB)"
+                New-PodeWebCard -Name 'Warning' -Content @(
+                    New-PodeWebAlert -Value "Could not connect to $($PodeDB)" -Type Warning
+                )
             }else{
                 $i = 200
                 $SqlTableName = 'cloud_ESXiHosts'
@@ -44,6 +46,7 @@
                     'Created'
                 )
 
+                #region Summary
                 New-PodeWebCard -Name Summary -DisplayName 'Summary of Cloud' -Content @(
                     New-PodeWebBadge -Colour Green -Value "$($VIServer.Count) vCenter"
                     $TotalCluster = $FullDB | Group-Object Cluster
@@ -59,7 +62,9 @@
                         New-PodeWebBadge -Colour $Colour -Value "V$($_.Name) ($($_.Count))"
                     }
                 )
+                #endregion
 
+                #region Search
                 New-PodeWebForm -Id "Form$($i)" -Name "Search for ESXiHost" -AsCard -ShowReset -ArgumentList @($Properties, $PodeDB, $SqlTableName) -ScriptBlock {
                     param($Properties, $PodeDB, $SqlTableName)
                     $SqliteQuery = "Select * from $($SqlTableName) Where HostName Like '%$($WebEvent.Data.Search)%'"
@@ -68,20 +73,50 @@
                 } -Content @(
                     New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '1000px'
                 )
+                #endregion
 
+                #region Tabs
                 New-PodeWebTabs -Tabs @(
                     foreach($item in $VIServer){
                         $i ++
                         $vCenter = ($item -split '\.')[0]
+
                         New-PodeWebTab -Id "Tab$($i)" -Name "vCenter $($vCenter)" -Layouts @(
-                            New-PodeWebTable -Id $i -Name "VC$($i)" -DisplayName "vCenter $($vCenter)" -SimpleSort -SimpleFilter -Click -AsCard -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlTableName) -ScriptBlock {
-                                param($Properties, $item, $PodeDB, $SqlTableName)
-                                $SqliteQuery = "Select * from $($SqlTableName) Where vCenterServer Like '%$($item)%'"
-                                Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
-                            }       
+                            $VICluster = $FullDB | Where-Object vCenterServer -match $item | Group-Object Cluster | Select-Object -ExpandProperty Name
+                            
+                            #region Badge
+                            New-PodeWebText -Value "vCenter:"
+                            New-PodeWebBadge -Colour Cyan -Value "$($VICluster.count) Cluster"
+                            $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Group-Object HostName
+                            New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
+                            #endregion
+
+                            foreach($Cluster in $VICluster){
+                                $ii ++
+                                #region Badge
+                                New-PodeWebText -Value "Cluster:"
+                                $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster | Group-Object HostName
+                                New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
+                                $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster| Group-Object Version | ForEach-Object {
+                                    switch -Regex ($_.Name){
+                                        '6.7'   {$Colour = 'Yellow'}
+                                        '7.0'   {$Colour = 'Green'}
+                                        default {$Colour = 'Red'}
+                                    }
+                                    New-PodeWebBadge -Colour $Colour -Value "V$($_.Name) ($($_.Count))"
+                                }
+                                #endregion
+    
+                                New-PodeWebTable -Id $ii -Name "VC$($ii)" -DisplayName "Cluster $($Cluster)" -SimpleSort -SimpleFilter -Click -AsCard -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlTableName, $Cluster) -ScriptBlock {
+                                    param($Properties, $item, $PodeDB, $SqlTableName, $Cluster)
+                                    $SqliteQuery = "Select * from $($SqlTableName) Where (vCenterServer Like '%$($item)%') And (Cluster = '$Cluster')"
+                                    Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
+                                }
+                            }
                         )
                     }
                 )
+                #endregion
 
             }
         }else{
@@ -92,7 +127,7 @@
         }
     }else{
         New-PodeWebCard -Name 'Warning' -Content @(
-            New-PodeWebText -Value "Could not find $($PodeDB)"
+            New-PodeWebAlert -Value "Could not find $($PodeDB)" -Type Warning
         )
     }
 

@@ -4,6 +4,7 @@
  */
 
  :root {
+  --bg-dark: #121d2f!important;
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
   --bs-purple: #6f42c1;
@@ -222,6 +223,16 @@ a:active {
   .navbar-light .navbar-text a:focus,.navbar-light .navbar-text a:hover{
     color:rgba(0,0,0,.9)
   }
+
+  nav.navbar {
+    box-shadow: 0 .5rem 2rem rgba(100, 100, 100, 0.15) !important;
+    border-bottom: #214981 1px solid;
+  }
+
+  nav.navbar-dark {
+    background-color: #142440 !important;
+  }
+
   .navbar-dark .navbar-brand{
     color:#fff
   }

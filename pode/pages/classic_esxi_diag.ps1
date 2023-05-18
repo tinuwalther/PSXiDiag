@@ -1,4 +1,4 @@
-﻿Add-PodeWebPage -Group 'Classic' -Name 'Classic ESXi Hosts Diagram' -Title 'Classic ESXi Host Diagram' -Icon 'server' -ScriptBlock {
+﻿Add-PodeWebPage -Group 'Classic' -Name 'Classic ESXi Host Diagram' -Title 'Classic ESXi Host Diagram' -Icon 'server' -ScriptBlock {
     
     Set-PodeWebBreadcrumb -Items @(
         New-PodeWebBreadcrumbItem -Name 'Home' -Url '/'

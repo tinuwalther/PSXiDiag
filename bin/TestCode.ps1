@@ -151,12 +151,19 @@ foreach($item in $SQLite_DB.vCenterServer){
 
 }
 
-$SqlTableName = 'ESXHosts'
+$SqlTableName = 'cloud_ESXiHosts'
 $MySQLiteDB  = Open-MySQLiteDB -Path $DBFile.FullName
-$SqliteQuery = "Select * from $($SqlTableName) Group by vCenterServer"
+#$SqliteQuery = "Select * from $($SqlTableName) Group by vCenterServer"
+$SqliteQuery = "SELECT COUNT(HostName) AS 'Total ESXiHosts' FROM $($SqlTableName) Group by vCenterServer"
 $SQLite_DB   = Invoke-MySQLiteQuery -connection $MySQLiteDB -Query $SqliteQuery
+
 foreach($item in $SQLite_DB.vCenterServer){
     $SqliteQuery  = "Select * from $($SqlTableName) Where vCenterServer Like '%$($item)%'"
     $dataset = Invoke-MySQLiteQuery -connection $MySQLiteDB -Query $SqliteQuery
     $dataset
 }
+
+$SqliteQuery = "SELECT * FROM Metadata"
+$TableExists = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query $SqliteQuery
+$var = "Author: $($TableExists.Author), Computername: $($TableExists.Computername), Created: $($TableExists.Created), Comment: $($TableExists.Comment)"
+$var

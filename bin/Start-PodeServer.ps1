@@ -322,7 +322,7 @@ if($CurrentOS -eq [OSType]::Windows){
             $DBFullPath   = Join-Path $DBRoot -ChildPath 'psxi.db'
             New-SqlLiteDB -DBFile $DBFullPath
             
-            # Start FileWatcher for /pode/input
+            # Start FileWatcher for /pode/upload
             Invoke-FileWatcher
 
             # Set pode routes for web-sites
