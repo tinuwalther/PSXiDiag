@@ -134,11 +134,15 @@ process{
     $ContinerStyleFluid  = 'container-fluid'
 
     #region header
-    $HeaderTitle        = $Page
+    $HeaderTitle = $Page
     #endregion
 
+    #region color
+    $TextColor  = '#ccc'
+    #region
+
     #region footer
-    $FooterSummary      = "Report saved as $($OutFile)"
+    #$FooterSummary = "Report saved as $($OutFile)"
     #endregion
 
     #region scriptblock
@@ -162,7 +166,7 @@ process{
                 ul -class "navbar-nav" -content {
                     #DynamicLinks
                     $InputObject | Group-Object $Column.Field01 | Select-Object -ExpandProperty Name | ForEach-Object {
-                        $vCenter = $($_).Split('.')[0]
+                        $vCenter = ($($_).Split('.')[0]).ToUpper()
                         if(-not([String]::IsNullOrEmpty($vCenter))){
                             li -class "nav-item" -content {
                                 a -class "nav-link" -href "#$($vCenter)" -content { $($vCenter) }
@@ -189,23 +193,36 @@ process{
                 article -id "mermaid" -Content {
 
                     $vcNo ++
-                    $vCenter = $($_).Split('.')[0]
+                    $vCenter = ($($_).Split('.')[0]).ToUpper()
 
                     if(-not([String]::IsNullOrEmpty($vCenter))){
 
                         h3 -Id $($vCenter) -Content {
                             a -href "https://$($_)/ui/" -Target _blank -content { "vCenter $($vCenter)" }
-                        } -Style "color:#198754; text-align: center"
+                        } -Style "text-align: center"
                         hr
 
                         #region ESXiHosts
                         $InputObject | Where-Object $Column.Field01 -match $_ | Group-Object vCenterServer | ForEach-Object {
-                            p { 
-                                $CountOfVersion = $_.Group.Version | Group-Object | ForEach-Object {
-                                    "$($_.Name) = $($_.Count)"
+                            $TotalESXiHost = span -class "badge bg-primary" -Content { "$($_.Count) ESXiHosts" }
+                            $TotalCluster  = span -class "badge bg-info" -Content { "$($_.Group.Cluster | Group-Object | Measure-Object -Property Count | Select-Object -ExpandProperty Count) Cluster" }
+                            $CountOfVersion = $_.Group.Version | Group-Object | ForEach-Object {
+                                if($($_.Name) -match '^6.0'){
+                                    span -class "badge bg-dark" -Content "$($_.Name) ($($_.Count))"
                                 }
-                                "Total ESXiHosts in $($vCenter): $($_.Count) (ESXi Versions: $($CountOfVersion -join ', '))"
-                            } -Style "color:#f8f9fa"
+                                if($($_.Name) -match '^6.5'){
+                                    span -class "badge bg-danger" -Content "$($_.Name) ($($_.Count))"
+                                }
+                                if($($_.Name) -match '^6.7'){
+                                    span -class "badge bg-warning" -Content "$($_.Name) ($($_.Count))"
+                                }
+                                if($($_.Name) -match '^7'){
+                                    span -class "badge bg-success" -Content "$($_.Name) ($($_.Count))"
+                                }
+                            }
+                            p { 
+                                "Total in $($vCenter):  $($TotalCluster) $($TotalESXiHost) $($CountOfVersion)"
+                            } -Style "color:$TextColor" #f8f9fa
                         }
                         #endregion
 
@@ -303,12 +320,24 @@ process{
         hr
         div -id "Content" -Class "$($ContinerStyleFluid)" -Style "background-color:#142440" {
             article -id "ESXiHosts" -Content {
-                p {
-                    $CountOfVersion = $InputObject | Group-Object Version | ForEach-Object {
-                        "$($_.Name) = $($_.Count)"
+                $TotalESXiHost = span -class "badge bg-primary" -Content { "$(($InputObject.$($Column.Field01)).count) ESXiHosts" }
+                $CountOfVersion = $InputObject | Group-Object Version | ForEach-Object {
+                    if($($_.Name) -match '^6.0'){
+                        span -class "badge bg-dark" -Content "$($_.Name) ($($_.Count))"
                     }
-                    "Total ESXiHosts: $(($InputObject.$($Column.Field01)).count) (ESXi Versions: $($CountOfVersion -join ', '))"
-                } -Style "color:#f8f9fa"
+                    if($($_.Name) -match '^6.5'){
+                        span -class "badge bg-danger" -Content "$($_.Name) ($($_.Count))"
+                    }
+                    if($($_.Name) -match '^6.7'){
+                        span -class "badge bg-warning" -Content "$($_.Name) ($($_.Count))"
+                    }
+                    if($($_.Name) -match '^7'){
+                        span -class "badge bg-success" -Content "$($_.Name) ($($_.Count))"
+                    }
+                }
+                p {
+                    "Total: $($TotalESXiHost) $($CountOfVersion)"
+                } -Style "color:$TextColor" #f8f9fa
             }
         }
         #endregion
@@ -363,7 +392,7 @@ process{
         #endregion body
 
         #region footer
-        div -Class $ContinerStyleFluid -Style "background-color:#343a40" {
+        div -Class $ContinerStyleFluid  {
             Footer {
 
                 div -Class $ContinerStyleFluid {
@@ -374,11 +403,11 @@ process{
                             }
                         }
                         div -Class "col-md" {
-                            p {$FooterSummary}
+                            #p {$FooterSummary}
                         }
                         div -Class "col-md" {
                             p {$((Get-Date).ToString())}
-                        }
+                        } -Style "color:$TextColor"
                     }
                 }
         

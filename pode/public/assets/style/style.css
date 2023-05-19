@@ -74,12 +74,13 @@ header {
 
 #Content {
   padding: 20;
+  color: #ccc;
   background: var(--bs-gray-200);
 }
 
 
 footer {
-  background: #343a40;
+  background:#121d2f !important;
   padding: 20;
   color: var(--bs-gray-200);
   text-align: center;
@@ -154,7 +155,7 @@ a:link {
 
 /* mouse over link */
   a:hover {
-    color: darkgreen;
+    color: dodgerblue;
   }
 
 /* selected link */
@@ -237,19 +238,19 @@ a:active {
     color:#fff
   }
   .navbar-dark .navbar-brand:focus,.navbar-dark .navbar-brand:hover{
-    color:#fff
+    color:dodgerblue
   }
   .navbar-dark .navbar-nav .nav-link{
-    color:green
+    color:#ccc
   }
   .navbar-dark .navbar-nav .nav-link:focus,.navbar-dark .navbar-nav .nav-link:hover{
-    color:rgba(255,255,255,.75)
+    color:dodgerblue
   }
   .navbar-dark .navbar-nav .nav-link.disabled{
     color:rgba(255,255,255,.25)
   }
   .navbar-dark .navbar-nav .active>.nav-link,.navbar-dark .navbar-nav .nav-link.active,.navbar-dark .navbar-nav .nav-link.show,.navbar-dark .navbar-nav .show>.nav-link{
-    color:lightgreen
+    color:dodgerblue
   }
   .navbar-dark .navbar-toggler{
     color:rgba(255,255,255,.5);

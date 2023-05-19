@@ -1,6 +1,6 @@
-<html ><head ><meta charset="UTF-8"  /><meta name="author" content="Martin Walther"  /><meta name="keywords" content="PSHTML, PowerShell, Mermaid Diagram"  /><meta name="description" content="PsMmaDiagram builds Mermaid Diagrams as HTML-Files with PSHTML from native PowerShell-Scripts"  /><link href="\assets\BootStrap\bootstrap.min.css" rel="stylesheet"  /><link href="\assets\style\style.css" rel="stylesheet"  /><script src="\assets\BootStrap\bootstrap.js"  ></script><script src="\assets\Jquery\jquery.min.js"  ></script><script src="\assets\mermaid\mermaid.min.js"  ></script><script src="mermaid.initialize({startOnLoad:true})"  ></script><title >New-PshtmlESXiDiag for Pode server</title></head><Body ><Section Id="section"  ><nav Class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top"  ><a Target="_self" href="#" Class="navbar-brand"  >HOME</a><button Class="navbar-toggler" data-toggle="collapse" data-target="#collapsibleNavbar" type="button"  ><span Class="navbar-toggler-icon"  ></span></button><div Id="collapsibleNavbar" Class="collapse navbar-collapse"  ><ul Class="navbar-nav"  ><li Class="nav-item"  ><a Target="_self" href="#vCSA400" Class="nav-link"  >vCSA400</a></li><li Class="nav-item"  ><a Target="_self" href="#vCSA410" Class="nav-link"  >vCSA410</a></li><li Class="nav-item"  ><a Target="_self" href="#vCSA420" Class="nav-link"  >vCSA420</a></li><li Class="nav-item"  ><a Target="_self" href="#vCSA421" Class="nav-link"  >vCSA421</a></li></ul></div></nav><div Style="background-color:#142440" Class="container-fluid"  ><div Style="background-color:#142440" Id="Content" Class="container-fluid"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vCSA400"  ><a Target="_blank" href="https://vCSA400.classic.ch/ui/"  >vCenter vCSA400</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vCSA400: 6 (ESXi Versions: 6.7 = 6)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
-VC1_vCSA400 -- VC1C1_Linux
-VC1_vCSA400 : + Linux
+<html ><head ><meta charset="UTF-8"  /><meta name="author" content="Martin Walther"  /><meta name="keywords" content="PSHTML, PowerShell, Mermaid Diagram"  /><meta name="description" content="PsMmaDiagram builds Mermaid Diagrams as HTML-Files with PSHTML from native PowerShell-Scripts"  /><link rel="stylesheet" href="\assets\BootStrap\bootstrap.min.css"  /><link rel="stylesheet" href="\assets\style\style.css"  /><script src="\assets\BootStrap\bootstrap.js"  ></script><script src="\assets\Jquery\jquery.min.js"  ></script><script src="\assets\mermaid\mermaid.min.js"  ></script><script src="mermaid.initialize({startOnLoad:true})"  ></script><title >New-PshtmlESXiDiag for Pode server</title></head><Body ><Section Id="section"  ><nav Class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top"  ><a Class="navbar-brand" Target="_self" href="#"  >HOME</a><button Class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"  ><span Class="navbar-toggler-icon"  ></span></button><div Class="collapse navbar-collapse" Id="collapsibleNavbar"  ><ul Class="navbar-nav"  ><li Class="nav-item"  ><a Class="nav-link" Target="_self" href="#VCSA400"  >VCSA400</a></li><li Class="nav-item"  ><a Class="nav-link" Target="_self" href="#VCSA410"  >VCSA410</a></li><li Class="nav-item"  ><a Class="nav-link" Target="_self" href="#VCSA420"  >VCSA420</a></li><li Class="nav-item"  ><a Class="nav-link" Target="_self" href="#VCSA421"  >VCSA421</a></li></ul></div></nav><div Class="container-fluid" Style="background-color:#142440"  ><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="text-align: center" Id="VCSA400"  ><a Target="_blank" href="https://vCSA400.classic.ch/ui/"  >vCenter VCSA400</a></h3><hr /><p Style="color:#ccc"  >Total in VCSA400:  <span Class="badge bg-info"  >2 Cluster</span> <span Class="badge bg-primary"  >6 ESXiHosts</span> <span Class="badge bg-warning"  >6.7 (6)</span></p><div Class="mermaid" Style="text-align: center"  >classDiagram
+VC1_VCSA400 -- VC1C1_Linux
+VC1_VCSA400 : + Linux
 VC1C1_Linux : + ProLiant DL380 Gen9
 VC1C1_Linux -- VC1C1_ProLiant DL380 Gen9
 VC1C1_ProLiant DL380 Gen9 : - Nord, 3 ESXi Hosts
@@ -11,8 +11,8 @@ VC1C1_Nord : + ESXi8053, ESXi 6.7, ProLiant DL380 Gen9
 VC1C1_ProLiant DL380 Gen9 : - Ost, 1 ESXi Hosts
 VC1C1_ProLiant DL380 Gen9 -- VC1C1_Ost
 VC1C1_Ost : + ESXi7051, ESXi 6.7, ProLiant DL380 Gen9
-VC1_vCSA400 -- VC1C2_Windows
-VC1_vCSA400 : + Windows
+VC1_VCSA400 -- VC1C2_Windows
+VC1_VCSA400 : + Windows
 VC1C2_Windows : + ProLiant DL380 Gen9
 VC1C2_Windows -- VC1C2_ProLiant DL380 Gen9
 VC1C2_ProLiant DL380 Gen9 : - Nord, 1 ESXi Hosts
@@ -21,9 +21,9 @@ VC1C2_Nord : + ESXi8998, ESXi 6.7, ProLiant DL380 Gen9
 VC1C2_ProLiant DL380 Gen9 : - Ost, 1 ESXi Hosts
 VC1C2_ProLiant DL380 Gen9 -- VC1C2_Ost
 VC1C2_Ost : + ESXi7999, ESXi 6.7, ProLiant DL380 Gen9
-</div></article></div><div Style="background-color:#142440" Id="Content" Class="container-fluid"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vCSA410"  ><a Target="_blank" href="https://vCSA410.classic.ch/ui/"  >vCenter vCSA410</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vCSA410: 6 (ESXi Versions: 6.5 = 4, 6.7 = 2)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
-VC1_vCSA410 -- VC1C1_Linux
-VC1_vCSA410 : + Linux
+</div></article></div><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="text-align: center" Id="VCSA410"  ><a Target="_blank" href="https://vCSA410.classic.ch/ui/"  >vCenter VCSA410</a></h3><hr /><p Style="color:#ccc"  >Total in VCSA410:  <span Class="badge bg-info"  >2 Cluster</span> <span Class="badge bg-primary"  >6 ESXiHosts</span> <span Class="badge bg-danger"  >6.5 (4)</span> <span Class="badge bg-warning"  >6.7 (2)</span></p><div Class="mermaid" Style="text-align: center"  >classDiagram
+VC1_VCSA410 -- VC1C1_Linux
+VC1_VCSA410 : + Linux
 VC1C1_Linux : + ProLiant XL170r Gen9
 VC1C1_Linux -- VC1C1_ProLiant XL170r Gen9
 VC1C1_ProLiant XL170r Gen9 : - Nord, 2 ESXi Hosts
@@ -34,8 +34,8 @@ VC1C1_ProLiant XL170r Gen9 : - West, 2 ESXi Hosts
 VC1C1_ProLiant XL170r Gen9 -- VC1C1_West
 VC1C1_West : + ESXi1201, ESXi 6.5, ProLiant XL170r Gen9
 VC1C1_West : + ESXi1202, ESXi 6.5, ProLiant XL170r Gen9
-VC1_vCSA410 -- VC1C2_Windows
-VC1_vCSA410 : + Windows
+VC1_VCSA410 -- VC1C2_Windows
+VC1_VCSA410 : + Windows
 VC1C2_Windows : + ProLiant DL380 Gen9
 VC1C2_Windows -- VC1C2_ProLiant DL380 Gen9
 VC1C2_ProLiant DL380 Gen9 : - Nord, 1 ESXi Hosts
@@ -46,9 +46,9 @@ VC1C2_Windows -- VC1C2_ProLiant XL170r Gen9
 VC1C2_ProLiant XL170r Gen9 : - Nord, 1 ESXi Hosts
 VC1C2_ProLiant XL170r Gen9 -- VC1C2_Nord
 VC1C2_Nord : + ESXi8220, ESXi 6.7, ProLiant XL170r Gen9
-</div></article></div><div Style="background-color:#142440" Id="Content" Class="container-fluid"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vCSA420"  ><a Target="_blank" href="https://vCSA420.classic.ch/ui/"  >vCenter vCSA420</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vCSA420: 4 (ESXi Versions: 6.7 = 4)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
-VC1_vCSA420 -- VC1C1_Oracle
-VC1_vCSA420 : + Oracle
+</div></article></div><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="text-align: center" Id="VCSA420"  ><a Target="_blank" href="https://vCSA420.classic.ch/ui/"  >vCenter VCSA420</a></h3><hr /><p Style="color:#ccc"  >Total in VCSA420:  <span Class="badge bg-info"  >1 Cluster</span> <span Class="badge bg-primary"  >4 ESXiHosts</span> <span Class="badge bg-warning"  >6.7 (4)</span></p><div Class="mermaid" Style="text-align: center"  >classDiagram
+VC1_VCSA420 -- VC1C1_Oracle
+VC1_VCSA420 : + Oracle
 VC1C1_Oracle : + ProLiant DL380 Gen10
 VC1C1_Oracle -- VC1C1_ProLiant DL380 Gen10
 VC1C1_ProLiant DL380 Gen10 : - Nord, 2 ESXi Hosts
@@ -61,9 +61,9 @@ VC1C1_Ost : + ESXi7902, ESXi 6.7, ProLiant DL380 Gen10
 VC1C1_ProLiant DL380 Gen10 : - West, 1 ESXi Hosts
 VC1C1_ProLiant DL380 Gen10 -- VC1C1_West
 VC1C1_West : + ESXi1902, ESXi 6.7, ProLiant DL380 Gen10
-</div></article></div><div Style="background-color:#142440" Id="Content" Class="container-fluid"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vCSA421"  ><a Target="_blank" href="https://vCSA421.classic.ch/ui/"  >vCenter vCSA421</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vCSA421: 2 (ESXi Versions: 6.7 = 2)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
-VC1_vCSA421 -- VC1C1_Oracle
-VC1_vCSA421 : + Oracle
+</div></article></div><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="text-align: center" Id="VCSA421"  ><a Target="_blank" href="https://vCSA421.classic.ch/ui/"  >vCenter VCSA421</a></h3><hr /><p Style="color:#ccc"  >Total in VCSA421:  <span Class="badge bg-info"  >1 Cluster</span> <span Class="badge bg-primary"  >2 ESXiHosts</span> <span Class="badge bg-warning"  >6.7 (2)</span></p><div Class="mermaid" Style="text-align: center"  >classDiagram
+VC1_VCSA421 -- VC1C1_Oracle
+VC1_VCSA421 : + Oracle
 VC1C1_Oracle : + ProLiant DL380 Gen10
 VC1C1_Oracle -- VC1C1_ProLiant DL380 Gen10
 VC1C1_ProLiant DL380 Gen10 : - Nord, 1 ESXi Hosts
@@ -72,4 +72,4 @@ VC1C1_Nord : + ESXi8911, ESXi 6.7, ProLiant DL380 Gen10
 VC1C1_ProLiant DL380 Gen10 : - Ost, 1 ESXi Hosts
 VC1C1_ProLiant DL380 Gen10 -- VC1C1_Ost
 VC1C1_Ost : + ESXi7912, ESXi 6.7, ProLiant DL380 Gen10
-</div></article></div><hr /><div Style="background-color:#142440" Id="Content" Class="container-fluid"  ><article Id="ESXiHosts"  ><p Style="color:#f8f9fa"  >Total ESXiHosts: 18 (ESXi Versions: 6.5 = 4, 6.7 = 14)</p></article></div></div></Section></Body><div Style="background-color:#343a40" Class="container-fluid"  ><footer ><div Class="container-fluid"  ><div Class="row align-items-center"  ><div Class="col-md"  ><p ><a Target="_self" href="#"  >I ♥ PS ></a></p></div><div Class="col-md"  ><p >Report saved as D:\github.com\PSXiDiag\pode\views\Classic-ESXiHost-Diagram.html</p></div><div Class="col-md"  ><p >17.05.2023 21:13:11</p></div></div></div></footer></div></html>
+</div></article></div><hr /><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="ESXiHosts"  ><p Style="color:#ccc"  >Total: <span Class="badge bg-primary"  >18 ESXiHosts</span> <span Class="badge bg-danger"  >6.5 (4)</span> <span Class="badge bg-warning"  >6.7 (14)</span></p></article></div></div></Section></Body><div Class="container-fluid"  ><footer ><div Class="container-fluid"  ><div Class="row align-items-center"  ><div Class="col-md"  ><p ><a Target="_self" href="#"  >I ♥ PS ></a></p></div><div Class="col-md"  ></div><div Class="col-md" Style="color:#ccc"  ><p >19.05.2023 11:55:48</p></div></div></div></footer></div></html>
