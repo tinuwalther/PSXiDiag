@@ -77,7 +77,7 @@ function Set-PodeRoutes {
     New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
     New-PodeLoggingMethod -Terminal | Enable-PodeErrorLogging
 
-    Use-PodeWebTemplates -Title "PSXi App" -Theme Auto
+    Use-PodeWebTemplates -Title "PSXi App v$($script:version)" -Theme Auto
 
     Add-PodeRoute -Method Get -Path '/classic_ESXiHosts_diag' -ScriptBlock {
         Write-PodeViewResponse -Path 'Classic-ESXiHost-Diagram'
@@ -88,13 +88,13 @@ function Set-PodeRoutes {
     }
 
     # Add Navbar
-    $Properties = @{
-        Name = 'Tinus GitHub'
-        Url  = 'https://github.com/tinuwalther'
-        Icon = 'account-star-outline'
-    }
-    $navgithub  = New-PodeWebNavLink @Properties -NewTab
-    Set-PodeWebNavDefault -Items $navgithub
+    $navDropdown = New-PodeWebNavDropdown -Name 'github' -Icon 'github' -Items @(
+        New-PodeWebNavLink -Name 'Badgerati' -Url 'https://github.com/Badgerati/Pode.Web' -Icon 'github' -NewTab
+        New-PodeWebNavLink -Name 'tinuwalther' -Url 'https://github.com/tinuwalther' -Icon 'github' -NewTab
+    )
+    $navDiv = New-PodeWebNavDivider
+    $navPodeWeb = New-PodeWebNavLink -Name 'Pode.Web' -Url 'https://badgerati.github.io/Pode.Web' -Icon 'help-circle-outline' -NewTab
+    Set-PodeWebNavDefault -Items $navDropdown, $navDiv, $navPodeWeb
 
     # Add dynamic pages
     $PodeRoot = $($PSScriptRoot).Replace('bin','pode')
@@ -309,6 +309,10 @@ if($PSVersionTable.PSVersion.Major -lt 6){
 }
 #endregion
 
+$version = Get-Content (Join-Path $($PSScriptRoot -replace 'bin') -ChildPath 'CHANGELOG.md') | Select-String -Pattern '\d\.\d\.\d' | Select-Object -Last 1
+$version | Out-Default
+$script:version = $version.ToString().Substring(0,5)
+
 #region Pode server
 if($CurrentOS -eq [OSType]::Windows){
     if(Test-IsElevated -OS $CurrentOS) {
@@ -322,7 +326,7 @@ if($CurrentOS -eq [OSType]::Windows){
             $DBFullPath   = Join-Path $DBRoot -ChildPath 'psxi.db'
             New-SqlLiteDB -DBFile $DBFullPath
             
-            # Start FileWatcher for /pode/input
+            # Start FileWatcher for /pode/upload
             Invoke-FileWatcher
 
             # Set pode routes for web-sites

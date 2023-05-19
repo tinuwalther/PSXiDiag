@@ -1,5 +1,5 @@
 vCenterServer;CountOfESXiHosts;CountOfVMs
-vCSA221.my.cloud.ch;2;70
-vCSA100.my.cloud.ch;6;180
-vCSA210.my.cloud.ch;8;240
-vCSA220.my.cloud.ch;4;140
+vcsa00dev.cloud.ch;7;180
+vcsa00dmz.cloud.ch;6;175
+vcsa10prd.cloud.ch;51;1275
+vcsa21dmz.cloud.ch;16;480
