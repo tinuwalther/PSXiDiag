@@ -2,7 +2,6 @@ Add-PodeWebPage -Group 'Cloud' -Name 'Cloud ESXi Host Diagram' -Title 'Cloud ESX
     
     Set-PodeWebBreadcrumb -Items @(
         New-PodeWebBreadcrumbItem -Name 'Home' -Url '/'
-        New-PodeWebBreadcrumbItem -Name 'Cloud' -Url '/'
         New-PodeWebBreadcrumbItem -Name 'Cloud ESXi Host Diagram' -Url '/pages/PageName?value=Cloud ESXi Hosts Diagram' -Active
     )
 

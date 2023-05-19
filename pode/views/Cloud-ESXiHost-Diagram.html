@@ -1,23 +1,23 @@
-<html ><head ><meta charset="UTF-8"  /><meta name="author" content="Martin Walther"  /><meta name="keywords" content="PSHTML, PowerShell, Mermaid Diagram"  /><meta name="description" content="PsMmaDiagram builds Mermaid Diagrams as HTML-Files with PSHTML from native PowerShell-Scripts"  /><link rel="stylesheet" href="\assets\BootStrap\bootstrap.min.css"  /><link rel="stylesheet" href="\assets\style\style.css"  /><script src="\assets\BootStrap\bootstrap.js"  ></script><script src="\assets\Jquery\jquery.min.js"  ></script><script src="\assets\mermaid\mermaid.min.js"  ></script><script src="mermaid.initialize({startOnLoad:true})"  ></script><title >New-PshtmlESXiDiag for Pode server</title></head><Body ><Section Id="section"  ><nav Class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top"  ><a Class="navbar-brand" href="#" Target="_self"  >HOME</a><button Class="navbar-toggler" data-target="#collapsibleNavbar" data-toggle="collapse" type="button"  ><span Class="navbar-toggler-icon"  ></span></button><div Class="collapse navbar-collapse" Id="collapsibleNavbar"  ><ul Class="navbar-nav"  ><li Class="nav-item"  ><a Class="nav-link" href="#vcsa00dev" Target="_self"  >vcsa00dev</a></li><li Class="nav-item"  ><a Class="nav-link" href="#vcsa00dmz" Target="_self"  >vcsa00dmz</a></li><li Class="nav-item"  ><a Class="nav-link" href="#vcsa10prd" Target="_self"  >vcsa10prd</a></li><li Class="nav-item"  ><a Class="nav-link" href="#vcsa21dmz" Target="_self"  >vcsa21dmz</a></li></ul></div></nav><div Class="container-fluid" Style="background-color:#142440"  ><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vcsa00dev"  ><a href="https://vcsa00dev.cloud.ch/ui/" Target="_blank"  >vCenter vcsa00dev</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vcsa00dev: 7 (ESXi Versions: 6.5.0 = 1, 6.7.0 = 6)</p><div Class="mermaid" Style="text-align: center"  >classDiagram
-VC1_vcsa00dev -- VC1C1_host
-VC1_vcsa00dev : + host
-VC1C1_host : + ProLiant BL460c G6
-VC1C1_host -- VC1C1_ProLiant BL460c G6
+<html ><head ><meta charset="UTF-8"  /><meta name="author" content="Martin Walther"  /><meta name="keywords" content="PSHTML, PowerShell, Mermaid Diagram"  /><meta name="description" content="PsMmaDiagram builds Mermaid Diagrams as HTML-Files with PSHTML from native PowerShell-Scripts"  /><link rel="stylesheet" href="\assets\BootStrap\bootstrap.min.css"  /><link rel="stylesheet" href="\assets\style\style.css"  /><script src="\assets\BootStrap\bootstrap.js"  ></script><script src="\assets\Jquery\jquery.min.js"  ></script><script src="\assets\mermaid\mermaid.min.js"  ></script><script src="mermaid.initialize({startOnLoad:true})"  ></script><title >New-PshtmlESXiDiag for Pode server</title></head><Body ><Section Id="section"  ><nav Class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top"  ><a href="#" Target="_self" Class="navbar-brand"  >HOME</a><button Class="navbar-toggler" data-target="#collapsibleNavbar" type="button" data-toggle="collapse"  ><span Class="navbar-toggler-icon"  ></span></button><div Class="collapse navbar-collapse" Id="collapsibleNavbar"  ><ul Class="navbar-nav"  ><li Class="nav-item"  ><a href="#vcsa00dev" Target="_self" Class="nav-link"  >vcsa00dev</a></li><li Class="nav-item"  ><a href="#vcsa00int" Target="_self" Class="nav-link"  >vcsa00int</a></li><li Class="nav-item"  ><a href="#vcsa10prd" Target="_self" Class="nav-link"  >vcsa10prd</a></li><li Class="nav-item"  ><a href="#vcsa21prd" Target="_self" Class="nav-link"  >vcsa21prd</a></li></ul></div></nav><div Style="background-color:#142440" Class="container-fluid"  ><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vcsa00dev"  ><a href="https://vcsa00dev.cloud.ch/ui/" Target="_blank"  >vCenter vcsa00dev</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vcsa00dev: 7 (ESXi Versions: 6.5.0 = 1, 6.7.0 = 6)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
+VC1_vcsa00dev -- VC1C1_Development
+VC1_vcsa00dev : + Development
+VC1C1_Development : + ProLiant BL460c G6
+VC1C1_Development -- VC1C1_ProLiant BL460c G6
 VC1C1_ProLiant BL460c G6 : - Maintenance, 1 ESXi Hosts
 VC1C1_ProLiant BL460c G6 -- VC1C1_Maintenance
 VC1C1_Maintenance : - esxi594, ESXi 6.7.0, ProLiant BL460c G6
-VC1C1_host : + ProLiant BL460c Gen9
-VC1C1_host -- VC1C1_ProLiant BL460c Gen9
+VC1C1_Development : + ProLiant BL460c Gen9
+VC1C1_Development -- VC1C1_ProLiant BL460c Gen9
 VC1C1_ProLiant BL460c Gen9 : - Maintenance, 1 ESXi Hosts
 VC1C1_ProLiant BL460c Gen9 -- VC1C1_Maintenance
 VC1C1_Maintenance : - esxi504, ESXi 6.7.0, ProLiant BL460c Gen9
-VC1C1_host : + ProLiant DL380 G7
-VC1C1_host -- VC1C1_ProLiant DL380 G7
+VC1C1_Development : + ProLiant DL380 G7
+VC1C1_Development -- VC1C1_ProLiant DL380 G7
 VC1C1_ProLiant DL380 G7 : - Maintenance, 1 ESXi Hosts
 VC1C1_ProLiant DL380 G7 -- VC1C1_Maintenance
 VC1C1_Maintenance : - esxi554, ESXi 6.7.0, ProLiant DL380 G7
-VC1C1_host : + ProLiant XL170r Gen9
-VC1C1_host -- VC1C1_ProLiant XL170r Gen9
+VC1C1_Development : + ProLiant XL170r Gen9
+VC1C1_Development -- VC1C1_ProLiant XL170r Gen9
 VC1C1_ProLiant XL170r Gen9 : - Connected, 1 ESXi Hosts
 VC1C1_ProLiant XL170r Gen9 -- VC1C1_Connected
 VC1C1_Connected : - esxi534, ESXi 6.5.0, ProLiant XL170r Gen9
@@ -30,9 +30,9 @@ VC1C2_ProLiant DL380 G7 -- VC1C2_Connected
 VC1C2_Connected : - esxi551, ESXi 6.7.0, ProLiant DL380 G7
 VC1C2_Connected : - esxi552, ESXi 6.7.0, ProLiant DL380 G7
 VC1C2_Connected : - esxi553, ESXi 6.7.0, ProLiant DL380 G7
-</div></article></div><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vcsa00dmz"  ><a href="https://vcsa00dmz.cloud.ch/ui/" Target="_blank"  >vCenter vcsa00dmz</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vcsa00dmz: 6 (ESXi Versions: 7.0.3 = 6)</p><div Class="mermaid" Style="text-align: center"  >classDiagram
-VC1_vcsa00dmz -- VC1C1_vSAN
-VC1_vcsa00dmz : + vSAN
+</div></article></div><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vcsa00int"  ><a href="https://vcsa00int.cloud.ch/ui/" Target="_blank"  >vCenter vcsa00int</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vcsa00int: 6 (ESXi Versions: 7.0.3 = 6)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
+VC1_vcsa00int -- VC1C1_vSAN
+VC1_vcsa00int : + vSAN
 VC1C1_vSAN : + ProLiant DL380 Gen10
 VC1C1_vSAN -- VC1C1_ProLiant DL380 Gen10
 VC1C1_ProLiant DL380 Gen10 : - Maintenance, 6 ESXi Hosts
@@ -43,7 +43,7 @@ VC1C1_Maintenance : - esxi783, ESXi 7.0.3, ProLiant DL380 Gen10
 VC1C1_Maintenance : - esxi981, ESXi 7.0.3, ProLiant DL380 Gen10
 VC1C1_Maintenance : - esxi982, ESXi 7.0.3, ProLiant DL380 Gen10
 VC1C1_Maintenance : - esxi983, ESXi 7.0.3, ProLiant DL380 Gen10
-</div></article></div><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vcsa10prd"  ><a href="https://vcsa10prd.cloud.ch/ui/" Target="_blank"  >vCenter vcsa10prd</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vcsa10prd: 51 (ESXi Versions: 6.5.0 = 31, 7.0.3 = 20)</p><div Class="mermaid" Style="text-align: center"  >classDiagram
+</div></article></div><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vcsa10prd"  ><a href="https://vcsa10prd.cloud.ch/ui/" Target="_blank"  >vCenter vcsa10prd</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vcsa10prd: 51 (ESXi Versions: 6.5.0 = 31, 7.0.3 = 20)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
 VC1_vcsa10prd -- VC1C1_Backup
 VC1_vcsa10prd : + Backup
 VC1C1_Backup : + ProLiant DL380 Gen10
@@ -58,63 +58,63 @@ VC1C1_ProLiant DL380 Gen9 : - Connected, 2 ESXi Hosts
 VC1C1_ProLiant DL380 Gen9 -- VC1C1_Connected
 VC1C1_Connected : - esxi555, ESXi 7.0.3, ProLiant DL380 Gen9
 VC1C1_Connected : - esxi556, ESXi 7.0.3, ProLiant DL380 Gen9
-VC1_vcsa10prd -- VC1C2_Internal
+VC1_vcsa10prd -- VC1C2_DWH
+VC1_vcsa10prd : + DWH
+VC1C2_DWH : + ProLiant DL380 Gen10
+VC1C2_DWH -- VC1C2_ProLiant DL380 Gen10
+VC1C2_ProLiant DL380 Gen10 : - Connected, 1 ESXi Hosts
+VC1C2_ProLiant DL380 Gen10 -- VC1C2_Connected
+VC1C2_Connected : - esxi411, ESXi 6.5.0, ProLiant DL380 Gen10
+VC1C2_DWH : + ProLiant DL380 Gen9
+VC1C2_DWH -- VC1C2_ProLiant DL380 Gen9
+VC1C2_ProLiant DL380 Gen9 : - Connected, 2 ESXi Hosts
+VC1C2_ProLiant DL380 Gen9 -- VC1C2_Connected
+VC1C2_Connected : - esxi415, ESXi 6.5.0, ProLiant DL380 Gen9
+VC1C2_Connected : - esxi417, ESXi 6.5.0, ProLiant DL380 Gen9
+VC1_vcsa10prd -- VC1C3_Internal
 VC1_vcsa10prd : + Internal
-VC1C2_Internal : + ProLiant XL170r Gen10
-VC1C2_Internal -- VC1C2_ProLiant XL170r Gen10
-VC1C2_ProLiant XL170r Gen10 : - Connected, 6 ESXi Hosts
-VC1C2_ProLiant XL170r Gen10 -- VC1C2_Connected
-VC1C2_Connected : - esxi543, ESXi 6.5.0, ProLiant XL170r Gen10
-VC1C2_Connected : - esxi544, ESXi 6.5.0, ProLiant XL170r Gen10
-VC1C2_Connected : - esxi545, ESXi 6.5.0, ProLiant XL170r Gen10
-VC1C2_Connected : - esxi546, ESXi 6.5.0, ProLiant XL170r Gen10
-VC1C2_Connected : - esxi547, ESXi 6.5.0, ProLiant XL170r Gen10
-VC1C2_Connected : - esxi548, ESXi 6.5.0, ProLiant XL170r Gen10
-VC1_vcsa10prd -- VC1C3_Linux
-VC1_vcsa10prd : + Linux
-VC1C3_Linux : + ProLiant XL170r Gen10
-VC1C3_Linux -- VC1C3_ProLiant XL170r Gen10
-VC1C3_ProLiant XL170r Gen10 : - Connected, 2 ESXi Hosts
+VC1C3_Internal : + ProLiant XL170r Gen10
+VC1C3_Internal -- VC1C3_ProLiant XL170r Gen10
+VC1C3_ProLiant XL170r Gen10 : - Connected, 6 ESXi Hosts
 VC1C3_ProLiant XL170r Gen10 -- VC1C3_Connected
-VC1C3_Connected : - esxi541, ESXi 6.5.0, ProLiant XL170r Gen10
-VC1C3_Connected : - esxi542, ESXi 6.5.0, ProLiant XL170r Gen10
-VC1C3_Linux : + Synergy 480 Gen10
-VC1C3_Linux -- VC1C3_Synergy 480 Gen10
-VC1C3_Synergy 480 Gen10 : - Connected, 12 ESXi Hosts
-VC1C3_Synergy 480 Gen10 -- VC1C3_Connected
-VC1C3_Connected : - esxi701, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi702, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi703, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi704, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi705, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi706, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi901, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi902, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi903, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi904, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi905, ESXi 7.0.3, Synergy 480 Gen10
-VC1C3_Connected : - esxi906, ESXi 7.0.3, Synergy 480 Gen10
-VC1_vcsa10prd -- VC1C4_SpezAnpro
-VC1_vcsa10prd : + Spez-Anpro
-VC1C4_SpezAnpro : + ProLiant DL380 Gen9
-VC1C4_SpezAnpro -- VC1C4_ProLiant DL380 Gen9
-VC1C4_ProLiant DL380 Gen9 : - Connected, 2 ESXi Hosts
-VC1C4_ProLiant DL380 Gen9 -- VC1C4_Connected
-VC1C4_Connected : - esxi581, ESXi 6.5.0 6.5.0, ProLiant DL380 Gen9
-VC1C4_Connected : - esxi582, ESXi 6.5.0 6.5.0, ProLiant DL380 Gen9
-VC1_vcsa10prd -- VC1C5_SpezDWH
-VC1_vcsa10prd : + Spez-DWH
-VC1C5_SpezDWH : + ProLiant DL380 Gen10
-VC1C5_SpezDWH -- VC1C5_ProLiant DL380 Gen10
-VC1C5_ProLiant DL380 Gen10 : - Connected, 1 ESXi Hosts
-VC1C5_ProLiant DL380 Gen10 -- VC1C5_Connected
-VC1C5_Connected : - esxi411, ESXi 6.5.0, ProLiant DL380 Gen10
-VC1C5_SpezDWH : + ProLiant DL380 Gen9
-VC1C5_SpezDWH -- VC1C5_ProLiant DL380 Gen9
+VC1C3_Connected : - esxi543, ESXi 6.5.0, ProLiant XL170r Gen10
+VC1C3_Connected : - esxi544, ESXi 6.5.0, ProLiant XL170r Gen10
+VC1C3_Connected : - esxi545, ESXi 6.5.0, ProLiant XL170r Gen10
+VC1C3_Connected : - esxi546, ESXi 6.5.0, ProLiant XL170r Gen10
+VC1C3_Connected : - esxi547, ESXi 6.5.0, ProLiant XL170r Gen10
+VC1C3_Connected : - esxi548, ESXi 6.5.0, ProLiant XL170r Gen10
+VC1_vcsa10prd -- VC1C4_Linux
+VC1_vcsa10prd : + Linux
+VC1C4_Linux : + ProLiant XL170r Gen10
+VC1C4_Linux -- VC1C4_ProLiant XL170r Gen10
+VC1C4_ProLiant XL170r Gen10 : - Connected, 2 ESXi Hosts
+VC1C4_ProLiant XL170r Gen10 -- VC1C4_Connected
+VC1C4_Connected : - esxi541, ESXi 6.5.0, ProLiant XL170r Gen10
+VC1C4_Connected : - esxi542, ESXi 6.5.0, ProLiant XL170r Gen10
+VC1C4_Linux : + Synergy 480 Gen10
+VC1C4_Linux -- VC1C4_Synergy 480 Gen10
+VC1C4_Synergy 480 Gen10 : - Connected, 12 ESXi Hosts
+VC1C4_Synergy 480 Gen10 -- VC1C4_Connected
+VC1C4_Connected : - esxi701, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi702, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi703, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi704, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi705, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi706, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi901, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi902, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi903, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi904, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi905, ESXi 7.0.3, Synergy 480 Gen10
+VC1C4_Connected : - esxi906, ESXi 7.0.3, Synergy 480 Gen10
+VC1_vcsa10prd -- VC1C5_Special
+VC1_vcsa10prd : + Special
+VC1C5_Special : + ProLiant DL380 Gen9
+VC1C5_Special -- VC1C5_ProLiant DL380 Gen9
 VC1C5_ProLiant DL380 Gen9 : - Connected, 2 ESXi Hosts
 VC1C5_ProLiant DL380 Gen9 -- VC1C5_Connected
-VC1C5_Connected : - esxi415, ESXi 6.5.0, ProLiant DL380 Gen9
-VC1C5_Connected : - esxi417, ESXi 6.5.0, ProLiant DL380 Gen9
+VC1C5_Connected : - esxi581, ESXi 6.5.0 6.5.0, ProLiant DL380 Gen9
+VC1C5_Connected : - esxi582, ESXi 6.5.0 6.5.0, ProLiant DL380 Gen9
 VC1_vcsa10prd -- VC1C6_SpezOffice
 VC1_vcsa10prd : + Spez-Office
 VC1C6_SpezOffice : + ProLiant DL380 Gen10
@@ -153,9 +153,9 @@ VC1C7_Maintenance : - esxi707, ESXi 7.0.3, Synergy 480 Gen10
 VC1C7_Maintenance : - esxi708, ESXi 7.0.3, Synergy 480 Gen10
 VC1C7_Maintenance : - esxi907, ESXi 7.0.3, Synergy 480 Gen10
 VC1C7_Maintenance : - esxi908, ESXi 7.0.3, Synergy 480 Gen10
-</div></article></div><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vcsa21dmz"  ><a href="https://vcsa21dmz.cloud.ch/ui/" Target="_blank"  >vCenter vcsa21dmz</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vcsa21dmz: 16 (ESXi Versions: 6.0.0 = 9, 6.5.0 = 7)</p><div Class="mermaid" Style="text-align: center"  >classDiagram
-VC1_vcsa21dmz -- VC1C1_Airlock
-VC1_vcsa21dmz : + Airlock
+</div></article></div><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="mermaid"  ><h3 Style="color:#198754; text-align: center" Id="vcsa21prd"  ><a href="https://vcsa21prd.cloud.ch/ui/" Target="_blank"  >vCenter vcsa21prd</a></h3><hr /><p Style="color:#f8f9fa"  >Total ESXiHosts in vcsa21prd: 15 (ESXi Versions: 6.0.0 = 8, 6.5.0 = 7)</p><div Style="text-align: center" Class="mermaid"  >classDiagram
+VC1_vcsa21prd -- VC1C1_Airlock
+VC1_vcsa21prd : + Airlock
 VC1C1_Airlock : + ProLiant DL380p Gen8
 VC1C1_Airlock -- VC1C1_ProLiant DL380p Gen8
 VC1C1_ProLiant DL380p Gen8 : - Connected, 4 ESXi Hosts
@@ -164,38 +164,31 @@ VC1C1_Connected : - esxi557, ESXi 6.5.0, ProLiant DL380p Gen8
 VC1C1_Connected : - esxi558, ESXi 6.5.0, ProLiant DL380p Gen8
 VC1C1_Connected : - esxi567, ESXi 6.5.0, ProLiant DL380p Gen8
 VC1C1_Connected : - esxi568, ESXi 6.5.0, ProLiant DL380p Gen8
-VC1_vcsa21dmz -- VC1C2_host
-VC1_vcsa21dmz : + host
-VC1C2_host : + VMware Virtual Platform
-VC1C2_host -- VC1C2_VMware Virtual Platform
-VC1C2_VMware Virtual Platform : - Connected, 1 ESXi Hosts
-VC1C2_VMware Virtual Platform -- VC1C2_Connected
-VC1C2_Connected : - esxi550, ESXi 6.0.0, VMware Virtual Platform
-VC1_vcsa21dmz -- VC1C3_Temp
-VC1_vcsa21dmz : + Temp
-VC1C3_Temp : + D51B-2U dual 1G LoM
-VC1C3_Temp -- VC1C3_D51B2U dual 1G LoM
-VC1C3_D51B2U dual 1G LoM : - Connected, 3 ESXi Hosts
-VC1C3_D51B2U dual 1G LoM -- VC1C3_Connected
-VC1C3_Connected : - esxi562, ESXi 6.5.0 6.0.0, D51B-2U dual 1G LoM
-VC1C3_Connected : - esxi581, ESXi 6.5.0 6.5.0, D51B-2U dual 1G LoM
-VC1C3_Connected : - esxi582, ESXi 6.5.0 6.5.0, D51B-2U dual 1G LoM
-VC1_vcsa21dmz -- VC1C4_vSAN
-VC1_vcsa21dmz : + vSAN
-VC1C4_vSAN : + ProLiant DL380 Gen9
-VC1C4_vSAN -- VC1C4_ProLiant DL380 Gen9
-VC1C4_ProLiant DL380 Gen9 : - Connected, 5 ESXi Hosts
-VC1C4_ProLiant DL380 Gen9 -- VC1C4_Connected
-VC1C4_Connected : - esxi564, ESXi 6.0.0, ProLiant DL380 Gen9
-VC1C4_Connected : - esxi565, ESXi 6.0.0, ProLiant DL380 Gen9
-VC1C4_Connected : - esxi566, ESXi 6.0.0, ProLiant DL380 Gen9
-VC1C4_Connected : - esxi573, ESXi 6.0.0, ProLiant DL380 Gen9
-VC1C4_Connected : - esxi574, ESXi 6.0.0, ProLiant DL380 Gen9
-VC1C4_vSAN : + ProLiant DL380p Gen8
-VC1C4_vSAN -- VC1C4_ProLiant DL380p Gen8
-VC1C4_ProLiant DL380p Gen8 : - Connected, 3 ESXi Hosts
-VC1C4_ProLiant DL380p Gen8 -- VC1C4_Connected
-VC1C4_Connected : - esxi561, ESXi 6.0.0, ProLiant DL380p Gen8
-VC1C4_Connected : - esxi562, ESXi 6.5.0 6.0.0, ProLiant DL380p Gen8
-VC1C4_Connected : - esxi563, ESXi 6.0.0, ProLiant DL380p Gen8
-</div></article></div><hr /><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="ESXiHosts"  ><p Style="color:#f8f9fa"  >Total ESXiHosts: 80 (ESXi Versions: 6.0.0 = 9, 6.5.0 = 39, 6.7.0 = 6, 7.0.3 = 26)</p></article></div></div></Section></Body><div Class="container-fluid" Style="background-color:#343a40"  ><footer ><div Class="container-fluid"  ><div Class="row align-items-center"  ><div Class="col-md"  ><p ><a href="#" Target="_self"  >I ♥ PS ></a></p></div><div Class="col-md"  ><p >Report saved as D:\github.com\PSXiDiag\pode\views\Cloud-ESXiHost-Diagram.html</p></div><div Class="col-md"  ><p >17.05.2023 21:13:14</p></div></div></div></footer></div></html>
+VC1_vcsa21prd -- VC1C2_Temp
+VC1_vcsa21prd : + Temp
+VC1C2_Temp : + D51B-2U dual 1G LoM
+VC1C2_Temp -- VC1C2_D51B2U dual 1G LoM
+VC1C2_D51B2U dual 1G LoM : - Connected, 3 ESXi Hosts
+VC1C2_D51B2U dual 1G LoM -- VC1C2_Connected
+VC1C2_Connected : - esxi562, ESXi 6.5.0 6.0.0, D51B-2U dual 1G LoM
+VC1C2_Connected : - esxi581, ESXi 6.5.0 6.5.0, D51B-2U dual 1G LoM
+VC1C2_Connected : - esxi582, ESXi 6.5.0 6.5.0, D51B-2U dual 1G LoM
+VC1_vcsa21prd -- VC1C3_vSAN
+VC1_vcsa21prd : + vSAN
+VC1C3_vSAN : + ProLiant DL380 Gen9
+VC1C3_vSAN -- VC1C3_ProLiant DL380 Gen9
+VC1C3_ProLiant DL380 Gen9 : - Connected, 5 ESXi Hosts
+VC1C3_ProLiant DL380 Gen9 -- VC1C3_Connected
+VC1C3_Connected : - esxi564, ESXi 6.0.0, ProLiant DL380 Gen9
+VC1C3_Connected : - esxi565, ESXi 6.0.0, ProLiant DL380 Gen9
+VC1C3_Connected : - esxi566, ESXi 6.0.0, ProLiant DL380 Gen9
+VC1C3_Connected : - esxi573, ESXi 6.0.0, ProLiant DL380 Gen9
+VC1C3_Connected : - esxi574, ESXi 6.0.0, ProLiant DL380 Gen9
+VC1C3_vSAN : + ProLiant DL380p Gen8
+VC1C3_vSAN -- VC1C3_ProLiant DL380p Gen8
+VC1C3_ProLiant DL380p Gen8 : - Connected, 3 ESXi Hosts
+VC1C3_ProLiant DL380p Gen8 -- VC1C3_Connected
+VC1C3_Connected : - esxi561, ESXi 6.0.0, ProLiant DL380p Gen8
+VC1C3_Connected : - esxi562, ESXi 6.5.0 6.0.0, ProLiant DL380p Gen8
+VC1C3_Connected : - esxi563, ESXi 6.0.0, ProLiant DL380p Gen8
+</div></article></div><hr /><div Class="container-fluid" Style="background-color:#142440" Id="Content"  ><article Id="ESXiHosts"  ><p Style="color:#f8f9fa"  >Total ESXiHosts: 79 (ESXi Versions: 6.0.0 = 8, 6.5.0 = 39, 6.7.0 = 6, 7.0.3 = 26)</p></article></div></div></Section></Body><div Style="background-color:#343a40" Class="container-fluid"  ><footer ><div Class="container-fluid"  ><div Class="row align-items-center"  ><div Class="col-md"  ><p ><a href="#" Target="_self"  >I ♥ PS ></a></p></div><div Class="col-md"  ><p >Report saved as D:\github.com\PSXiDiag\pode\views\Cloud-ESXiHost-Diagram.html</p></div><div Class="col-md"  ><p >19.05.2023 08:50:12</p></div></div></div></footer></div></html>

@@ -2,7 +2,6 @@
     
     Set-PodeWebBreadcrumb -Items @(
         New-PodeWebBreadcrumbItem -Name 'Home' -Url '/'
-        New-PodeWebBreadcrumbItem -Name 'Classic' -Url '/'
         New-PodeWebBreadcrumbItem -Name 'Classic ESXi Host Diagram' -Url '/pages/PageName?value=Classic ESXi Hosts Diagram' -Active
     )
 
