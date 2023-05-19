@@ -77,7 +77,7 @@
                         $Properties += 'vCenterServer'
                         Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties | Out-PodeWebTable
                     } -Content @(
-                        New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '1000px'
+                        New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '960px' -Placeholder 'HostName'
                     )
                     #endregion
 
