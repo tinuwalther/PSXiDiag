@@ -39,9 +39,8 @@
                         Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
                     }
                     if([String]::IsNullOrEmpty($TableExists)){
-                        New-PodeWebAlert -Value "Could not find table in $($PodeDB)" -Type Warning
-                        New-PodeWebAlert -Value 'Please upload classic_ESXiHost.csv and classic_Summary.csv' -Type Important
-                        New-PodeWebAlert -Value 'Please upload cloud_ESXiHost.csv and cloud_Summary.csv' -Type Important
+                        New-PodeWebAlert -Value "Could not find any of $($SqlTableName) in $($PodeDB)" -Type Warning
+                        New-PodeWebAlert -Value 'Please upload classic_ESXiHost.csv, classic_Summary.csv, cloud_ESXiHost.csv, cloud_Summary.csv and restart the pode-server' -Type Important
                     }else{
                         foreach($item in $SqlTableName){
                             New-PodeWebAlert -Value "Table $($item)" -Type Success

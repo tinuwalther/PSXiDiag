@@ -5,6 +5,7 @@ We currently have ~150 ESXi Hosts across 12 vCenters in our environemnt. Whenerv
 - [PSXiDiag](#psxidiag)
   - [How it works](#how-it-works)
   - [PSXi Homepage](#psxi-homepage)
+  - [PSXi Summary](#psxi-summary)
   - [PSXi ESXi Inventory](#psxi-esxi-inventory)
   - [Mermaid Diagram](#mermaid-diagram)
 
@@ -24,34 +25,36 @@ The content of the CSV-file will be stored in a SQLite DB in seperated tabels fo
 
 ## PSXi Homepage
 
-This is the Homepage of the PSXi App. It shows you the summary of all vCenter, ESXiHosts and VMs.
+This is the Homepage of the PSXi App. It shows you the status of the Modules and the SQLite Database.
 
 ![PSXiHomePage](./img/PSXiHomePage.png)
 
-## PSXi ESXi Inventory
-
-If you click on this page, all ESXi Hosts of the Cloud will be grouped by vCenterServer.
-
-![PSXiEsxInventory](./img/PSXiEsxInventory.png)
+## PSXi Summary
 
 In the Summary, you can see the total of vCenter, and the count of each ESXiHost versions.
 
 ![PSXiEsxInventory](./img/PSXiSummaryEsxiHosts.png)
 
-You can search for the ESXiHost in the search box.
+## PSXi ESXi Inventory
+
+You can search for the ESXiHost in the search box in the pages Summary, Classic-/Cloud ESXi Host Table.
 
 ![PSXiEsxInventory](./img/PSXiSearchEsxiHosts.png)
 
-Each vCenter has it own tab where you can find all ESXiHosts.
+If you click on this page, all ESXi Hosts of the Classic will be grouped by vCenterServer.
+
+![PSXiEsxInventory](./img/PSXiEsxInventory.png)
+
+If you cklick on this page, each vCenter of the Cloud has it own tab where you can find all ESXiHosts.
 
 ![PSXiEsxInventory](./img/PSXivCenterTabs.png)
 
 ## Mermaid Diagram
 
-For each zones, there has a Mermaid-Class-Diagram for the vCenters. 
+For each zones, there is a Mermaid-Class-Diagram for each vCenter. 
 
 ![PSXiEsxInventory](./img/PSXiDiagramESXi.png)
 
-The Diagram is an iFrame to another page and it will be automatically genereate, if you put a new CSV-file into the folder where the FileWatcher is configured.
+The Diagram is an iFrame to another page and it will be automatically genereate, if you upload a new CSV-file into the folder where the FileWatcher is configured.
 
 [Top](#)
