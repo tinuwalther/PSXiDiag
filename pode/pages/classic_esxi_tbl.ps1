@@ -1,4 +1,9 @@
-﻿Add-PodeWebPage -Group 'Classic' -Name 'Classic ESXi Host Table' -Title 'Classic ESXi Host Inventory' -Icon 'server' -ScriptBlock {
+﻿<#
+    Classic Zone
+#>
+$GroupName = (Get-PodeConfig).PSXi.Group1
+Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Title "$($GroupName) ESXi Host Inventory" -Icon 'server' -ArgumentList $GroupName -ScriptBlock {
+    param($GroupName)
     #region module
     if(-not(Get-InstalledModule -Name mySQLite -ea SilentlyContinue)){
         Install-Module -Name mySQLite -Force
@@ -9,24 +14,18 @@
     
     Set-PodeWebBreadcrumb -Items @(
         New-PodeWebBreadcrumbItem -Name 'Home' -Url '/'
-        New-PodeWebBreadcrumbItem -Name 'Classic ESXi Host Inventory' -Url '/pages/PageName?value=Classic ESXi Hosts Table' -Active
+        New-PodeWebBreadcrumbItem -Name "$GroupName ESXi Host Inventory" -Url "/pages/PageName?value=$($GroupName) ESXi Hosts Table" -Active
     )
 
-    $PodeRoot = $($PSScriptRoot).Replace('pages','db')
-    $PodeDB   = Join-Path $PodeRoot -ChildPath 'psxi.db'
-    $SqlTableName = 'classic_summary', 'classic_ESXiHosts'
+    $PodeRoot     = $($PSScriptRoot).Replace('pages','db')
+    $PodeDB       = Join-Path $PodeRoot -ChildPath 'psxi.db'
+    $PSXiTables   = (Get-PodeConfig).PSXi.Tables #'classic_summary', 'classic_ESXiHosts'
+    $SqlTableName = switch -regex ($PSXiTables){ $GroupName { $_ } }
 
     if(Test-Path $PodeDB){
 
         New-PodeWebContainer -NoBackground -Content @(
             
-            # $PSModule = Get-Module -ListAvailable pode*
-            # New-PodeWebCard -Name 'Module check' -Content @(
-            #     foreach($module in $PSModule){
-            #         New-PodeWebAlert -Value "Module: $($module.Name), Version: $($module.Version)" -Type Info
-            #     }
-            # )
-
             $TableExists = foreach($item in $SqlTableName){
                 $SqliteQuery = "SELECT * FROM sqlite_master WHERE name like '$item'"
                 Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
@@ -34,7 +33,7 @@
             if([String]::IsNullOrEmpty($TableExists)){
                 New-PodeWebCard -Name 'Warning' -Content @(
                     New-PodeWebAlert -Value "Could not find table in $($PodeDB)" -Type Warning
-                    New-PodeWebAlert -Value 'Please upload classic_ESXiHost.csv and classic_Summary.csv' -Type Important
+                    New-PodeWebAlert -Value "Please upload CSV-files ($($SqlTableName))" -Type Important
                 )
             }else{
                 $MySQLiteDB   = Open-MySQLiteDB -Path $PodeDB
@@ -48,19 +47,10 @@
                     $SqliteQuery  = "Select * from $($SqlTableName)"
                     $FullDB       = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
                     $VIServer     = $FullDB | Group-Object vCenterServer | Select-Object -ExpandProperty Name
-                    $Properties = @(
-                        'HostName'	
-                        'Version'
-                        'Manufacturer'
-                        'Model'
-                        'Cluster'
-                        'PhysicalLocation'
-                        'ConnectionState'
-                        'Created'
-                    )
+                    $Properties = (Get-PodeConfig).PSXi.TableHeader
 
                     #region Summary
-                    New-PodeWebCard -Name Summary -DisplayName 'Summary of Classic' -Content @(
+                    New-PodeWebCard -Name Summary -DisplayName "Summary of $GroupName" -Content @(
                         New-PodeWebBadge -Colour Green -Value "$($VIServer.Count) vCenter"
                         $TotalCluster = $FullDB | Group-Object Cluster
                         New-PodeWebBadge -Colour Cyan -Value "$($TotalCluster.Count) Cluster"
