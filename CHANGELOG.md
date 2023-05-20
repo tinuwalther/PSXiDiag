@@ -3,4 +3,5 @@
 Version | Description | Date | Author
 -|-|-|-
 1.0.0 | Initial upload | 2023-05-19 | Martin Walther
-1.0.1 | Fix ID in Layouts and Elements of cloud_esxi_tbl.ps1 and classic_esxi_tbl.ps1 | 2023-05-19 | Martin Walther
+1.0.1 | Fix ID in Layouts and Elements | 2023-05-19 | Martin Walther
+1.0.2 | Adding the configuration to server.psd1 | 2023-05-20 | Martin Walther

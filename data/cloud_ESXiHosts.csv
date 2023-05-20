@@ -16,9 +16,6 @@ esxi567.cloud.ch;6.5.0;HP;ProLiant DL380p Gen8;vcsa21prd.cloud.ch;Airlock;Connec
 esxi558.cloud.ch;6.5.0;HP;ProLiant DL380p Gen8;vcsa21prd.cloud.ch;Airlock;Connected;NORD
 esxi557.cloud.ch;6.5.0;HP;ProLiant DL380p Gen8;vcsa21prd.cloud.ch;Airlock;Connected;OST
 esxi568.cloud.ch;6.5.0;HP;ProLiant DL380p Gen8;vcsa21prd.cloud.ch;Airlock;Connected;NORD
-esxi562.cloud.ch;6.5.0;Quanta Computer Inc;D51B-2U dual 1G LoM;vcsa21prd.cloud.ch;Temp;Connected;NORD
-esxi582.cloud.ch;6.5.0;Quanta Computer Inc;D51B-2U dual 1G LoM;vcsa21prd.cloud.ch;Temp;Connected;NORD
-esxi581.cloud.ch;6.5.0;Quanta Computer Inc.;D51B-2U dual 1G LoM;vcsa21prd.cloud.ch;Temp;Connected;OST
 esxi574.cloud.ch;6.0.0;HP;ProLiant DL380 Gen9;vcsa21prd.cloud.ch;vSAN;Connected;NORD
 esxi562.cloud.ch;6.0.0;HP;ProLiant DL380p Gen8;vcsa21prd.cloud.ch;vSAN;Connected;NORD
 esxi563.cloud.ch;6.0.0;HP;ProLiant DL380p Gen8;vcsa21prd.cloud.ch;vSAN;Connected;OST
@@ -44,7 +41,7 @@ esxi581.cloud.ch;6.5.0;HP;ProLiant DL380 Gen9;vcsa10prd.cloud.ch;Special;Connect
 esxi411.cloud.ch;6.5.0;HPE;ProLiant DL380 Gen10;vcsa10prd.cloud.ch;DWH;Connected;OST
 esxi415.cloud.ch;6.5.0;HP;ProLiant DL380 Gen9;vcsa10prd.cloud.ch;DWH;Connected;OST
 esxi417.cloud.ch;6.5.0;HP;ProLiant DL380 Gen9;vcsa10prd.cloud.ch;DWH;Connected;OST
-esxi401.cloud.ch;6.5.0;HPE;ProLiant DL380 Gen10;vcsa10prd.cloud.ch;Spez-Office;Connected;OST
+esxi401.cloud.ch;6.5.0;HPE;ProLiant DL380 Gen10;vcsa10prd.cloud.ch;Office;Connected;OST
 esxi707.cloud.ch;7.0.3;HPE;Synergy 480 Gen10;vcsa10prd.cloud.ch;Windows;Maintenance;OST
 esxi708.cloud.ch;7.0.3;HPE;Synergy 480 Gen10;vcsa10prd.cloud.ch;Windows;Maintenance;OST
 esxi907.cloud.ch;7.0.3;HPE;Synergy 480 Gen10;vcsa10prd.cloud.ch;Windows;Maintenance;NORD

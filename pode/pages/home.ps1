@@ -10,15 +10,16 @@
 
     $PodeRoot = $($PSScriptRoot).Replace('pages','db')
     $PodeDB   = Join-Path $PodeRoot -ChildPath 'psxi.db'
-    $SqlTableName = 'classic_summary', 'cloud_summary', 'classic_ESXiHosts', 'cloud_ESXiHost'
+    $SqlTableName = (Get-PodeConfig).PSXiTables
 
     if(Test-Path $PodeDB){
 
         New-PodeWebContainer -NoBackground -Content @(
 
-            $PSModule = Get-Module -ListAvailable pode*
+            $PSModule = (Get-PodeConfig).PSModules
             New-PodeWebCard -Name 'Module check' -Content @(
-                foreach($module in $PSModule){
+                foreach($item in $PSModule){
+                    $module = (Get-Module -ListAvailable $item) | Sort-Object Version | Select-Object -Last 1
                     New-PodeWebAlert -Value "Module: $($module.Name), Version: $($module.Version)" -Type Info
                 }
             )

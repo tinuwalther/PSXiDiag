@@ -19,13 +19,6 @@
     if(Test-Path $PodeDB){
 
         New-PodeWebContainer -NoBackground -Content @(
-            
-            # $PSModule = Get-Module -ListAvailable pode*
-            # New-PodeWebCard -Name 'Module check' -Content @(
-            #     foreach($module in $PSModule){
-            #         New-PodeWebAlert -Value "Module: $($module.Name), Version: $($module.Version)" -Type Info
-            #     }
-            # )
 
             $TableExists = foreach($item in $SqlTableName){
                 $SqliteQuery = "SELECT * FROM sqlite_master WHERE name like '$item'"

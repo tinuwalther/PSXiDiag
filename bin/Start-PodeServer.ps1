@@ -1,4 +1,4 @@
-#Requires -Modules Pode, Pode.Web, PSHTML, mySQLite 
+#Requires -Modules PsNetTools, PSHTML, Pode, Pode.Web, mySQLite
 <#
 .SYNOPSIS
     Start Pode server
@@ -77,7 +77,7 @@ function Set-PodeRoutes {
     New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
     New-PodeLoggingMethod -Terminal | Enable-PodeErrorLogging
 
-    Use-PodeWebTemplates -Title "PSXi App v$($script:version)" -Theme Auto
+    Use-PodeWebTemplates -Title "PSXi App v$((Get-PodeConfig).PSXiVersion)" -Theme Dark
 
     Add-PodeRoute -Method Get -Path '/classic_ESXiHosts_diag' -ScriptBlock {
         Write-PodeViewResponse -Path 'Classic-ESXiHost-Diagram'
@@ -309,10 +309,6 @@ if($PSVersionTable.PSVersion.Major -lt 6){
 }
 #endregion
 
-$version = Get-Content (Join-Path $($PSScriptRoot -replace 'bin') -ChildPath 'CHANGELOG.md') | Select-String -Pattern '\d\.\d\.\d' | Select-Object -Last 1
-$version | Out-Default
-$script:version = $version.ToString().Substring(0,5)
-
 #region Pode server
 if($CurrentOS -eq [OSType]::Windows){
     if(Test-IsElevated -OS $CurrentOS) {
@@ -320,6 +316,8 @@ if($CurrentOS -eq [OSType]::Windows){
         Start-PodeServer {
             Write-Host "Running on Windows with elevated Privileges since $(Get-Date)" -ForegroundColor Red
             Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
+
+            Get-PodeConfig | Out-Default
 
             # Initialize new SQLite database
             $DBRoot       = Join-Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'db'
