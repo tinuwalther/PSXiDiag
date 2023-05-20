@@ -74,11 +74,6 @@ function Set-PodeRoutes {
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
-    New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
-    New-PodeLoggingMethod -Terminal | Enable-PodeErrorLogging
-
-    Use-PodeWebTemplates -Title "PSXi App v$((Get-PodeConfig).PSXiVersion)" -Theme Dark
-
     Add-PodeRoute -Method Get -Path '/classic_ESXiHosts_diag' -ScriptBlock {
         Write-PodeViewResponse -Path 'Classic-ESXiHost-Diagram'
     }
@@ -98,7 +93,7 @@ function Set-PodeRoutes {
 
     # Add dynamic pages
     $PodeRoot = $($PSScriptRoot).Replace('bin','pode')
-    foreach($item in (Get-ChildItem (Join-Path $PodeRoot -ChildPath 'pages'))){
+    foreach($item in (Get-ChildItem -Filter '*.ps1' -Path (Join-Path $PodeRoot -ChildPath 'pages'))){
         . "$($item.FullName)"
     }
     Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'psxi'
@@ -133,24 +128,41 @@ function Invoke-FileWatcher{
                     $DBFullPath   = Join-Path $DBRoot -ChildPath 'psxi.db'
                     $TableName    = ($FileEvent.Name) -replace '.csv'
                     if(Test-Path $DBFullPath){
-
-                        "Database $DBFullPath already available" | Out-PodeHost
+                        if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                            "Database-Check: Database $DBFullPath already exists" | Out-PodeHost
+                        }
                         # Read header from csv-file and set it as column-names to the table
                         $th = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';') + 'Created'
-                        "Ovewrite the Table $($TableName) if it already exists!" | Out-PodeHost
+                        if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                            "Table-Check: Ovewrite the Table $($TableName) if its already exists" | Out-PodeHost
+                        }
                         New-MySQLiteDBTable -Path $DBFullPath -TableName $TableName -ColumnNames $th -Force
                         # Add ID as primary-key th the table
                         Invoke-MySQLiteQuery -Path $DBFullPath -query "ALTER TABLE $TableName ADD ID [INTEGER PRIMARY KEY];"
 
                         switch -Regex ($TableName){
                             '_ESXiHosts' {
-                                "Add content 'ESXiHost' to the table" | Out-PodeHost
+                                if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                                    "Item received: $($FileEvent.FullPath)" | Out-PodeHost
+                                    "Table-Check: Add content 'ESXiHost' to the table $TableName" | Out-PodeHost
+                                }
                                 Update-ESXiHostTable -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName
                                 Invoke-PshtmlESXiDiagram -DBFile $($DBFullPath) -ScriptFile $(Join-Path $PSScriptRoot -ChildPath "New-PshtmlESXiDiag.ps1") -SqlTableName $TableName
+                                if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                                    "Remove item: $($FileEvent.FullPath)" | Out-PodeHost
+                                }
+                                Remove-Item -Path $FileEvent.FullPath -Force
                             }
                             '_summary' {
-                                "Add content 'Summary' to the table" | Out-PodeHost
+                                if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                                    "Item received: $($FileEvent.FullPath)" | Out-PodeHost
+                                    "Table-Check: Add content 'Summary' to the table $TableName" | Out-PodeHost
+                                }
                                 Update-SummaryTable -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName
+                                if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                                    "Remove item: $($FileEvent.FullPath)" | Out-PodeHost
+                                }
+                                Remove-Item -Path $FileEvent.FullPath -Force
                             }
                         }
 
@@ -314,11 +326,14 @@ if($CurrentOS -eq [OSType]::Windows){
     if(Test-IsElevated -OS $CurrentOS) {
         $null = Set-HostEntry -Name 'psxi' -Elevated
         Start-PodeServer {
-            Write-Host "Running on Windows with elevated Privileges since $(Get-Date)" -ForegroundColor Red
-            Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
 
+            Write-Host "Running on Windows with elevated Privileges since $(Get-Date)" -ForegroundColor Red
             Get-PodeConfig | Out-Default
 
+            Use-PodeWebTemplates -Title "$((Get-PodeConfig).PSXi.AppName) v$((Get-PodeConfig).PSXi.Version)" -Theme Dark -NoPageFilter #-HideSidebar
+            New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
+            New-PodeLoggingMethod -Terminal | Enable-PodeErrorLogging
+        
             # Initialize new SQLite database
             $DBRoot       = Join-Path $($PSScriptRoot).Replace('bin','pode') -ChildPath 'db'
             $DBFullPath   = Join-Path $DBRoot -ChildPath 'psxi.db'
@@ -329,7 +344,9 @@ if($CurrentOS -eq [OSType]::Windows){
 
             # Set pode routes for web-sites
             Set-PodeRoutes
-            
+
+            Write-Host "Press Ctrl. + C to terminate the Pode server" -ForegroundColor Yellow
+
         } -RootPath $($PSScriptRoot).Replace('bin','pode')
     }else{
         Write-Host "Running on Windows and start new session with elevated Privileges" -ForegroundColor Green

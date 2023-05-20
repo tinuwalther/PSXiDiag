@@ -1,4 +1,4 @@
-﻿Add-PodeWebPage -Name 'Summary' -Title 'vCenter Summary' -Icon 'server' -ScriptBlock {
+﻿Add-PodeWebPage -Name 'Summary' -Title 'vCenter Summary' -Icon 'clipboard-check' -ScriptBlock {
 
     #region module
     if(-not(Get-InstalledModule -Name mySQLite -ea SilentlyContinue)){
@@ -9,9 +9,9 @@
     #endregion
 
     $i = 500
-    $PodeRoot = $($PSScriptRoot).Replace('pages','db')
-    $PodeDB   = Join-Path $PodeRoot -ChildPath 'psxi.db'
-    $SqlTableName = 'classic_summary', 'cloud_summary', 'classic_ESXiHosts', 'cloud_ESXiHost'
+    $PodeRoot     = $($PSScriptRoot).Replace('pages','db')
+    $PodeDB       = Join-Path $PodeRoot -ChildPath 'psxi.db'
+    $SqlTableName = (Get-PodeConfig).PSXi.Tables #'cloud_summary', 'cloud_ESXiHosts'
 
     if(Test-Path $PodeDB){
         $TableExists = foreach($item in $SqlTableName){
@@ -47,17 +47,7 @@
                     $SqliteQuery = "Select * from cloud_ESXiHosts Where HostName Like '%$($WebEvent.Data.Search)%'"
                     $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
                 }
-                $Properties = @(
-                    'HostName'	
-                    'Version'
-                    'Manufacturer'
-                    'Model'
-                    'Cluster'
-                    'PhysicalLocation'
-                    'ConnectionState'
-                    'Created'
-                    'vCenterServer'
-                )
+                $Properties = (Get-PodeConfig).PSXi.TableHeader + "vCenterServer"
                 $Result | Select-Object $Properties | Out-PodeWebTable
             } -Content @(
                 New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '1000px'
@@ -109,8 +99,7 @@
         }else{
             New-PodeWebCard -Name 'Warning' -Content @(
                 New-PodeWebAlert -Value "Could not find table in $($PodeDB)" -Type Warning
-                New-PodeWebAlert -Value 'Please upload classic_ESXiHost.csv and classic_Summary.csv' -Type Important
-                New-PodeWebAlert -Value 'Please upload cloud_ESXiHost.csv and cloud_Summary.csv' -Type Important
+                New-PodeWebAlert -Value "Please upload CSV-files ($($SqlTableName))" -Type Important
                 #New-PodeWebAlert -Value 'And restart the server' -Type Important
             )
         }

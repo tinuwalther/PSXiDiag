@@ -10,18 +10,22 @@
 
     $PodeRoot = $($PSScriptRoot).Replace('pages','db')
     $PodeDB   = Join-Path $PodeRoot -ChildPath 'psxi.db'
-    $SqlTableName = (Get-PodeConfig).PSXiTables
+    $SqlTableName = (Get-PodeConfig).PSXi.Tables
 
     if(Test-Path $PodeDB){
 
         New-PodeWebContainer -NoBackground -Content @(
-
+            
             $PSModule = (Get-PodeConfig).PSModules
             New-PodeWebCard -Name 'Module check' -Content @(
-                foreach($item in $PSModule){
-                    $module = (Get-Module -ListAvailable $item) | Sort-Object Version | Select-Object -Last 1
-                    New-PodeWebAlert -Value "Module: $($module.Name), Version: $($module.Version)" -Type Info
-                }
+                New-PodeWebGrid -Cells @(
+                    foreach($item in $PSModule){
+                        $module = (Get-Module -ListAvailable $item) | Sort-Object Version | Select-Object -Last 1
+                        New-PodeWebCell -Width '50%' -Content @(
+                            New-PodeWebAlert -Value "Module: $($module.Name), Version: $($module.Version)" -Type Info
+                        )
+                    }
+                )
             )
 
             $SqliteQuery = "SELECT * FROM Metadata"
@@ -34,23 +38,28 @@
                 New-PodeWebCard -Name 'Database check' -Content @(
                     $var = "Database: Created: $($TableExists.Created), Comment: $($TableExists.Comment), $($PodeDB)"
                     New-PodeWebAlert -Value $var -Type Success
-
+                )
+                New-PodeWebCard -Name 'Table check' -Content @(
                     $TableExists = foreach($item in $SqlTableName){
                         $SqliteQuery = "SELECT * FROM sqlite_master WHERE name like '$item'"
                         Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
                     }
                     if([String]::IsNullOrEmpty($TableExists)){
                         New-PodeWebAlert -Value "Could not find any of $($SqlTableName) in $($PodeDB)" -Type Warning
-                        New-PodeWebAlert -Value 'Please upload classic_ESXiHost.csv, classic_Summary.csv, cloud_ESXiHost.csv, cloud_Summary.csv and restart the pode-server' -Type Important
+                        New-PodeWebAlert -Value "Please upload CSV-files ($($SqlTableName)) and restart the pode-server" -Type Important
                     }else{
-                        foreach($item in $SqlTableName){
-                            New-PodeWebAlert -Value "Table $($item)" -Type Success
-                        }
-                    }
-        
-                )  
-            }
+                        New-PodeWebGrid -Cells @(
 
+                            foreach($item in $SqlTableName){
+                                New-PodeWebCell -Width '50%' -Content @(
+                                    New-PodeWebAlert -Value "Table $($item)" -Type Success
+                                )
+                            }
+
+                        )
+                    }
+                )
+            }
         )
 
     }else{

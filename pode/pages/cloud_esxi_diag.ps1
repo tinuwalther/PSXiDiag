@@ -1,8 +1,13 @@
-Add-PodeWebPage -Group 'Cloud' -Name 'Cloud ESXi Host Diagram' -Title 'Cloud ESXi Host Diagram' -Icon 'server' -ScriptBlock {
-    
+<#
+    Cloud Zone
+#>
+$GroupName = (Get-PodeConfig).PSXi.Group2
+Add-PodeWebPage -Group $GroupName -Name "$GroupName ESXi Host Diagram" -Title "$GroupName ESXi Host Diagram" -Icon 'cloud' -ArgumentList $GroupName -ScriptBlock {
+    param($GroupName)
+
     Set-PodeWebBreadcrumb -Items @(
         New-PodeWebBreadcrumbItem -Name 'Home' -Url '/'
-        New-PodeWebBreadcrumbItem -Name 'Cloud ESXi Host Diagram' -Url '/pages/PageName?value=Cloud ESXi Hosts Diagram' -Active
+        New-PodeWebBreadcrumbItem -Name "$GroupName ESXi Host Diagram" -Url "/pages/PageName?value=$($GroupName) ESXi Hosts Diagram" -Active
     )
 
     New-PodeWebIFrame -Url '/cloud_ESXiHosts_diag'
