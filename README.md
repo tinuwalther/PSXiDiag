@@ -33,6 +33,7 @@ This is the Homepage of the PSXi App. It shows you the status of the Modules and
 
 In the Summary, you can see the total of vCenter, and the count of each ESXiHost versions.
 
+![PSXiEsxInventory](./img/PSXiOverallSummary.png)
 ![PSXiEsxInventory](./img/PSXiSummaryEsxiHosts.png)
 
 ## PSXi ESXi Inventory

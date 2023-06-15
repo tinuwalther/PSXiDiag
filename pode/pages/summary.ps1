@@ -37,21 +37,84 @@
                 
                 $VMs = $classic_summary.'Total VMs' + $cloud_summary.'Total VMs'
                 New-PodeWebBadge -Colour Light -Value "$($VMs) VMs"
+
+                
+                New-PodeWebGrid -Cells @(
+
+                    New-PodeWebCell -Id 'vCenter' -Width '30%' -Content @(
+                        New-PodeWebChart -Name "Overall Summary vCenter" -ArgumentList @($cloud_summary, $classic_summary) -Type Bar -Height 300px -NoRefresh -ScriptBlock {
+                            param($cloud_summary, $classic_summary)
+                            @{
+                                Key    = 'vCenter'
+                                Values = @(
+                                    @{
+                                        Key   = 'Classic'
+                                        Value = $classic_summary.'Total vCenter'
+                                    }
+                                    @{
+                                        Key   = 'Cloud'
+                                        Value = $cloud_summary.'Total vCenter'
+                                    }
+                                )
+                            }
+                        }
+                    )
+
+                    New-PodeWebCell -Id 'ESXiHosts' -Width '30%' -Content @(
+                        New-PodeWebChart -Name "Overall Summary ESXiHosts" -ArgumentList @($cloud_summary, $classic_summary) -Type Bar -Height 300px -NoRefresh -ScriptBlock {
+                            param($cloud_summary, $classic_summary)
+                            @{
+                                Key    = 'ESXiHosts'
+                                Values = @(
+                                    @{
+                                        Key   = 'Classic'
+                                        Value = $classic_summary.'Total ESXiHosts'
+                                    }
+                                    @{
+                                        Key   = 'Cloud'
+                                        Value = $cloud_summary.'Total ESXiHosts'
+                                    }
+                                )
+                            }
+                        }
+                    )
+
+                    New-PodeWebCell -Id 'VMs' -Width '30%' -Content @(
+                        New-PodeWebChart -Name "Overall Summary VMs" -ArgumentList @($cloud_summary, $classic_summary) -Type Bar -Height 300px -NoRefresh -ScriptBlock {
+                            param($cloud_summary, $classic_summary)
+                            @{
+                                Key    = 'VMs'
+                                Values = @(
+                                    @{
+                                        Key   = 'Classic'
+                                        Value = $classic_summary.'Total VMs'
+                                    }
+                                    @{
+                                        Key   = 'Cloud'
+                                        Value = $cloud_summary.'Total VMs'
+                                    }
+                                )
+                            }
+                        }
+                    )
+
+                )
+
             )
     
-            New-PodeWebForm -Id "Form$($i)" -Name "Search for ESXiHost" -AsCard -ShowReset -ArgumentList @($PodeDB) -ScriptBlock {
-                param($PodeDB)
-                $SqliteQuery = "Select * from classic_ESXiHosts Where HostName Like '%$($WebEvent.Data.Search)%'"
-                $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
-                if([String]::IsNullOrEmpty($Result)){
-                    $SqliteQuery = "Select * from cloud_ESXiHosts Where HostName Like '%$($WebEvent.Data.Search)%'"
-                    $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
-                }
-                $Properties = (Get-PodeConfig).PSXi.TableHeader + "vCenterServer"
-                $Result | Select-Object $Properties | Out-PodeWebTable
-            } -Content @(
-                New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '1000px'
-            )
+            # New-PodeWebForm -Id "Form$($i)" -Name "Search for ESXiHost" -AsCard -ShowReset -ArgumentList @($PodeDB) -ScriptBlock {
+            #     param($PodeDB)
+            #     $SqliteQuery = "Select * from classic_ESXiHosts Where HostName Like '%$($WebEvent.Data.Search)%'"
+            #     $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+            #     if([String]::IsNullOrEmpty($Result)){
+            #         $SqliteQuery = "Select * from cloud_ESXiHosts Where HostName Like '%$($WebEvent.Data.Search)%'"
+            #         $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+            #     }
+            #     $Properties = (Get-PodeConfig).PSXi.TableHeader + "vCenterServer"
+            #     $Result | Select-Object $Properties | Out-PodeWebTable
+            # } -Content @(
+            #     New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '1000px'
+            # )
     
             New-PodeWebGrid -Cells @(
     
@@ -70,27 +133,33 @@
                         }
     
                         New-PodeWebCell -Width '50%' -Content @(
-    
-                            New-PodeWebCard -Name "$DisplayName Summary" -Content @(
-                                $SqliteQuery = "SELECT COUNT(vCenterServer) AS 'Total vCenter', SUM(CountOfESXiHosts) AS 'Total ESXiHosts', SUM(CountOfVMs) AS 'Total VMs' FROM $item"
-                                $summary = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+
+                            $SqliteQuery = "SELECT COUNT(vCenterServer) AS 'Total vCenter', SUM(CountOfESXiHosts) AS 'Total ESXiHosts', SUM(CountOfVMs) AS 'Total VMs' FROM $item"
+                            $summary = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+
+                            New-PodeWebCard  -Id "Chart$($i)" -Name "Chart$($i)" -DisplayName "$($DisplayName) Summary" -Content @(
+
                                 New-PodeWebText -Value "Total"
                                 New-PodeWebBadge -Colour Green -Value "$($summary.'Total vCenter') vCenter"
                                 New-PodeWebBadge -Colour Blue -Value "$($summary.'Total ESXiHosts') ESXiHosts"
                                 New-PodeWebBadge -Colour Light -Value "$($summary.'Total VMs') VMs"
+
+                                New-PodeWebChart -Name "$DisplayName Summary" -ArgumentList @($Properties, $item, $PodeDB) -Type Bar -Height 250px -NoRefresh -ScriptBlock {
+                                    param($Properties, $item, $PodeDB)
+                                    $SqliteQuery = "Select * from $($item)"
+                                    $summary = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
+                                    $Xproperty = 'vCenterServer'
+                                    $Ypropterty = @('CountOfESXiHosts', 'CountOfVMs')
+                                    $summary | ConvertTo-PodeWebChartData -LabelProperty $Xproperty -DatasetProperty $Ypropterty
+                                }
+
+                                New-PodeWebTable -Id "Table$($i)" -Name "Summary$($i)" -DisplayName "$($DisplayName) Summary" -SimpleSort -Click -NoExport -NoRefresh -Compact -ArgumentList @($Properties, $item, $PodeDB) -ScriptBlock {
+                                    param($Properties, $item, $PodeDB)
+                                    $SqliteQuery = "Select * from $($item)"
+                                    Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
+                                }                     
+        
                             )
-    
-                            # New-PodeWebTable -Id "Total$($i)" -Name "Total$($i)" -DisplayName "Total $($DisplayName)" -SimpleSort -Click -NoExport -NoRefresh -AsCard -Compact -ArgumentList @($item, $PodeDB) -ScriptBlock {
-                            #     param($item, $PodeDB)
-                            #     $SqliteQuery = "SELECT COUNT(vCenterServer) AS 'Total vCenter', SUM(CountOfESXiHosts) AS 'Total ESXiHosts', SUM(CountOfVMs) AS 'Total VMs'FROM $item"
-                            #     Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
-                            # }
-    
-                            New-PodeWebTable -Id "Table$($i)" -Name "Summary$($i)" -DisplayName "Summary $($DisplayName)" -SimpleSort -Click -NoExport -NoRefresh -AsCard -Compact -ArgumentList @($Properties, $item, $PodeDB) -ScriptBlock {
-                                param($Properties, $item, $PodeDB)
-                                $SqliteQuery = "Select * from $($item)"
-                                Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
-                            }                     
     
                         )
                     }

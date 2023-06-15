@@ -7,3 +7,4 @@ Version | Description | Date | Author
 1.0.2 | Adding the configuration to server.psd1 | 2023-05-20 | Martin Walther
 1.0.3 | Reading configuration from server.psd1 | 2023-05-20 | Martin Walther
 1.0.4 | Group configuration in server.psd1 | 2023-05-20 | Martin Walther
+1.0.5 | Add charts to the summary pages | 2023-06-11 | Martin Walther
