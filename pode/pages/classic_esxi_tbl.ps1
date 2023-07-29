@@ -101,16 +101,16 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                                 $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster | Group-Object HostName
                                 New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
 
-                                # The first vCenter and first Cluster has no ESXi Versions
-                                $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster| Group-Object Version | ForEach-Object {
-                                    switch -Regex ($_.Name){
+                                $VersionGroup = $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster| Group-Object Version
+                                for($i = 0; $i -lt $VersionGroup.count; $i++ ){
+                                    switch -Regex ($VersionGroup[$i].Name){
                                         '^6\.5'   {$Colour = 'Red'}
                                         '^6\.7'   {$Colour = 'Yellow'}
                                         '^7\.0'   {$Colour = 'Green'}
                                         default {$Colour = 'Dark'}
                                     }
-                                    if($_.count -gt 0){
-                                        New-PodeWebBadge -Colour $Colour -Value "V$($_.Name) ($($_.Count))"
+                                    if($VersionGroup[$i].Count -gt 0){
+                                        New-PodeWebBadge -Colour $Colour -Value "V$($VersionGroup[$i].Name) ($($VersionGroup[$i].Count))"
                                     }
                                 }
                                 New-PodeWebLine

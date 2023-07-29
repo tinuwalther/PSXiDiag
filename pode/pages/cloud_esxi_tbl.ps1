@@ -88,33 +88,25 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                         foreach($item in $VIServer){
                             $i ++
                             $vCenter = (($item -split '\.')[0]).ToUpper()
-
+                            $VICluster = $FullDB | Where-Object vCenterServer -match $item | Group-Object Cluster | Select-Object -ExpandProperty Name
+                            $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Group-Object HostName
+                            
                             New-PodeWebTab -Id "Tab$($i)" -Name "vCenter $($vCenter)" -Layouts @(
-                                $VICluster = $FullDB | Where-Object vCenterServer -match $item | Group-Object Cluster | Select-Object -ExpandProperty Name
                                 
                                 #region Badge
                                 New-PodeWebLine
                                 New-PodeWebText -Value "vCenter «$($vCenter)» contains:" -Style Bold
-                                #New-PodeWebBadge -Colour Light -Value "$($vCenter)"
                                 New-PodeWebBadge -Colour Cyan -Value "$($VICluster.count) Cluster"
-                                $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Group-Object HostName
                                 New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
-                                New-PodeWebLine
+                                # New-PodeWebLine
                                 #endregion
 
                                 foreach($Cluster in $VICluster){
                                     $ii ++
-        
-                                    New-PodeWebTable -Id "Table$($ii)" -Name "VC$($ii)" -DisplayName "Cluster $($Cluster)" -AsCard -SimpleSort -NoExport -NoRefresh -Click -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlTableName, $Cluster) -ScriptBlock {
-                                        param($Properties, $item, $PodeDB, $SqlTableName, $Cluster)
-                                        $SqliteQuery = "Select * from $($SqlTableName) Where (vCenterServer Like '%$($item)%') And (Cluster = '$Cluster')"
-                                        Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
-                                    }
 
                                     #region Badge
                                     New-PodeWebLine
-                                    New-PodeWebText -Value "Cluster «$($Cluster)» contains:" -Style Bold
-                                    #New-PodeWebBadge -Colour Light -Value "$($Cluster)"
+                                    New-PodeWebText -Value "Cluster «$($Cluster)» contains:" -Style Italics
                                     $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster | Group-Object HostName
                                     New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
                                     $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster| Group-Object Version | ForEach-Object {
@@ -130,6 +122,12 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                                     }
                                     New-PodeWebLine
                                     #endregion
+        
+                                    New-PodeWebTable -Id "Table$($ii)" -Name "VC$($ii)" -DisplayName "Cluster $($Cluster)" -AsCard -SimpleSort -NoExport -NoRefresh -Click -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlTableName, $Cluster) -ScriptBlock {
+                                        param($Properties, $item, $PodeDB, $SqlTableName, $Cluster)
+                                        $SqliteQuery = "Select * from $($SqlTableName) Where (vCenterServer Like '%$($item)%') And (Cluster = '$Cluster')"
+                                        Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
+                                    }
                                 }
                             )
                         }
