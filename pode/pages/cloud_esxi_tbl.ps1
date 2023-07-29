@@ -56,13 +56,18 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                         New-PodeWebBadge -Colour Cyan -Value "$($TotalCluster.Count) Cluster"
                         $ESXiHosts = $FullDB | Group-Object HostName
                         New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
-                        $FullDB | Group-Object Version | ForEach-Object {
-                            switch -Regex ($_.Name){
-                                '6.7'   {$Colour = 'Yellow'}
-                                '7.0'   {$Colour = 'Green'}
-                                default {$Colour = 'Red'}
+                        $VersionGroup = Invoke-MySQLiteQuery -Path $PodeDB -Query "Select Version, COUNT(Version) AS Count from $($SqlTableName) Group by Version"
+                        for($i = 0; $i -lt $VersionGroup.count; $i++ ){
+                            # "$($SqlTableName) : $($VersionGroup[$i].Version) : $($VersionGroup[$i].Count)" | Out-Default
+                            switch -Regex ($VersionGroup[$i].Version){
+                                '^7\.0'   {$Colour = 'Green'}
+                                '^6\.7'   {$Colour = 'Yellow'}
+                                '^6\.5'   {$Colour = 'Red'}
+                                default {$Colour = 'Dark'}
                             }
-                            New-PodeWebBadge -Colour $Colour -Value "V$($_.Name) ($($_.Count))"
+                            if($VersionGroup[$i].Count -gt 0){
+                                New-PodeWebBadge -Colour $Colour -Value "V$($VersionGroup[$i].Version) ($($VersionGroup[$i].Count))"
+                            }
                         }
                     )
                     #endregion
@@ -114,11 +119,14 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                                     New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
                                     $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster| Group-Object Version | ForEach-Object {
                                         switch -Regex ($_.Name){
-                                            '6.7'   {$Colour = 'Yellow'}
-                                            '7.0'   {$Colour = 'Green'}
-                                            default {$Colour = 'Red'}
+                                            '^7\.0'   {$Colour = 'Green'}
+                                            '^6\.7'   {$Colour = 'Yellow'}
+                                            '^6\.5'   {$Colour = 'Red'}
+                                            default {$Colour = 'Dark'}
                                         }
-                                        New-PodeWebBadge -Colour $Colour -Value "V$($_.Name) ($($_.Count))"
+                                        if($_.count -gt 0){
+                                            New-PodeWebBadge -Colour $Colour -Value "V$($_.Name) ($($_.Count))"
+                                        }
                                     }
                                     New-PodeWebLine
                                     #endregion

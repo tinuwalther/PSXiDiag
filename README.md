@@ -59,3 +59,15 @@ For each zones, there is a Mermaid-Class-Diagram for each vCenter.
 The Diagram is an iFrame to another page and it will be automatically genereate, if you upload a new CSV-file into the folder where the FileWatcher is configured.
 
 [Top](#)
+
+## Issues
+
+Pode.Web V0.8.3 in a PodeWebForm, the New-PodeWebTextbox Parameter -NoForm -Width '960px' does not work correct like 0.8.2. It shows the buttons on a new line.
+
+v0.8.3
+
+![New-PodeWebTextbox](./img/Pode.Web_V0.8.3_New-PodeWebTextbox-NoForm.png)
+
+v0.8.2
+
+![New-PodeWebTextbox](./img/Pode.Web_V0.8.2_New-PodeWebTextbox-NoForm.png)

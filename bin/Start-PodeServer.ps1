@@ -328,7 +328,7 @@ if($CurrentOS -eq [OSType]::Windows){
         Start-PodeServer {
 
             Write-Host "Running on Windows with elevated Privileges since $(Get-Date)" -ForegroundColor Red
-            Get-PodeConfig | Out-Default
+            # Get-PodeConfig | Out-Default
 
             Use-PodeWebTemplates -Title "$((Get-PodeConfig).PSXi.AppName) v$((Get-PodeConfig).PSXi.Version)" -Theme Dark -NoPageFilter #-HideSidebar
             New-PodeLoggingMethod -File -Name 'requests' -MaxDays 4 | Enable-PodeRequestLogging
