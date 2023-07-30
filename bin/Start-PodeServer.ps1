@@ -217,7 +217,7 @@ function Update-ESXiHostTable{
     } -process { 
         $i ++
         $SqlQuery = "Insert into $($SqlTableName) Values( 
-            $(for($i = 0; $i -lt $TableHeader.length; $i++){ "'" + $($_.$($TableHeader[$i])) + "'" + ',' }) '$(Get-Date)', '$($i)' 
+            $(for($h = 0; $h -lt $TableHeader.length; $h++){ "'" + $($_.$($TableHeader[$h])) + "'" + ',' }) '$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')', '$($i)'
         )"
         # Same as hardcoded version:
         # $SqlQuery = "Insert into $($SqlTableName) Values(
