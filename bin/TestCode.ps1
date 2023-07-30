@@ -174,7 +174,7 @@ $var
 [string]$SqlTableName               = 'classic_ESXiHosts'
 
 $db = Open-MySQLiteDB $DBFile.FullName
-$SqliteQuery = "Select vCenterServer, COUNT(Cluster) AS CountOfCluster from $($SqlTableName) Group by vCenterServer"
+$SqliteQuery = "Select Created from $($SqlTableName) Limit 1"
 # $SqliteQuery = "Select vCenterServer, Cluster, COUNT(HostName) AS CountOfHosts, COUNT(Cluster) AS CountOfCluster from $($SqlTableName) Group by vCenterServer"
 $SQLite_DB   = Invoke-MySQLiteQuery -connection $db -Query $SqliteQuery
 $SQLite_DB | Format-Table -AutoSize

@@ -46,11 +46,13 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                     $SqlTableName = 'classic_ESXiHosts'
                     $SqliteQuery  = "Select * from $($SqlTableName)"
                     $FullDB       = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                    [datetime]$Created = $FullDB.Created | Select-Last 1
                     $VIServer     = $FullDB | Group-Object vCenterServer | Select-Object -ExpandProperty Name
                     $Properties = (Get-PodeConfig).PSXi.TableHeader
 
                     #region Summary
                     New-PodeWebCard -Name Summary -DisplayName "Summary of $GroupName" -Content @(
+                        New-PodeWebText -Value "Last update: $(Get-Date $Created -f 'yyyy-MM-dd HH:mm:ss') "  
                         New-PodeWebBadge -Colour Green -Value "$($VIServer.Count) vCenter"
                         $TotalCluster = $FullDB | Group-Object Cluster
                         New-PodeWebBadge -Colour Cyan -Value "$($TotalCluster.Count) Cluster"
@@ -76,10 +78,11 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                     New-PodeWebForm -Id "Form$($i)" -Name "Search for ESXiHost" -AsCard -ShowReset -ArgumentList @($Properties, $PodeDB, $SqlTableName) -ScriptBlock {
                         param($Properties, $PodeDB, $SqlTableName)
                         $SqliteQuery = "Select * from $($SqlTableName) Where HostName Like '%$($WebEvent.Data.Search)%'"
-                        $Properties += 'vCenterServer'
-                        Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties | Out-PodeWebTable
+                        $sProperties = @('vCenterServer')
+                        $sProperties += $Properties
+                        Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $sProperties | Out-PodeWebTable
                     } -Content @(
-                        New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -Placeholder 'HostName' -NoForm -Width '960px' 
+                        New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '400px' -Placeholder 'Enter a HostName or leave it empty to load all Hosts'
                     )
                     #endregion
 

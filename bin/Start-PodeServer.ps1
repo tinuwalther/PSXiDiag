@@ -96,7 +96,13 @@ function Set-PodeRoutes {
     foreach($item in (Get-ChildItem -Filter '*.ps1' -Path (Join-Path $PodeRoot -ChildPath 'pages'))){
         . "$($item.FullName)"
     }
-    Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'psxi'
+    $ep = Add-PodeEndpoint -Address * -Port 5989 -Protocol Http -Hostname 'psxi' -PassThru
+    foreach($item in $ep.keys){
+        if($item -eq 'Url'){
+            $global:epurl = $ep[$item]
+        }
+    }
+    
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
@@ -132,11 +138,12 @@ function Invoke-FileWatcher{
                             "Database-Check: Database $DBFullPath already exists" | Out-PodeHost
                         }
                         # Read header from csv-file and set it as column-names to the table
-                        $th = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';') + 'Created'
+                        $th = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';')
                         if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                            "Table header: $($th)" | Out-Default
                             "Table-Check: Ovewrite the Table $($TableName) if its already exists" | Out-PodeHost
                         }
-                        New-MySQLiteDBTable -Path $DBFullPath -TableName $TableName -ColumnNames $th -Force
+                        New-MySQLiteDBTable -Path $DBFullPath -TableName $TableName -ColumnNames @($th + 'Created') -Force
                         # Add ID as primary-key th the table
                         Invoke-MySQLiteQuery -Path $DBFullPath -query "ALTER TABLE $TableName ADD ID [INTEGER PRIMARY KEY];"
 
@@ -146,7 +153,7 @@ function Invoke-FileWatcher{
                                     "Item received: $($FileEvent.FullPath)" | Out-PodeHost
                                     "Table-Check: Add content 'ESXiHost' to the table $TableName" | Out-PodeHost
                                 }
-                                Update-ESXiHostTable -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName
+                                Update-ESXiHostTable -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName -TableHeader $th
                                 Invoke-PshtmlESXiDiagram -DBFile $($DBFullPath) -ScriptFile $(Join-Path $PSScriptRoot -ChildPath "New-PshtmlESXiDiag.ps1") -SqlTableName $TableName
                                 if((Get-PodeConfig).DebugLevel -eq 'Info'){
                                     "Remove item: $($FileEvent.FullPath)" | Out-PodeHost
@@ -193,6 +200,10 @@ function Update-ESXiHostTable{
 
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
+        [Object]$TableHeader,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [string]$SqlTableName
     )
 
@@ -205,18 +216,17 @@ function Update-ESXiHostTable{
         $db = Open-MySQLiteDB $DBFile.FullName
     } -process { 
         $i ++
-        $SqlQuery = "Insert into $($SqlTableName) Values(
-            '$($_.HostName)',
-            '$($_.Version)',
-            '$($_.Manufacturer)',
-            '$($_.Model)',
-            '$($_.vCenterServer)',
-            '$($_.Cluster)',
-            '$($_.PhysicalLocation)',
-            '$($_.ConnectionState)',
-            '$(Get-Date)',
-            '$($i)'
+        $SqlQuery = "Insert into $($SqlTableName) Values( 
+            $(for($i = 0; $i -lt $TableHeader.length; $i++){ "'" + $($_.$($TableHeader[$i])) + "'" + ',' }) '$(Get-Date)', '$($i)' 
         )"
+        # Same as hardcoded version:
+        # $SqlQuery = "Insert into $($SqlTableName) Values(
+        #     '$($_.HostName)', '$($_.Version)', '$($_.Manufacturer)', '$($_.Model)', '$($_.vCenterServer)',
+        #     '$($_.Cluster)', '$($_.PhysicalLocation)', '$($_.ConnectionState)', '$($_.Notes)', '$(Get-Date)', '$($i)'
+        # )"
+        if((Get-PodeConfig).DebugLevel -eq 'Info'){
+            $SqlQuery | Out-Default
+        }
         Invoke-MySQLiteQuery -connection $db -keepalive -query $SqlQuery
     } -end { 
         Close-MySQLiteDB $db

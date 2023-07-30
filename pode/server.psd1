@@ -10,7 +10,7 @@
     PSModules   = 'PSHTML', 'mySQLite', 'Pode', 'Pode.Web'
     PSXi = @{
         AppName = 'PSXi App'
-        Version = '1.0.5'
+        Version = '1.0.6'
         Group1  = 'Classic'
         Group2  = 'Cloud'
         Tables  = @(
@@ -27,7 +27,7 @@
             'Cluster'
             'PhysicalLocation'
             'ConnectionState'
-            'Created'
+            'Notes'
         )
     }
 }

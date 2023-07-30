@@ -27,6 +27,9 @@
                     }
                 )
             )
+            # New-PodeWebCard -Name 'Endpoint check' -Content @(
+            #     New-PodeWebAlert -Value  $global:epurl -Type Success
+            # )
 
             $SqliteQuery = "SELECT * FROM Metadata"
             $TableExists = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
