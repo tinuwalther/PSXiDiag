@@ -77,10 +77,8 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                     #region Search
                     New-PodeWebForm -Id "Form$($i)" -Name "Search for ESXiHost" -AsCard -ShowReset -ArgumentList @($Properties, $PodeDB, $SqlTableName) -ScriptBlock {
                         param($Properties, $PodeDB, $SqlTableName)
-                        $SqliteQuery = "Select * from $($SqlTableName) Where HostName Like '%$($WebEvent.Data.Search)%'"
-                        $sProperties = @('vCenterServer')
-                        $sProperties += $Properties
-                        Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $sProperties | Out-PodeWebTable
+                        $SqliteQuery = "Select * from $($SqlTableName) Where HostName Like '%$($WebEvent.Data.Search)%' Order by vCenterServer"
+                        Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Out-PodeWebTable
                     } -Content @(
                         New-PodeWebTextbox -Id "Search$($i)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '400px' -Placeholder 'Enter a HostName or leave it empty to load all Hosts'
                     )
