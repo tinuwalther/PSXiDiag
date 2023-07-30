@@ -97,36 +97,40 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                             New-PodeWebTab -Id "Tab$($i)" -Name "vCenter $($vCenter)" -Layouts @(
                                 
                                 #region Badge
-                                New-PodeWebLine
-                                New-PodeWebText -Value "vCenter «$($vCenter)» contains:" -Style Bold
-                                New-PodeWebBadge -Colour Cyan -Value "$($VICluster.count) Cluster"
-                                New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
-                                # New-PodeWebLine
+                                New-PodeWebCard -NoTitle -NoHide -Content @(
+                                    New-PodeWebText -Value "vCenter «$($vCenter)» contains:" -Style Bold
+                                    New-PodeWebBadge -Colour Cyan -Value "$($VICluster.count) Cluster"
+                                    New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
+                                )
                                 #endregion
 
                                 foreach($Cluster in $VICluster){
                                     $ii ++
 
                                     #region Badge
-                                    New-PodeWebLine
-                                    New-PodeWebText -Value "Cluster «$($Cluster)» contains:" -Style Italics
-                                    $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster | Group-Object HostName
-                                    New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
-                                    $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster| Group-Object Version | ForEach-Object {
-                                        switch -Regex ($_.Name){
-                                            '^7\.0'   {$Colour = 'Green'}
-                                            '^6\.7'   {$Colour = 'Yellow'}
-                                            '^6\.5'   {$Colour = 'Red'}
-                                            default {$Colour = 'Dark'}
+                                    # New-PodeWebLine
+                                    New-PodeWebParagraph -Elements @(
+                                        New-PodeWebText -Value "Cluster «$($Cluster)» contains:" -Style Italics
+                                        $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster | Group-Object HostName
+                                        New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
+                                        $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster| Group-Object Version | ForEach-Object {
+                                            switch -Regex ($_.Name){
+                                                '^7\.0'   {$Colour = 'Green'}
+                                                '^6\.7'   {$Colour = 'Yellow'}
+                                                '^6\.5'   {$Colour = 'Red'}
+                                                default {$Colour = 'Dark'}
+                                            }
+                                            if($_.count -gt 0){
+                                                New-PodeWebBadge -Colour $Colour -Value "V$($_.Name) ($($_.Count))"
+                                            }
                                         }
-                                        if($_.count -gt 0){
-                                            New-PodeWebBadge -Colour $Colour -Value "V$($_.Name) ($($_.Count))"
-                                        }
-                                    }
-                                    New-PodeWebLine
+                                    )
+                                    # New-PodeWebLine
                                     #endregion
         
-                                    New-PodeWebTable -Id "Table$($ii)" -Name "VC$($ii)" -DisplayName "Cluster $($Cluster)" -AsCard -SimpleSort -NoExport -NoRefresh -Click -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlTableName, $Cluster) -ScriptBlock {
+                                    New-PodeWebTable -Id "Table$($ii)" -Name "VC$($ii)" -DisplayName "Cluster $($Cluster)" -AsCard -SimpleSort -NoExport -NoRefresh -Click -DataColumn HostName -ClickScriptBlock{
+                                        Show-PodeWebToast -Message "$($WebEvent.Data.Value) clicked" -Duration 900000
+                                    } -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlTableName, $Cluster) -ScriptBlock {
                                         param($Properties, $item, $PodeDB, $SqlTableName, $Cluster)
                                         $SqliteQuery = "Select * from $($SqlTableName) Where (vCenterServer Like '%$($item)%') And (Cluster = '$Cluster')"
                                         Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
