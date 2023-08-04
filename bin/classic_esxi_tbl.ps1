@@ -123,7 +123,7 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                                     $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery #-As Hashtable | Select-Object -ExpandProperty Values
                                     foreach($item in $Result){ $Message = "$($Message), $($item)" }
                                     Show-PodeWebToast -Title $($WebEvent.Data.Value) -Message $Message.TrimStart(', ') -Duration 900000
-                            } -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlTableName, $Cluster) -ScriptBlock {
+                                } -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlTableName, $Cluster) -ScriptBlock {
                                     param($Properties, $item, $PodeDB, $SqlTableName, $Cluster)
                                     $SqliteQuery = "Select * from $($SqlTableName) Where (vCenterServer Like '%$($item)%') And (Cluster = '$Cluster')"
                                     Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
