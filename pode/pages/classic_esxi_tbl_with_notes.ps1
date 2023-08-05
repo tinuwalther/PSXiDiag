@@ -15,11 +15,12 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
     #endregion
 
     #region Defaults
-    $PodeRoot     = $($PSScriptRoot).Replace('pages','db')
-    $PodeDB       = Join-Path $PodeRoot -ChildPath 'psxi.db'
-    $PSXiViews    = (Get-PodeConfig).PSXi.Views
-    $SqlViewName  = switch -regex ($PSXiViews){ $GroupName { $_ } }
-    $SqlNotesTableName = "$($SqlViewName.Replace('view_',''))Notes"
+    $PodeRoot            = $($PSScriptRoot).Replace('pages','db')
+    $global:PodeDB       = Join-Path $PodeRoot -ChildPath 'psxi.db'
+    $PSXiViews           = (Get-PodeConfig).PSXi.Views
+    $SqlViewName         = switch -regex ($PSXiViews){ $GroupName { $_ } }
+    $global:SqlTableName = "$($SqlViewName.Replace('view_',''))"
+    $SqlNotesTableName   = "$($SqlViewName.Replace('view_',''))Notes"
     #endregion Defaults
     
     #region Breadcrumb
@@ -29,33 +30,32 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
     )
     #endregion Breadcrumb
 
-    if(Test-Path $PodeDB){
+    if(Test-Path $global:PodeDB){
 
         #region Get data from SQLite
         $TableExists = foreach($item in $SqlViewName){
-            # $item | Out-Default
             $SqliteQuery = "SELECT * FROM sqlite_master WHERE name like '$item'"
-            Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+            Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
         }
 
         if([String]::IsNullOrEmpty($TableExists)){
             New-PodeWebCard -Name 'Warning' -Content @(
-                New-PodeWebAlert -Value "Could not find view in $($PodeDB)" -Type Warning
+                New-PodeWebAlert -Value "Could not find view in $($global:PodeDB)" -Type Warning
                 New-PodeWebAlert -Value "Please upload CSV-files for ($($SqlViewName))" -Type Important
             )
             break
         }else{
-            $MySQLiteDB = Open-MySQLiteDB -Path $PodeDB
+            $MySQLiteDB = Open-MySQLiteDB -Path $global:PodeDB
             if([String]::IsNullOrEmpty($MySQLiteDB)){
                 New-PodeWebCard -Name 'Warning' -Content @(
-                    New-PodeWebAlert -Value "Could not connect to $($PodeDB)" -Type Warning
+                    New-PodeWebAlert -Value "Could not connect to $($global:PodeDB)" -Type Warning
                 )
                 break
             }else{
                 $i = $ii = 100
                 $SqlViewName = $item
                 $SqliteQuery  = "Select * from $($SqlViewName)"
-                $FullDB       = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                $FullDB       = Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
                 [datetime]$Created = $FullDB.Created | Select-Last 1
                 $VIServer     = $FullDB | Group-Object vCenterServer | Select-Object -ExpandProperty Name
                 $Properties = (Get-PodeConfig).PSXi.TableHeader
@@ -73,7 +73,7 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
                 New-PodeWebBadge -Colour Cyan -Value "$($TotalCluster.Count) Cluster"
                 $ESXiHosts = $FullDB | Group-Object HostName
                 New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
-                $VersionGroup = Invoke-MySQLiteQuery -Path $PodeDB -Query "Select Version, COUNT(Version) AS Count from $($SqlViewName) Group by Version"
+                $VersionGroup = Invoke-MySQLiteQuery -Path $global:PodeDB -Query "Select Version, COUNT(Version) AS Count from $($SqlViewName) Group by Version"
                 for($i = 0; $i -lt $VersionGroup.count; $i++ ){
                     # "$($SqlViewName) : $($VersionGroup[$i].Version) : $($VersionGroup[$i].Count)" | Out-Default
                     switch -Regex ($VersionGroup[$i].Version){
@@ -90,10 +90,10 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
             #endregion Summary
 
             #region Search
-            New-PodeWebForm -Id "Form$($GroupName)" -Name "Search for ESXiHost" -AsCard -ShowReset -ArgumentList @($Properties, $PodeDB, $SqlViewName) -ScriptBlock {
-                param($Properties, $PodeDB, $SqlViewName)
+            New-PodeWebForm -Id "Form$($GroupName)" -Name "Search for ESXiHost" -AsCard -ShowReset -ArgumentList @($Properties, $global:PodeDB, $SqlViewName) -ScriptBlock {
+                param($Properties, $global:PodeDB, $SqlViewName)
                 $SqliteQuery = "Select * from $($SqlViewName) Where HostName Like '%$($WebEvent.Data.Search)%' Order by vCenterServer"
-                Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Out-PodeWebTable -Sort
+                Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery | Out-PodeWebTable -Sort
             } -Content @(
                 New-PodeWebTextbox -Id "Search$($GroupName)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '400px' -Placeholder 'Enter a HostName or leave it empty to load all Hosts'
             )
@@ -108,45 +108,41 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
 
                     #region Table ESXiNotes
                     New-PodeWebTable -Id "$($GroupName)TblNotes" -Name "$($GroupName)TableESXiNotes" -DisplayName "ESXi Notes" -AsCard -SimpleSort -NoRefresh -NoExport -Click -DataColumn HostName -ClickScriptBlock{
-                        param($Properties, $item, $PodeDB, $SqlNotesTableName, $Cluster)
+                        param($Properties, $item, $global:PodeDB, $SqlNotesTableName, $Cluster)
                         $SqliteQuery = "Select * from $($SqlNotesTableName)"
-                        Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
-                    } -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlNotesTableName, $Cluster) -ScriptBlock {
-                        param($Properties, $item, $PodeDB, $SqlNotesTableName, $Cluster)
+                        Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
+                    } -Compact -ArgumentList @($Properties, $item, $global:PodeDB, $SqlNotesTableName, $Cluster) -ScriptBlock {
+                        param($Properties, $item, $global:PodeDB, $SqlNotesTableName, $Cluster)
                         $SqliteQuery = "Select * from $($SqlNotesTableName)"
-                        Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                        Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
                     }
                     #endregion Table ESXiNotes
 
                     #region Add ESXiNotes
-                    New-PodeWebForm -Id "$($GroupName)AddESXiNotes" -Name "Add Notes for ESXiHost" -ShowReset -AsCard -ArgumentList @($GroupName, $PodeDB, $SqlNotesTableName) -ScriptBlock {
-                        param($GroupName, $PodeDB, $SqlNotesTableName)
+                    New-PodeWebForm -Id "$($GroupName)AddESXiNotes" -Name "Add Notes for ESXiHost" -ShowReset -AsCard -ArgumentList @($GroupName, $global:PodeDB, $SqlNotesTableName) -ScriptBlock {
+                        param($GroupName, $global:PodeDB, $SqlNotesTableName)
                         $SqliteQuery = "INSERT INTO $($SqlNotesTableName) (HostName, Notes) VALUES ('$($WebEvent.Data.AddHostName)', '$($WebEvent.Data.Notes)')"
-                        Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                        Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
                         Sync-PodeWebTable -Name "$($GroupName)TableESXiNotes"
                         Show-PodeWebToast -Message "Notes for $($WebEvent.Data.AddHostName) inserted"
                     } -Content @(
                         New-PodeWebTextbox -Name 'AddHostName' -DisplayName 'HostName' -Placeholder 'ESXiHost' -AutoComplete {
-                            $PodeRoot     = $($PSScriptRoot).Replace('pages','db')
-                            $PodeDB       = Join-Path $PodeRoot -ChildPath 'psxi.db'                        
-                            return @(Invoke-MySQLiteQuery -Path $PodeDB -Query "SELECT HostName FROM 'classic_ESXiHosts'").HostName
+                            return @(Invoke-MySQLiteQuery -Path $global:PodeDB -Query "SELECT HostName FROM '$($global:SqlTableName)'").HostName
                         }
                         New-PodeWebTextbox -Name 'Notes' -Placeholder 'New Notes for this ESXiHost'
                     )
                     #endregion Add ESXiNotes
 
                     #region Remove ESXiNotes
-                    New-PodeWebForm -Id "$($GroupName)RemoveESXiNotes" -Name "Remove Notes of ESXiHost" -ShowReset -AsCard -ArgumentList @($GroupName, $PodeDB, $SqlNotesTableName) -ScriptBlock {
-                        param($GroupName, $PodeDB, $SqlNotesTableName)
+                    New-PodeWebForm -Id "$($GroupName)RemoveESXiNotes" -Name "Remove Notes of ESXiHost" -ShowReset -AsCard -ArgumentList @($GroupName, $global:PodeDB, $SqlNotesTableName) -ScriptBlock {
+                        param($GroupName, $global:PodeDB, $SqlNotesTableName)
                         $SqliteQuery = "DELETE FROM $($SqlNotesTableName) WHERE (HostName like '%$($WebEvent.Data.RemoveHostName)%')"
-                        Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                        Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
                         Sync-PodeWebTable -Name "$($GroupName)TableESXiNotes"
                         Show-PodeWebToast -Message "Notes for $($WebEvent.Data.RemoveHostName) removed"
                     } -Content @(
                         New-PodeWebTextbox -Name 'RemoveHostName' -DisplayName 'HostName' -Placeholder 'ESXiHost' -AutoComplete {
-                            $PodeRoot     = $($PSScriptRoot).Replace('pages','db')
-                            $PodeDB       = Join-Path $PodeRoot -ChildPath 'psxi.db'                        
-                            return @(Invoke-MySQLiteQuery -Path $PodeDB -Query "SELECT HostName FROM 'classic_ESXiHosts'").HostName
+                            return @(Invoke-MySQLiteQuery -Path $global:PodeDB -Query "SELECT HostName FROM '$($global:SqlTableName)'").HostName
                         }
                     )
                     #endregion Remove ESXiNotes
@@ -192,15 +188,15 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
                         #endregion
 
                         New-PodeWebTable -Id "Table$($ii)" -Name "VC$($ii)" -DisplayName "Cluster $($Cluster)" -AsCard -SimpleSort -NoRefresh -NoExport -Click -DataColumn HostName -ClickScriptBlock{
-                            param($Properties, $item, $PodeDB, $SqlViewName, $Cluster)
+                            param($Properties, $item, $global:PodeDB, $SqlViewName, $Cluster)
                             $SqliteQuery = "Select * from $($SqlViewName) Where (HostName = '$($WebEvent.Data.Value)')"
-                            $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery #-As Hashtable | Select-Object -ExpandProperty Values
+                            $Result = Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery #-As Hashtable | Select-Object -ExpandProperty Values
                             foreach($item in $Result){ $Message = "$($Message), $($item)" }
                             Show-PodeWebToast -Title $($WebEvent.Data.Value) -Message $Message.TrimStart(', ') -Duration 900000
-                        } -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlViewName, $Cluster) -ScriptBlock {
-                            param($Properties, $item, $PodeDB, $SqlViewName, $Cluster)
+                        } -Compact -ArgumentList @($Properties, $item, $global:PodeDB, $SqlViewName, $Cluster) -ScriptBlock {
+                            param($Properties, $item, $global:PodeDB, $SqlViewName, $Cluster)
                             $SqliteQuery = "Select * from $($SqlViewName) Where (vCenterServer Like '%$($item)%') And (Cluster = '$Cluster')"
-                            Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
+                            Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery | Select-Object $Properties
                         }
 
                     }
@@ -212,7 +208,7 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
 
     }else{
         New-PodeWebCard -Name 'Warning' -Content @(
-            New-PodeWebAlert -Value "Could not find $($PodeDB)" -Type Warning
+            New-PodeWebAlert -Value "Could not find $($global:PodeDB)" -Type Warning
         )
     }
 
