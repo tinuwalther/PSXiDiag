@@ -137,18 +137,52 @@ function Invoke-FileWatcher{
                         if((Get-PodeConfig).DebugLevel -eq 'Info'){
                             "Database-Check: Database $DBFullPath already exists" | Out-PodeHost
                         }
+
                         # Read header from csv-file and set it as column-names to the table
                         $th = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';')
                         if((Get-PodeConfig).DebugLevel -eq 'Info'){
                             "Table header: $($th)" | Out-Default
                             "Table-Check: Ovewrite the Table $($TableName) if its already exists" | Out-PodeHost
                         }
+
+                        # Create new empty table, replace if it exists
                         New-MySQLiteDBTable -Path $DBFullPath -TableName $TableName -ColumnNames @($th + 'Created') -Force
                         # Add ID as primary-key th the table
                         Invoke-MySQLiteQuery -Path $DBFullPath -query "ALTER TABLE $TableName ADD ID [INTEGER PRIMARY KEY];"
 
+                        # Create table for Notes
+                        $TableExists = Invoke-MySQLiteQuery -Path $DBFullPath -query "SELECT * FROM sqlite_master WHERE type = 'table' AND name like '$($TableName)Notes'"
+                        if([string]::IsNullOrEmpty($TableExists)){
+                            Invoke-MySQLiteQuery -Path $DBFullPath -query "CREATE TABLE '$($TableName)Notes'(  
+                                ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+                                HostName TEXT,
+                                Notes TEXT
+                            )"
+                        }
+
+                        # Create views
+                        $ViewExists = Invoke-MySQLiteQuery -Path $DBFullPath -query "SELECT * FROM sqlite_master WHERE type = 'view' AND name like 'view_$($TableName)'"
+                        if([string]::IsNullOrEmpty($ViewExists)){
+                            Invoke-MySQLiteQuery -Path $DBFullPath -query "CREATE VIEW 'view_$($TableName)' AS
+                            SELECT 
+                                l.'ID',
+                                l.'HostName', 
+                                l.'Version',
+                                l.'ConnectionState',
+                                l.'PhysicalLocation',
+                                l.'Manufacturer',
+                                l.'Model',
+                                l.'vCenterServer',
+                                l.'Cluster',
+                                l.'Created',
+                                n.'Notes' 
+                            FROM '$($TableName)' AS l
+                            LEFT JOIN '$($TableName)Notes' AS n
+                            ON l.'HostName' = n.'HostName'"
+                        }
+                        
                         switch -Regex ($TableName){
-                            '_ESXiHosts' {
+                            '_ESXiHosts$' {
                                 if((Get-PodeConfig).DebugLevel -eq 'Info'){
                                     "Item received: $($FileEvent.FullPath)" | Out-PodeHost
                                     "Table-Check: Add content 'ESXiHost' to the table $TableName" | Out-PodeHost
@@ -160,7 +194,7 @@ function Invoke-FileWatcher{
                                 }
                                 Remove-Item -Path $FileEvent.FullPath -Force
                             }
-                            '_summary' {
+                            '_summary$' {
                                 if((Get-PodeConfig).DebugLevel -eq 'Info'){
                                     "Item received: $($FileEvent.FullPath)" | Out-PodeHost
                                     "Table-Check: Add content 'Summary' to the table $TableName" | Out-PodeHost

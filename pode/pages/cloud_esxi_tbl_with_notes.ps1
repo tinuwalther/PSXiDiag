@@ -1,9 +1,9 @@
 ﻿<#
-    Classic Zone
+    Cloud Zone
 #>
-$GroupName    = (Get-PodeConfig).PSXi.Group1
+$GroupName = (Get-PodeConfig).PSXi.Group2
 
-Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Title "$($GroupName) ESXi Host Inventory" -Icon 'server' -ScriptBlock {
+Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Title "$($GroupName) ESXi Host Inventory" -Icon 'cloud' -ArgumentList $GroupName -ScriptBlock {
     param($GroupName)
 
     #region module
@@ -14,6 +14,13 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
     if(-not(Get-Module -Name mySQLite)){ Import-Module -Name mySQLite }
     #endregion
 
+    #region Breadcrumb
+    Set-PodeWebBreadcrumb -Items @(
+        New-PodeWebBreadcrumbItem -Name 'Home' -Url '/'
+        New-PodeWebBreadcrumbItem -Name "$GroupName ESXi Host Inventory" -Url "/pages/PageName?value=$($GroupName) ESXi Hosts Table" -Active
+    )
+    #endregion Breadcrumb
+    
     #region Defaults
     $PodeRoot     = $($PSScriptRoot).Replace('pages','db')
     $PodeDB       = Join-Path $PodeRoot -ChildPath 'psxi.db'
@@ -21,13 +28,6 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
     $SqlViewName  = switch -regex ($PSXiViews){ $GroupName { $_ } }
     $SqlNotesTableName = "$($SqlViewName.Replace('view_',''))Notes"
     #endregion Defaults
-    
-    #region Breadcrumb
-    Set-PodeWebBreadcrumb -Items @(
-        New-PodeWebBreadcrumbItem -Name 'Home' -Url '/'
-        New-PodeWebBreadcrumbItem -Name "$GroupName ESXi Host Inventory" -Url "/pages/PageName?value=$($GroupName) ESXi Hosts Table" -Active
-    )
-    #endregion Breadcrumb
 
     if(Test-Path $PodeDB){
 
@@ -52,7 +52,7 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
                 )
                 break
             }else{
-                $i = $ii = 100
+                $i = $ii = 200
                 $SqlViewName = $item
                 $SqliteQuery  = "Select * from $($SqlViewName)"
                 $FullDB       = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
@@ -129,7 +129,7 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
                         New-PodeWebTextbox -Name 'AddHostName' -DisplayName 'HostName' -Placeholder 'ESXiHost' -AutoComplete {
                             $PodeRoot     = $($PSScriptRoot).Replace('pages','db')
                             $PodeDB       = Join-Path $PodeRoot -ChildPath 'psxi.db'                        
-                            return @(Invoke-MySQLiteQuery -Path $PodeDB -Query "SELECT HostName FROM 'classic_ESXiHosts'").HostName
+                            return @(Invoke-MySQLiteQuery -Path $PodeDB -Query "SELECT HostName FROM 'cloud_ESXiHosts'").HostName
                         }
                         New-PodeWebTextbox -Name 'Notes' -Placeholder 'New Notes for this ESXiHost'
                     )
@@ -146,7 +146,7 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
                         New-PodeWebTextbox -Name 'RemoveHostName' -DisplayName 'HostName' -Placeholder 'ESXiHost' -AutoComplete {
                             $PodeRoot     = $($PSScriptRoot).Replace('pages','db')
                             $PodeDB       = Join-Path $PodeRoot -ChildPath 'psxi.db'                        
-                            return @(Invoke-MySQLiteQuery -Path $PodeDB -Query "SELECT HostName FROM 'classic_ESXiHosts'").HostName
+                            return @(Invoke-MySQLiteQuery -Path $PodeDB -Query "SELECT HostName FROM 'cloud_ESXiHosts'").HostName
                         }
                     )
                     #endregion Remove ESXiNotes
@@ -158,58 +158,72 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
 
         #region tables
         if($MySQLiteDB){
-            #region VIServer
-            foreach($item in $VIServer){
-                $i ++
-                $vCenter = (($item -split '\.')[0]).ToUpper()
-                $VICluster = $FullDB | Where-Object vCenterServer -match $item | Group-Object Cluster | Select-Object -ExpandProperty Name
-                $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Group-Object HostName
+            New-PodeWebContainer -NoBackground -Content @(
 
-                New-PodeWebCard -Id "VC$($i)" -Name "VC$($i)" -DisplayName "vCenter «$($vCenter)» contains $($VICluster.count) Cluster, $($ESXiHosts.Count) ESXiHosts" -Content @(
+                #region Tabs
+                New-PodeWebTabs -Tabs @(
+                    foreach($item in $VIServer){
 
-                    foreach($Cluster in $VICluster){
-                        $ii ++
+                        $i ++
+                        $vCenter = (($item -split '\.')[0]).ToUpper()
+                        $VICluster = $FullDB | Where-Object vCenterServer -match $item | Group-Object Cluster | Select-Object -ExpandProperty Name
+                        $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Group-Object HostName
+                        
+                        New-PodeWebTab -Id "Tab$($i)" -Name "vCenter $($vCenter)" -Layouts @(
+                            
+                            #region Badge
+                            New-PodeWebCard -NoTitle -NoHide -Content @(
+                                New-PodeWebText -Value "vCenter «$($vCenter)» contains:" -Style Bold
+                                New-PodeWebBadge -Colour Cyan -Value "$($VICluster.count) Cluster"
+                                New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
+                            )
+                            #endregion
 
-                        #region Badge 
-                        New-PodeWebText -Value "Cluster «$($Cluster)» contains:" -Style Italics
-                        #New-PodeWebBadge -Colour Light -Value "$($Cluster)"
-                        $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster | Group-Object HostName
-                        New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
+                            foreach($Cluster in $VICluster){
+                                $ii ++
 
-                        $VersionGroup = $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster| Group-Object Version
-                        for($i = 0; $i -lt $VersionGroup.count; $i++ ){
-                            switch -Regex ($VersionGroup[$i].Name){
-                                '^6\.5'   {$Colour = 'Red'}
-                                '^6\.7'   {$Colour = 'Yellow'}
-                                '^7\.0'   {$Colour = 'Green'}
-                                default {$Colour = 'Dark'}
+                                #region Badge
+                                New-PodeWebParagraph -Elements @(
+                                    New-PodeWebText -Value "Cluster «$($Cluster)» contains:" -Style Italics
+                                    $ESXiHosts = $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster | Group-Object HostName
+                                    New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts.Count) ESXiHosts"
+                                    $FullDB | Where-Object vCenterServer -match $item | Where-Object Cluster -match $Cluster| Group-Object Version | ForEach-Object {
+                                        switch -Regex ($_.Name){
+                                            '^7\.0'   {$Colour = 'Green'}
+                                            '^6\.7'   {$Colour = 'Yellow'}
+                                            '^6\.5'   {$Colour = 'Red'}
+                                            default {$Colour = 'Dark'}
+                                        }
+                                        if($_.count -gt 0){
+                                            New-PodeWebBadge -Colour $Colour -Value "V$($_.Name) ($($_.Count))"
+                                        }
+                                    }
+                                )
+                                #endregion
+    
+                                #region Table ESXiNotes
+                                New-PodeWebTable -Id "Table$($ii)" -Name "VC$($ii)" -DisplayName "Cluster $($Cluster)" -AsCard -SimpleSort -NoExport -NoRefresh -Click -DataColumn HostName -ClickScriptBlock{
+                                    param($Properties, $item, $PodeDB, $SqlViewName, $Cluster)
+                                    $SqliteQuery = "Select * from $($SqlViewName) Where (HostName = '$($WebEvent.Data.Value)')"
+                                    $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery #-As Hashtable | Select-Object -ExpandProperty Values
+                                    foreach($item in $Result){ $Message = "$($Message), $($item)" }
+                                    Show-PodeWebToast -Title $($WebEvent.Data.Value) -Message $Message.TrimStart(', ') -Duration 900000
+                                } -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlViewName, $Cluster) -ScriptBlock {
+                                    param($Properties, $item, $PodeDB, $SqlViewName, $Cluster)
+                                    $SqliteQuery = "Select * from $($SqlViewName) Where (vCenterServer Like '%$($item)%') And (Cluster = '$Cluster')"
+                                    Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
+                                }
+                                #endregion Table ESXiNotes
+
                             }
-                            if($VersionGroup[$i].Count -gt 0){
-                                New-PodeWebBadge -Colour $Colour -Value "V$($VersionGroup[$i].Name) ($($VersionGroup[$i].Count))"
-                            }
-                        }
-                        New-PodeWebLine
-                        #endregion
-
-                        New-PodeWebTable -Id "Table$($ii)" -Name "VC$($ii)" -DisplayName "Cluster $($Cluster)" -AsCard -SimpleSort -NoRefresh -NoExport -Click -DataColumn HostName -ClickScriptBlock{
-                            param($Properties, $item, $PodeDB, $SqlViewName, $Cluster)
-                            $SqliteQuery = "Select * from $($SqlViewName) Where (HostName = '$($WebEvent.Data.Value)')"
-                            $Result = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery #-As Hashtable | Select-Object -ExpandProperty Values
-                            foreach($item in $Result){ $Message = "$($Message), $($item)" }
-                            Show-PodeWebToast -Title $($WebEvent.Data.Value) -Message $Message.TrimStart(', ') -Duration 900000
-                        } -Compact -ArgumentList @($Properties, $item, $PodeDB, $SqlViewName, $Cluster) -ScriptBlock {
-                            param($Properties, $item, $PodeDB, $SqlViewName, $Cluster)
-                            $SqliteQuery = "Select * from $($SqlViewName) Where (vCenterServer Like '%$($item)%') And (Cluster = '$Cluster')"
-                            Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery | Select-Object $Properties
-                        }
-
+                        )
                     }
-                ) 
-            }
-            #endregion VIServer
+                )
+                #endregion
+            )
         }
         #endregion tables
-
+        
     }else{
         New-PodeWebCard -Name 'Warning' -Content @(
             New-PodeWebAlert -Value "Could not find $($PodeDB)" -Type Warning

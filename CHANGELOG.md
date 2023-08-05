@@ -8,4 +8,5 @@ Version | Description | Date | Author
 1.0.3 | Reading configuration from server.psd1 | 2023-05-20 | Martin Walther
 1.0.4 | Group configuration in server.psd1 | 2023-05-20 | Martin Walther
 1.0.5 | Add charts to the summary pages | 2023-06-11 | Martin Walther
-1.0.9 | Add seperated table for notes | 2023-08-04 | Martin Walther
+1.0.9 | Add seperated table for classic notes | 2023-08-04 | Martin Walther
+1.1.0 | Add seperated table for cloud notes | 2023-08-04 | Martin Walther
