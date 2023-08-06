@@ -265,6 +265,36 @@ function Update-ESXiHostTable{
     } -end { 
         Close-MySQLiteDB $db
     }
+
+    #region add or merge Notes, Master is the Notes-Table
+    $ESXiHosts = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "SELECT HostName, Notes FROM '$($SqlTableName)' WHERE Notes >''"
+    if(-not([String]::IsNullOrEmpty($ESXiHosts))){
+        if((Get-PodeConfig).DebugLevel -eq 'Info'){
+            "$($SqlTableName): found Notes for $($ESXiHosts.HostName) = $($ESXiHosts.Notes)" | Out-Default
+        }
+        $ESXiHostsNotes = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "SELECT HostName, Notes FROM '$($SqlTableName)Notes' WHERE HostName = '$($ESXiHosts.HostName)'"
+        if([String]::IsNullOrEmpty($ESXiHostsNotes)){
+            if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                "$($SqlTableName)Notes: no Notes for $($ESXiHostsNotes.HostName), insert into" | Out-Default
+            }
+            $InsertNotes = $($ESXiHosts.Notes).Trim()
+            $SqliteQuery = "INSERT INTO '$($SqlTableName)Notes' (HostName, Notes) VALUES ('$($ESXiHosts.HostName)', '$($InsertNotes)')"
+            Invoke-MySQLiteQuery -Path $DBFile.FullName -Query $SqliteQuery
+        }else{
+            if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                "$($SqlTableName)Notes: found Notes for $($ESXiHostsNotes.HostName) = $($ESXiHostsNotes.Notes), update" | Out-Default
+            }
+            if($($ESXiHostsNotes.Notes) -match $($ESXiHosts.Notes)){
+                $MergedNotes = $($ESXiHostsNotes.Notes).Trim()
+            }else{
+                $MergedNotes = $("$($ESXiHostsNotes.Notes), from CSV: $($ESXiHosts.Notes)").Trim()
+            }
+            $SqliteQuery = "UPDATE '$($SqlTableName)Notes' SET Notes='$($MergedNotes)' WHERE HostName = '$($ESXiHosts.HostName)'"
+            Invoke-MySQLiteQuery -Path $DBFile.FullName -Query $SqliteQuery
+        }
+    }
+    #endregion add or merge Notes
+
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 }
 

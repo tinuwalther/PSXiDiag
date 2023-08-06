@@ -121,12 +121,22 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
                         #endregion Table ESXiNotes
 
                         #region Add ESXiNotes
-                        New-PodeWebForm -Id "$($GroupName)AddESXiNotes" -Name "Add Notes for ESXiHost" -ShowReset -AsCard -ArgumentList @($GroupName, $global:PodeDB, $SqlNotesTableName) -ScriptBlock {
+                        New-PodeWebForm -Id "$($GroupName)AddESXiNotes" -Name "Add/Update Notes for ESXiHost" -ShowReset -AsCard -ArgumentList @($GroupName, $global:PodeDB, $SqlNotesTableName) -ScriptBlock {
                             param($GroupName, $global:PodeDB, $SqlNotesTableName)
-                            $SqliteQuery = "INSERT INTO $($SqlNotesTableName) (HostName, Notes) VALUES ('$($WebEvent.Data.AddHostName)', '$($WebEvent.Data.Notes)')"
-                            Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
-                            Sync-PodeWebTable -Name "$($GroupName)TableESXiNotes"
-                            Show-PodeWebToast -Message "Notes for $($WebEvent.Data.AddHostName) inserted"
+                            $HostExists = Invoke-MySQLiteQuery -Path $global:PodeDB -Query "SELECT HostName from $($SqlNotesTableName) WHERE HostName = '$($WebEvent.Data.AddHostName).Trim()'"
+                            if([String]::IsNullOrEmpty($HostExists)){
+                                # ADD
+                                $SqliteQuery = "INSERT INTO $($SqlNotesTableName) (HostName, Notes) VALUES ('$($WebEvent.Data.AddHostName.Trim())', '$($WebEvent.Data.Notes.Trim())')"
+                                Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
+                                Sync-PodeWebTable -Name "$($GroupName)TableESXiNotes"
+                                Show-PodeWebToast -Message "Notes for $($WebEvent.Data.AddHostName) inserted"
+                            }else{
+                                # UPDATE
+                                $SqliteQuery = "UPDATE $($SqlNotesTableName) SET Notes='$($WebEvent.Data.Notes.Trim())' WHERE HostName = '$($WebEvent.Data.AddHostName.Trim())'"
+                                Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
+                                Sync-PodeWebTable -Name "$($GroupName)TableESXiNotes"
+                                Show-PodeWebToast -Message "Notes for $($WebEvent.Data.AddHostName) updated"
+                            }
                         } -Content @(
                             New-PodeWebTextbox -Name 'AddHostName' -DisplayName 'HostName' -Placeholder 'ESXiHost' -AutoComplete {
                                 return @(Invoke-MySQLiteQuery -Path $global:PodeDB -Query "SELECT HostName FROM '$($global:SqlTableName)'").HostName
@@ -189,8 +199,9 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
                                 }
                             }
                             New-PodeWebLine
-                            #endregion
+                            #endregion Badge
 
+                            #region add table
                             New-PodeWebTable -Id "Table$($ii)" -Name "VC$($ii)" -DisplayName "Cluster $($Cluster)" -AsCard -SimpleSort -NoRefresh -NoExport -Click -DataColumn HostName -ClickScriptBlock{
                                 param($Properties, $item, $global:PodeDB, $SqlViewName, $Cluster)
                                 $SqliteQuery = "Select * from $($SqlViewName) Where (HostName = '$($WebEvent.Data.Value)')"
@@ -202,6 +213,7 @@ Add-PodeWebPage -ArgumentList @($GroupName) -Group $($GroupName) -Name "$($Group
                                 $SqliteQuery = "Select * from $($SqlViewName) Where (vCenterServer Like '%$($item)%') And (Cluster = '$Cluster')"
                                 Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery | Select-Object $Properties
                             }
+                            #endregion add table
 
                         }
                     ) 
