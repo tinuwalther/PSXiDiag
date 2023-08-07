@@ -111,7 +111,7 @@ Update-SummaryTable -CSVFile $CSVFile -DBFile $DBFile -SqlTableName $SqlTableNam
 $db = Open-MySQLiteDB $DBFile.FullName
 $SqliteQuery = "Select vCenterServer from $($SqlTableName) Group by vCenterServer"
 $SQLite_DB   = Invoke-MySQLiteQuery -connection $db -Query $SqliteQuery
-$SQLite_DB | ft -AutoSize
+$SQLite_DB | Format-Table -AutoSize
 
 $db = Open-MySQLiteDB $DBFile.FullName
 $SqliteQuery = "Select * from $($SqlTableName)"
@@ -167,3 +167,14 @@ $SqliteQuery = "SELECT * FROM Metadata"
 $TableExists = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query $SqliteQuery
 $var = "Author: $($TableExists.Author), Computername: $($TableExists.Computername), Created: $($TableExists.Created), Comment: $($TableExists.Comment)"
 $var
+
+
+
+[System.IO.FileInfo]$DBFile         = 'D:\github.com\PSXiDiag\pode\db\psxi.db'
+[string]$SqlTableName               = 'classic_ESXiHosts'
+
+$db = Open-MySQLiteDB $DBFile.FullName
+$SqliteQuery = "Select Created from $($SqlTableName) Limit 1"
+# $SqliteQuery = "Select vCenterServer, Cluster, COUNT(HostName) AS CountOfHosts, COUNT(Cluster) AS CountOfCluster from $($SqlTableName) Group by vCenterServer"
+$SQLite_DB   = Invoke-MySQLiteQuery -connection $db -Query $SqliteQuery
+$SQLite_DB | Format-Table -AutoSize
