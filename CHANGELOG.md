@@ -12,3 +12,4 @@ Version | Description | Date | Author
 1.1.0 | Add seperated table for cloud notes | 2023-08-05 | Martin Walther
 1.1.1 | Change Add Notes to Add/Update Notes | 2023-08-06 | Martin Walther
 1.1.2 | Add merge Notes on import from CSV | 2023-08-06 | Martin Walther
+1.1.3 | Remove double quatation marks on header for import from CSV | 2023-08-27 | Martin Walther

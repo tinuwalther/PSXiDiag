@@ -149,7 +149,7 @@ function Invoke-FileWatcher{
                         New-MySQLiteDBTable -Path $DBFullPath -TableName $TableName -ColumnNames @($th + 'Created') -Force
                         # Add ID as primary-key th the table
                         Invoke-MySQLiteQuery -Path $DBFullPath -query "ALTER TABLE $TableName ADD ID [INTEGER PRIMARY KEY];"
-
+                        
                         # Create table for Notes
                         $TableExists = Invoke-MySQLiteQuery -Path $DBFullPath -query "SELECT * FROM sqlite_master WHERE type = 'table' AND name like '$($TableName)Notes'"
                         if([string]::IsNullOrEmpty($TableExists)){
@@ -186,6 +186,9 @@ function Invoke-FileWatcher{
                                 if((Get-PodeConfig).DebugLevel -eq 'Info'){
                                     "Item received: $($FileEvent.FullPath)" | Out-PodeHost
                                     "Table-Check: Add content 'ESXiHost' to the table $TableName" | Out-PodeHost
+                                }
+                                if($th -match '"'){
+                                    $th = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';') -Replace '"'
                                 }
                                 Update-ESXiHostTable -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName -TableHeader $th
                                 Invoke-PshtmlESXiDiagram -DBFile $($DBFullPath) -ScriptFile $(Join-Path $PSScriptRoot -ChildPath "New-PshtmlESXiDiag.ps1") -SqlTableName $TableName
@@ -243,7 +246,7 @@ function Update-ESXiHostTable{
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
 
-    Write-Verbose "($data | Select-Object -First 1 | Format-Table | Out-String)"
+    # There is a problem, if the data in the csv has ""
     $data = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
     $data | foreach-object -begin { 
         $i = 0
@@ -253,6 +256,7 @@ function Update-ESXiHostTable{
         $SqlQuery = "Insert into $($SqlTableName) Values( 
             $(for($h = 0; $h -lt $TableHeader.length; $h++){ "'" + $($_.$($TableHeader[$h])) + "'" + ',' }) '$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')', '$($i)'
         )"
+        # $(for($h = 0; $h -lt $TableHeader.length; $h++){ "'" + $($_.$($TableHeader[$h])) + "'" + ',' }) '$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')', '$($i)'
         # Same as hardcoded version:
         # $SqlQuery = "Insert into $($SqlTableName) Values(
         #     '$($_.HostName)', '$($_.Version)', '$($_.Manufacturer)', '$($_.Model)', '$($_.vCenterServer)',
@@ -268,29 +272,34 @@ function Update-ESXiHostTable{
 
     #region add or merge Notes, Master is the Notes-Table
     $ESXiHosts = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "SELECT HostName, Notes FROM '$($SqlTableName)' WHERE Notes >''"
-    if(-not([String]::IsNullOrEmpty($ESXiHosts))){
+    foreach($esxi in $ESXiHosts){
         if((Get-PodeConfig).DebugLevel -eq 'Info'){
-            "$($SqlTableName): found Notes for $($ESXiHosts.HostName) = $($ESXiHosts.Notes)" | Out-Default
+            "$($SqlTableName): found Notes for $($esxi.HostName) = $($esxi.Notes)" | Out-Default
         }
-        $ESXiHostsNotes = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "SELECT HostName, Notes FROM '$($SqlTableName)Notes' WHERE HostName = '$($ESXiHosts.HostName)'"
+        $ESXiHostsNotes = Invoke-MySQLiteQuery -Path $DBFile.FullName -Query "SELECT HostName, Notes FROM '$($SqlTableName)Notes' WHERE HostName = '$($esxi.HostName)'"
         if([String]::IsNullOrEmpty($ESXiHostsNotes)){
             if((Get-PodeConfig).DebugLevel -eq 'Info'){
-                "$($SqlTableName)Notes: no Notes for $($ESXiHostsNotes.HostName), insert into" | Out-Default
+                "$($SqlTableName)Notes: no Notes for $($esxi.HostName), insert into" | Out-Default
             }
-            $InsertNotes = $($ESXiHosts.Notes).Trim()
-            $SqliteQuery = "INSERT INTO '$($SqlTableName)Notes' (HostName, Notes) VALUES ('$($ESXiHosts.HostName)', '$($InsertNotes)')"
+            $InsertNotes = $($esxi.Notes).Trim()
+            # No Notes found, insert into table
+            $SqliteQuery = "INSERT INTO '$($SqlTableName)Notes' (HostName, Notes) VALUES ('$($esxi.HostName)', '$($InsertNotes)')"
             Invoke-MySQLiteQuery -Path $DBFile.FullName -Query $SqliteQuery
         }else{
-            if((Get-PodeConfig).DebugLevel -eq 'Info'){
-                "$($SqlTableName)Notes: found Notes for $($ESXiHostsNotes.HostName) = $($ESXiHostsNotes.Notes), update" | Out-Default
+            # Notes found for one or more Hosts
+            foreach($item in $ESXiHostsNotes){
+                if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                    "$($SqlTableName)Notes: found Notes for $($item.HostName) = $($item.Notes), update" | Out-Default
+                }
+                if($($item.Notes) -match $($esxi.Notes)){
+                    $MergedNotes = $($item.Notes).Trim()
+                }else{
+                    $MergedNotes = $("$($item.Notes), from CSV: $($esxi.Notes)").Trim()
+                }
+                # Notes found, update table
+                $SqliteQuery = "UPDATE '$($SqlTableName)Notes' SET Notes='$($MergedNotes)' WHERE HostName = '$($esxi.HostName)'"
+                Invoke-MySQLiteQuery -Path $DBFile.FullName -Query $SqliteQuery
             }
-            if($($ESXiHostsNotes.Notes) -match $($ESXiHosts.Notes)){
-                $MergedNotes = $($ESXiHostsNotes.Notes).Trim()
-            }else{
-                $MergedNotes = $("$($ESXiHostsNotes.Notes), from CSV: $($ESXiHosts.Notes)").Trim()
-            }
-            $SqliteQuery = "UPDATE '$($SqlTableName)Notes' SET Notes='$($MergedNotes)' WHERE HostName = '$($ESXiHosts.HostName)'"
-            Invoke-MySQLiteQuery -Path $DBFile.FullName -Query $SqliteQuery
         }
     }
     #endregion add or merge Notes
