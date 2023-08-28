@@ -83,8 +83,85 @@ The Diagram is an iFrame to another page and it will be automatically genereate,
 
 [Top](#)
 
+## Entity Relationship Diagrams
+
+Possible entities are:
+
+````mermaid
+erDiagram
+    classic_ESXiHosts ||--o{ View_classic_ESXiHosts : HostName
+    classic_ESXiHosts {
+        int ID
+        string HostName
+        string Version
+        string HostName
+        string Manufacturer
+        string Model
+        string vCenterServer
+        string Cluster
+        string PhysicalLocation
+        string ConnectionState
+    }
+    classic_ESXiHostsNotes ||--o{ View_classic_ESXiHosts : HostName
+    classic_ESXiHostsNotes {
+        int ID
+        string HostName
+        string Notes
+    }
+    View_classic_ESXiHosts {
+        int ID
+        string HostName
+        string Notes
+    }
+        
+    classic_summary {
+        int ID
+        string vCenterServer
+        string CountOfESXiHosts
+        string CountOfVMs
+    }
+
+    cloud_ESXiHosts ||--o{ View_cloud_ESXiHosts : HostName
+    cloud_ESXiHosts {
+        int ID
+        string HostName
+        string Version
+        string HostName
+        string Manufacturer
+        string Model
+        string vCenterServer
+        string Cluster
+        string PhysicalLocation
+        string ConnectionState
+    }
+    cloud_ESXiHostsNotes ||--o{ View_cloud_ESXiHosts : HostName
+    cloud_ESXiHostsNotes {
+        int ID
+        string HostName
+        string Notes
+    }
+    View_cloud_ESXiHosts {
+        int ID
+        string HostName
+        string Notes
+    }
+
+    cloud_summary {
+        int ID
+        string vCenterServer
+        string CountOfESXiHosts
+        string CountOfVMs
+    }
+````
+
+More entities are possible.
+
 ## See also
 
+Web Server: [Pode](https://badgerati.github.io/Pode/)
+[Pode.Web](https://badgerati.github.io/Pode.Web/)
+
+Database: [mySQLite](https://github.com/jdhitsolutions/MySQLite)
 [SQLite Tutorial](https://www.sqlitetutorial.net)
 
 [Top](#)
