@@ -8,6 +8,7 @@ We currently have ~150 ESXi Hosts across 12 vCenters in our environemnt. Whenerv
   - [PSXi Summary](#psxi-summary)
   - [PSXi ESXi Inventory](#psxi-esxi-inventory)
   - [Mermaid Diagram](#mermaid-diagram)
+  - [See also](#see-also)
 
 ## How it works
 
@@ -25,30 +26,52 @@ The content of the CSV-file will be stored in a SQLite DB in seperated tabels fo
 
 ## PSXi Homepage
 
-This is the Homepage of the PSXi App. It shows you the status of the Modules and the SQLite Database.
+This is the Homepage of the PSXi App. It shows you the status of the Modules and the SQLite Database, Tables and Views.
 
-![PSXiHomePage](./img/PSXiHomePage.png)
+![PSXiHomePage Module Check](./img/PSXiHomePage1.png)
+![PSXiHomePage DB and Table Check](./img/PSXiHomePage2.png)
+![PSXiHomePage View Check](./img/PSXiHomePage3.png)
 
 ## PSXi Summary
 
 In the Summary, you can see the total of vCenter, and the count of each ESXiHost versions.
 
-![PSXiEsxInventory](./img/PSXiOverallSummary.png)
-![PSXiEsxInventory](./img/PSXiSummaryEsxiHosts.png)
+![PSXiOverallSummary](./img/PSXiOverallSummary.png)
+![PSXiSummaryEsxiHosts](./img/PSXiSummaryEsxiHosts.png)
 
 ## PSXi ESXi Inventory
 
-You can search for the ESXiHost in the search box in the pages Summary, Classic-/Cloud ESXi Host Table.
+If you click on the Group Classic and Classic ESXi Host Inventory, the first you can see is the summary of objects in this environment.
 
-![PSXiEsxInventory](./img/PSXiSearchEsxiHosts.png)
+![PSXiClassicSummaryEsxiHosts](./img/PSXiClassicSummaryEsxiHosts.png)
 
-If you click on this page, all ESXi Hosts of the Classic will be grouped by vCenterServer.
+At the next you can search for an ESXiHosts. Enter the name of the ESXiHost in the search box and press submit.
 
+![PSXiSearchEsxiHosts](./img/PSXiSearchEsxiHosts.png)
+
+Here you can view, add, update and remove note of an ESXiHost.
+
+![PSXiEsyiHostsNotes1](img/PSXiEsyiHostsNotes1.png)
+
+To add or update notes, enter the name of the ESXiHost and all Hosts of the ESXiHosts-table will be listet in the Dropdown, choose the one to edit and enter the note and press submit.
+
+![PSXiEsyiHostsNotes2](img/PSXiEsyiHostsNotes2.png)
+
+To delete the notes of an ESXiHost, enter the name of the ESXiHost and all Hosts of the ESXiHosts-table will be listet in the Dropdown, choose the one to remove the notes and press submit.
+
+![PSXiEsyiHostsNotes3](img/PSXiEsyiHostsNotes3.png)
+
+Each ESXiHosts of the Classic will be grouped by their vCenter Server.
+ 
 ![PSXiEsxInventory](./img/PSXiEsxInventory.png)
 
-If you cklick on this page, each vCenter of the Cloud has it own tab where you can find all ESXiHosts.
+Each vCenter of the Cloud has it own tab where you can find all ESXiHosts.
 
-![PSXiEsxInventory](./img/PSXivCenterTabs.png)
+![PSXivCenterTabs](./img/PSXivCenterTabs.png)
+
+If you click at the row of an ESXiHost, all fileds of the selected ESXiHost will be showed as Sticky-note.
+
+![PSXiEsxiHostDetails](img/PSXiEsxiHostDetails.png)
 
 ## Mermaid Diagram
 
@@ -60,14 +83,85 @@ The Diagram is an iFrame to another page and it will be automatically genereate,
 
 [Top](#)
 
-## Issues
+## Entity Relationship Diagrams
 
-Pode.Web V0.8.3 in a PodeWebForm, the New-PodeWebTextbox Parameter -NoForm -Width '960px' does not work correct like 0.8.2. It shows the buttons on a new line.
+Possible entities are:
 
-v0.8.3
+````mermaid
+erDiagram
+    classic_ESXiHosts ||--o{ View_classic_ESXiHosts : HostName
+    classic_ESXiHosts {
+        int ID
+        string HostName
+        string Version
+        string HostName
+        string Manufacturer
+        string Model
+        string vCenterServer
+        string Cluster
+        string PhysicalLocation
+        string ConnectionState
+    }
+    classic_ESXiHostsNotes ||--o{ View_classic_ESXiHosts : HostName
+    classic_ESXiHostsNotes {
+        int ID
+        string HostName
+        string Notes
+    }
+    View_classic_ESXiHosts {
+        int ID
+        string HostName
+        string Notes
+    }
+        
+    classic_summary {
+        int ID
+        string vCenterServer
+        string CountOfESXiHosts
+        string CountOfVMs
+    }
 
-![New-PodeWebTextbox](./img/Pode.Web_V0.8.3_New-PodeWebTextbox-NoForm.png)
+    cloud_ESXiHosts ||--o{ View_cloud_ESXiHosts : HostName
+    cloud_ESXiHosts {
+        int ID
+        string HostName
+        string Version
+        string HostName
+        string Manufacturer
+        string Model
+        string vCenterServer
+        string Cluster
+        string PhysicalLocation
+        string ConnectionState
+    }
+    cloud_ESXiHostsNotes ||--o{ View_cloud_ESXiHosts : HostName
+    cloud_ESXiHostsNotes {
+        int ID
+        string HostName
+        string Notes
+    }
+    View_cloud_ESXiHosts {
+        int ID
+        string HostName
+        string Notes
+    }
 
-v0.8.2
+    cloud_summary {
+        int ID
+        string vCenterServer
+        string CountOfESXiHosts
+        string CountOfVMs
+    }
+````
 
-![New-PodeWebTextbox](./img/Pode.Web_V0.8.2_New-PodeWebTextbox-NoForm.png)
+More entities are possible.
+
+## See also
+
+Web Server: [Pode](https://badgerati.github.io/Pode/)
+[Pode.Web](https://badgerati.github.io/Pode.Web/)
+
+Database: [mySQLite](https://github.com/jdhitsolutions/MySQLite)
+[SQLite Tutorial](https://www.sqlitetutorial.net)
+
+[Top](#)
