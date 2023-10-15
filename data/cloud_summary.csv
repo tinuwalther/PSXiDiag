@@ -1,5 +1,5 @@
-vCenterServer;CountOfESXiHosts;CountOfVMs
-vcsa00dev.cloud.ch;7;180
-vcsa00dmz.cloud.ch;6;175
-vcsa10prd.cloud.ch;51;1275
-vcsa21dmz.cloud.ch;16;480
+"vCenterServer";"CountOfESXiHosts";"CountOfVMs"
+"vcsa00dev.cloud.ch";"7";"180"
+"vcsa00dmz.cloud.ch";"6";"175"
+"vcsa10prd.cloud.ch";"51";"1275"
+"vcsa21dmz.cloud.ch";"16";"480"

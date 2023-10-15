@@ -178,3 +178,92 @@ $SqliteQuery = "Select Created from $($SqlTableName) Limit 1"
 # $SqliteQuery = "Select vCenterServer, Cluster, COUNT(HostName) AS CountOfHosts, COUNT(Cluster) AS CountOfCluster from $($SqlTableName) Group by vCenterServer"
 $SQLite_DB   = Invoke-MySQLiteQuery -connection $db -Query $SqliteQuery
 $SQLite_DB | Format-Table -AutoSize
+
+
+#region Tests with original CSV-files
+$fileWithQuotationMarks = 'D:\github.com\PSXiDiag\data\AllClassicVIServers-IXESXiHostSummary.csv'
+$fileNoQuotationMarks   = 'D:\github.com\PSXiDiag\data\classic_ESXiHosts.csv'
+
+$dbFile   = 'D:\temp\test.db'
+$createDb = New-MySQLiteDB $dbFile -PassThru -force
+$createDb
+
+$csvWithQuotationMarks = Import-Csv -Delimiter ';' -Path $fileWithQuotationMarks -Encoding utf8 | Sort-Object HostName
+$csvNoQuotationMarks   = Import-Csv -Delimiter ';' -Path $fileNoQuotationMarks   -Encoding utf8 | Sort-Object HostName
+
+# $csvWithQuotationMarks | ConvertTo-Json
+# $csvNoQuotationMarks   | ConvertTo-Json
+# Compare-Object -ReferenceObject $csvNoQuotationMarks -DifferenceObject $csvWithQuotationMarks
+
+# $jsonWithQuotationMarks = Get-Content -Path $fileWithQuotationMarks -
+# $jsonNoQuotationMarks   = Import-Csv -Delimiter ';' -Path $fileNoQuotationMarks   -Encoding utf8 | Sort-Object HostName
+
+# Read header from csv-file and set it as column-names to the table
+$th = (Get-Content -Path $fileWithQuotationMarks   -Encoding utf8 -TotalCount 1).Split(';')
+$th = (Get-Content -Path $fileNoQuotationMarks   -Encoding utf8 -TotalCount 1).Split(';')
+if($th -match '"'){
+    $th = (Get-Content -Path $fileWithQuotationMarks -Encoding utf8 -TotalCount 1).Split(';') -Replace '"'
+}else{$false}
+
+# ConvertTo-MySQLiteDB - works as design (no Problem)
+$TableName = 'classic_ESXiHosts'
+# $th = (Get-Content -Path $fileWithQuotationMarks -Encoding utf8 -TotalCount 1).Split(';')
+# New-MySQLiteDBTable -Path $dbFile -TableName $TableName -ColumnNames $th -Force
+
+$th = '"ID" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ' + '"Created", ' 
+$th = $th + (Get-Content -Path $fileWithQuotationMarks -Encoding utf8 -TotalCount 1).Replace(';',', ')
+$TableExists = Invoke-MySQLiteQuery -Path $dbFile -query "SELECT * FROM sqlite_master WHERE type = 'table' AND name like '$($TableName)'"
+if($TableExists){
+    Invoke-MySQLiteQuery -Path $dbFile -query "DROP TABLE '$($TableName)'"
+}
+Invoke-MySQLiteQuery -Path $dbFile -query "CREATE TABLE '$($TableName)' ($th)"
+
+#$csvWithQuotationMarks | ConvertTo-MySQLiteDB -Path $dbFile -TableName $TableName -Primary ID -Append
+# Create table for Notes
+Invoke-MySQLiteQuery -Path $dbFile -query "CREATE TABLE '$($TableName)Notes'(  
+    ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+    HostName TEXT,
+    Notes TEXT
+)"
+
+$ViewExists = Invoke-MySQLiteQuery -Path $dbFile -query "SELECT * FROM sqlite_master WHERE type = 'view' AND name like 'view_$($TableName)'"
+if([string]::IsNullOrEmpty($ViewExists)){
+    Invoke-MySQLiteQuery -Path $dbFile -query "CREATE VIEW 'view_$($TableName)' AS
+    SELECT 
+        l.'ID',
+        l.'HostName', 
+        l.'Version',
+        l.'ConnectionState',
+        l.'PhysicalLocation',
+        l.'Manufacturer',
+        l.'Model',
+        l.'vCenterServer',
+        l.'Cluster',
+        l.'Created',
+        n.'Notes' 
+    FROM '$($TableName)' AS l
+    LEFT JOIN '$($TableName)Notes' AS n
+    ON l.'HostName' = n.'HostName'"
+}
+
+# import from csv
+$SqlTableName = $TableName
+$TableHeader  = (Get-Content -Path $fileNoQuotationMarks   -Encoding utf8 -TotalCount 1).Split(';')
+
+$csvWithQuotationMarks | foreach-object -begin { 
+    $i = 0
+    $db = Open-MySQLiteDB $dbFile
+} -process { 
+    $i ++
+    $SqlQuery = "Insert into $($SqlTableName) Values( 
+        $(for($h = 0; $h -lt $TableHeader.length; $h++){ "'" + $($_.$($TableHeader[$h])) + "'" + ',' }) '$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')', '$($i)'
+    )"
+    $SqlQuery
+    Invoke-MySQLiteQuery -connection $db -keepalive -query $SqlQuery
+} -end { 
+    Close-MySQLiteDB $db
+}
+
+
+Invoke-MySQLiteQuery -Path $dbFile -query "SELECT * FROM $TableName;"
+#endregion

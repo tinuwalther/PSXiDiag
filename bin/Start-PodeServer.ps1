@@ -147,39 +147,10 @@ function Invoke-FileWatcher{
 
                         # Create new empty table, replace if it exists
                         New-MySQLiteDBTable -Path $DBFullPath -TableName $TableName -ColumnNames @($th + 'Created') -Force
+                        $th = $null
+                        
                         # Add ID as primary-key th the table
                         Invoke-MySQLiteQuery -Path $DBFullPath -query "ALTER TABLE $TableName ADD ID [INTEGER PRIMARY KEY];"
-                        
-                        # Create table for Notes
-                        $TableExists = Invoke-MySQLiteQuery -Path $DBFullPath -query "SELECT * FROM sqlite_master WHERE type = 'table' AND name like '$($TableName)Notes'"
-                        if([string]::IsNullOrEmpty($TableExists)){
-                            Invoke-MySQLiteQuery -Path $DBFullPath -query "CREATE TABLE '$($TableName)Notes'(  
-                                ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
-                                HostName TEXT,
-                                Notes TEXT
-                            )"
-                        }
-
-                        # Create views
-                        $ViewExists = Invoke-MySQLiteQuery -Path $DBFullPath -query "SELECT * FROM sqlite_master WHERE type = 'view' AND name like 'view_$($TableName)'"
-                        if([string]::IsNullOrEmpty($ViewExists)){
-                            Invoke-MySQLiteQuery -Path $DBFullPath -query "CREATE VIEW 'view_$($TableName)' AS
-                            SELECT 
-                                l.'ID',
-                                l.'HostName', 
-                                l.'Version',
-                                l.'ConnectionState',
-                                l.'PhysicalLocation',
-                                l.'Manufacturer',
-                                l.'Model',
-                                l.'vCenterServer',
-                                l.'Cluster',
-                                l.'Created',
-                                n.'Notes' 
-                            FROM '$($TableName)' AS l
-                            LEFT JOIN '$($TableName)Notes' AS n
-                            ON l.'HostName' = n.'HostName'"
-                        }
                         
                         switch -Regex ($TableName){
                             '_ESXiHosts$' {
@@ -187,16 +158,90 @@ function Invoke-FileWatcher{
                                     "Item received: $($FileEvent.FullPath)" | Out-PodeHost
                                     "Table-Check: Add content 'ESXiHost' to the table $TableName" | Out-PodeHost
                                 }
-                                if($th -match '"'){
-                                    $th = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';') -Replace '"'
+
+                                $theader = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';')
+                                if($theader -match '"'){
+                                    $theader = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';') -Replace '"'
                                 }
-                                Update-ESXiHostTable -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName -TableHeader $th
+                        
+                                # Create table for Notes
+                                $TableExists = Invoke-MySQLiteQuery -Path $DBFullPath -query "SELECT * FROM sqlite_master WHERE type = 'table' AND name like '$($TableName)Notes'"
+                                if([string]::IsNullOrEmpty($TableExists)){
+                                    Invoke-MySQLiteQuery -Path $DBFullPath -query "CREATE TABLE '$($TableName)Notes'(  
+                                        ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+                                        HostName TEXT,
+                                        Notes TEXT
+                                    )"
+                                }
+
+                                # Create views
+                                $ViewExists = Invoke-MySQLiteQuery -Path $DBFullPath -query "SELECT * FROM sqlite_master WHERE type = 'view' AND name like 'view_$($TableName)'"
+                                if([string]::IsNullOrEmpty($ViewExists)){
+                                    Invoke-MySQLiteQuery -Path $DBFullPath -query "CREATE VIEW 'view_$($TableName)' AS
+                                    SELECT 
+                                        l.'ID',
+                                        l.'HostName', 
+                                        l.'Version',
+                                        l.'ConnectionState',
+                                        l.'PhysicalLocation',
+                                        l.'Manufacturer',
+                                        l.'Model',
+                                        l.'vCenterServer',
+                                        l.'Cluster',
+                                        l.'Created',
+                                        n.'Notes' 
+                                    FROM '$($TableName)' AS l
+                                    LEFT JOIN '$($TableName)Notes' AS n
+                                    ON l.'HostName' = n.'HostName'"
+                                }
+
+                                Update-ESXiHostTable -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName -TableHeader $theader
                                 Invoke-PshtmlESXiDiagram -DBFile $($DBFullPath) -ScriptFile $(Join-Path $PSScriptRoot -ChildPath "New-PshtmlESXiDiag.ps1") -SqlTableName $TableName
                                 if((Get-PodeConfig).DebugLevel -eq 'Info'){
                                     "Remove item: $($FileEvent.FullPath)" | Out-PodeHost
                                 }
                                 Remove-Item -Path $FileEvent.FullPath -Force
+                                $theader = $null
                             }
+
+                            '_Datastores$' {
+                                if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                                    "Item received: $($FileEvent.FullPath)" | Out-PodeHost
+                                    "Table-Check: Add content 'Datastores' to the table $TableName" | Out-PodeHost
+                                }
+
+                                $theader = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';')
+                                if($theader -match '"'){
+                                    $theader = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';') -Replace '"'
+                                }
+
+                                Update-DatastoreTable -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName -TableHeader $theader
+                                if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                                    "Remove item: $($FileEvent.FullPath)" | Out-PodeHost
+                                }
+                                Remove-Item -Path $FileEvent.FullPath -Force
+                                $theader = $null
+                            }
+
+                            '_Networks$' {
+                                if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                                    "Item received: $($FileEvent.FullPath)" | Out-PodeHost
+                                    "Table-Check: Add content 'Networks' to the table $TableName" | Out-PodeHost
+                                }
+
+                                $theader = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';')
+                                if($theader -match '"'){
+                                    $theader = (Get-Content -Path $FileEvent.FullPath -Encoding utf8 -TotalCount 1).Split(';') -Replace '"'
+                                }
+
+                                Update-NetworkTable -CSVFile $FileEvent.FullPath -DBFile $DBFullPath -SqlTableName $TableName -TableHeader $theader
+                                if((Get-PodeConfig).DebugLevel -eq 'Info'){
+                                    "Remove item: $($FileEvent.FullPath)" | Out-PodeHost
+                                }
+                                Remove-Item -Path $FileEvent.FullPath -Force
+                                $theader = $null
+                            }
+
                             '_summary$' {
                                 if((Get-PodeConfig).DebugLevel -eq 'Info'){
                                     "Item received: $($FileEvent.FullPath)" | Out-PodeHost
@@ -302,6 +347,110 @@ function Update-ESXiHostTable{
             }
         }
     }
+    #endregion add or merge Notes
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+}
+
+function Update-DatastoreTable{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
+        [System.IO.FileInfo]$DBFile,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
+        [System.IO.FileInfo]$CSVFile,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [Object]$TableHeader,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$SqlTableName
+    )
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+
+    # There is a problem, if the data in the csv has ""
+    $data = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
+    $data | foreach-object -begin { 
+        $i = 0
+        $db = Open-MySQLiteDB $DBFile.FullName
+    } -process { 
+        $i ++
+        $SqlQuery = "Insert into $($SqlTableName) Values( 
+            $(for($h = 0; $h -lt $TableHeader.length; $h++){ "'" + $($_.$($TableHeader[$h])) + "'" + ',' }) '$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')', '$($i)'
+        )"
+        # $(for($h = 0; $h -lt $TableHeader.length; $h++){ "'" + $($_.$($TableHeader[$h])) + "'" + ',' }) '$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')', '$($i)'
+        # Same as hardcoded version:
+        # $SqlQuery = "Insert into $($SqlTableName) Values(
+        #     '$($_.HostName)', '$($_.Version)', '$($_.Manufacturer)', '$($_.Model)', '$($_.vCenterServer)',
+        #     '$($_.Cluster)', '$($_.PhysicalLocation)', '$($_.ConnectionState)', '$($_.Notes)', '$(Get-Date)', '$($i)'
+        # )"
+        if((Get-PodeConfig).DebugLevel -eq 'Info'){
+            $SqlQuery | Out-Default
+        }
+        Invoke-MySQLiteQuery -connection $db -keepalive -query $SqlQuery
+    } -end { 
+        Close-MySQLiteDB $db
+    }
+
+    #region add or merge Notes, Master is the Notes-Table
+    #endregion add or merge Notes
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+}
+
+function Update-NetworkTable{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
+        [System.IO.FileInfo]$DBFile,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateScript({ if(Test-Path -Path $($_) ){$true}else{Throw "File '$($_)' not found"} })]
+        [System.IO.FileInfo]$CSVFile,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [Object]$TableHeader,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$SqlTableName
+    )
+
+    Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ Begin   ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')
+
+    # There is a problem, if the data in the csv has ""
+    $data = Import-Csv -Delimiter ';' -Path $CSVFile.FullName -Encoding utf8
+    $data | foreach-object -begin { 
+        $i = 0
+        $db = Open-MySQLiteDB $DBFile.FullName
+    } -process { 
+        $i ++
+        $SqlQuery = "Insert into $($SqlTableName) Values( 
+            $(for($h = 0; $h -lt $TableHeader.length; $h++){ "'" + $($_.$($TableHeader[$h])) + "'" + ',' }) '$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')', '$($i)'
+        )"
+        # $(for($h = 0; $h -lt $TableHeader.length; $h++){ "'" + $($_.$($TableHeader[$h])) + "'" + ',' }) '$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff')', '$($i)'
+        # Same as hardcoded version:
+        # $SqlQuery = "Insert into $($SqlTableName) Values(
+        #     '$($_.HostName)', '$($_.Version)', '$($_.Manufacturer)', '$($_.Model)', '$($_.vCenterServer)',
+        #     '$($_.Cluster)', '$($_.PhysicalLocation)', '$($_.ConnectionState)', '$($_.Notes)', '$(Get-Date)', '$($i)'
+        # )"
+        if((Get-PodeConfig).DebugLevel -eq 'Info'){
+            $SqlQuery | Out-Default
+        }
+        Invoke-MySQLiteQuery -connection $db -keepalive -query $SqlQuery
+    } -end { 
+        Close-MySQLiteDB $db
+    }
+
+    #region add or merge Notes, Master is the Notes-Table
     #endregion add or merge Notes
 
     Write-Verbose $('[', (Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), ']', '[ End     ]', "$($MyInvocation.MyCommand.Name)" -Join ' ')

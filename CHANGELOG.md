@@ -13,3 +13,4 @@ Version | Description | Date | Author
 1.1.1 | Change Add Notes to Add/Update Notes | 2023-08-06 | Martin Walther
 1.1.2 | Add merge Notes on import from CSV | 2023-08-06 | Martin Walther
 1.1.3 | Remove double quatation marks on header for import from CSV | 2023-08-27 | Martin Walther
+1.1.4 | Add Datastore page | 2023-10-15 | Martin Walther
