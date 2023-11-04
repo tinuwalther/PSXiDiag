@@ -1,0 +1,5 @@
+"Name";"HyperVVersion";"Manufacturer";"Model";"VMMServer";"Cluster";"PhysicalLocation";"HyperVState";"Notes"
+"WHV7103.cloud.ch";"10.0.14393.4046";"";"";"fptv0010.cloud.ch";"Shared";"Ost";"Running";""
+"WHV9602.cloud.ch";"10.0.17763.1490";"";"";"fptv0010.cloud.ch";"Management";"Nord";"Running";""
+"WHV9581.cloud.ch";"10.0.17763.4644";"";"";"fptv0010.cloud.ch";"Test";"West";"Running";""
+"WHV9580.cloud.ch";"10.0.17763.4644";"";"";"fptv0010.cloud.ch";"Test";"West";"Running";""

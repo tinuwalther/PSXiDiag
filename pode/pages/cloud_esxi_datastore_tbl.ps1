@@ -2,8 +2,8 @@
     Cloud Zone
 #>
 $GroupName = (Get-PodeConfig).PSXi.Group2
-$PageName  = "2. $($GroupName) Datastores"
-$PageTitle = "2. $($GroupName) Datastore Inventory"
+$PageName  = "2. $($GroupName) ESXi Datastores"
+$PageTitle = "2. $($GroupName) ESXi Datastore Inventory"
 
 Add-PodeWebPage -Group $($GroupName) -Name $PageName -Title $PageTitle -Icon 'cloud' -ArgumentList @($GroupName, $PageName, $PageTitle) -ScriptBlock {
     param($GroupName, $PageName, $PageTitle)
@@ -62,7 +62,7 @@ Add-PodeWebPage -Group $($GroupName) -Name $PageName -Title $PageTitle -Icon 'cl
                 $FullDB       = Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
                 [datetime]$Created = $FullDB.Created | Select-Last 1
                 $VIServer     = $FullDB | Group-Object vCenterServer | Select-Object -ExpandProperty Name
-                $Properties = (Get-PodeConfig).PSXi.DatastoreHeader
+                $Properties = (Get-PodeConfig).PSXi.vmwDatastoreHeader
             }
         }
         #endregion Get data from SQLite

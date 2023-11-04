@@ -10,9 +10,10 @@
     PSModules   = 'PSHTML', 'mySQLite', 'Pode', 'Pode.Web'
     PSXi = @{
         AppName = 'PSXi App'
-        Version = '1.1.4'
+        Version = '1.1.5'
         Group1  = 'Classic'
         Group2  = 'Cloud'
+        Group3  = 'Hyper-V'
         Tables  = @(
             'classic_summary' 
             'cloud_summary' 
@@ -27,7 +28,8 @@
             'view_classic_ESXiHosts' 
             'view_cloud_ESXiHosts' 
         )
-        ESXiHeader = @(
+        # VMware
+        vmwESXiHeader = @(
             'HostName'
             'Manufacturer'
             'Model'
@@ -37,7 +39,8 @@
             'ConnectionState'
             'Notes'
         )
-        DatastoreHeader = @(
+        # VMware
+        vmwDatastoreHeader = @(
             # 'vCenterServer'
             # 'DatastoreCluster'
             'DatastoreName'
@@ -47,6 +50,27 @@
             'CapacityGB'
             'FreeSpaceGB'
             'Free'
+        )
+        # VMware
+        vmwNetworkHeader = @(
+            'vCenterServer'
+            'NetworkName'
+            'NetworkType'
+            'NetworkFolder'
+            'VDSwitch'
+            'NetworkStatus'
+        )
+        # Hyper-V
+        hvHostHeader = @(
+            'Name'
+            'HyperVVersion'
+            'Manufacturer'
+            'Model'
+            'VMMServer'
+            'Cluster'
+            'PhysicalLocation'
+            'HyperVState'
+            'Notes'
         )
     }
 }

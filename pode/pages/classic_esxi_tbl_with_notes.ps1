@@ -61,7 +61,7 @@ Add-PodeWebPage -Group $($GroupName) -Name $PageName -Title $PageTitle -Icon 'se
                 $FullDB       = Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
                 [datetime]$Created = $FullDB.Created | Select-Last 1
                 $VIServer     = $FullDB | Group-Object vCenterServer | Select-Object -ExpandProperty Name
-                $Properties = (Get-PodeConfig).PSXi.ESXiHeader
+                $Properties = (Get-PodeConfig).PSXi.vmwESXiHeader
             }
         }
         #endregion Get data from SQLite
@@ -95,7 +95,7 @@ Add-PodeWebPage -Group $($GroupName) -Name $PageName -Title $PageTitle -Icon 'se
                 #endregion Summary
 
                 #region Search
-                New-PodeWebForm -Id "Form$($GroupName)" -Name "Search for ESXiHost" -AsCard -ShowReset -ArgumentList @($Properties, $global:PodeDB, $SqlViewName) -ScriptBlock {
+                New-PodeWebForm -Id "Form$($GroupName)" -Name "Search for Host" -AsCard -ShowReset -ArgumentList @($Properties, $global:PodeDB, $SqlViewName) -ScriptBlock {
                     param($Properties, $global:PodeDB, $SqlViewName)
                     $SqliteQuery = "Select * from $($SqlViewName) Where HostName Like '%$($WebEvent.Data.Search)%' Order by vCenterServer"
                     Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery | Out-PodeWebTable -Sort
