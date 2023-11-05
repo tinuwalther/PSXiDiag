@@ -1,6 +1,8 @@
 ﻿<#
     Classic Zone
 #>
+Import-PodeWebStylesheet -Url 'psxi.css'
+
 $GroupName = (Get-PodeConfig).PSXi.Group1
 $PageName  = "2. $($GroupName) ESXi Datastores"
 $PageTitle = "2. $($GroupName) ESXi Datastore Inventory"

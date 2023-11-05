@@ -1,4 +1,6 @@
-﻿Add-PodeWebPage -Name 'Summary' -Title 'vCenter Summary' -Icon 'clipboard-check' -ScriptBlock {
+﻿Import-PodeWebStylesheet -Url 'psxi.css'
+
+Add-PodeWebPage -Name 'Summary' -Title 'vCenter Summary' -Icon 'clipboard-check' -ScriptBlock {
 
     #region module
     if(-not(Get-InstalledModule -Name mySQLite -ea SilentlyContinue)){

@@ -23,10 +23,12 @@
             'cloud_ESXiHostsNotes'
             'classic_Datastores'
             'cloud_Datastores'
+            'hyperv_SCVMHosts'
         )
         Views = @(
             'view_classic_ESXiHosts' 
             'view_cloud_ESXiHosts' 
+            'view_hyperv_SCVMHosts'
         )
         # VMware
         vmwESXiHeader = @(
@@ -62,11 +64,11 @@
         )
         # Hyper-V
         hvHostHeader = @(
-            'Name'
-            'HyperVVersion'
+            'HostName'
+            'Version'
             'Manufacturer'
             'Model'
-            'VMMServer'
+            # 'VMMServer'
             'Cluster'
             'PhysicalLocation'
             'HyperVState'
