@@ -65,11 +65,11 @@
         # Hyper-V
         hvHostHeader = @(
             'HostName'
-            'Version'
             'Manufacturer'
             'Model'
+            'Version'
             # 'VMMServer'
-            'Cluster'
+            # 'Cluster'
             'PhysicalLocation'
             'HyperVState'
             'Notes'
