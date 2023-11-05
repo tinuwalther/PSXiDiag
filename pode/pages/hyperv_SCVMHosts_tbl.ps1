@@ -84,9 +84,9 @@ Add-PodeWebPage -Group $($GroupName) -Name $PageName -Title $PageTitle -Icon 'cl
                     $VersionGroup = Invoke-MySQLiteQuery -Path $global:PodeDB -Query "Select Version, COUNT(Version) AS Count from $($SqlViewName) Group by Version"
                     for($i = 0; $i -lt $VersionGroup.count; $i++ ){
                         switch -Regex ($VersionGroup[$i].Version){
-                            '17763'   {$Colour = 'Green'}
-                            '14393'   {$Colour = 'Yellow'}
-                            '^6\.5'   {$Colour = 'Red'}
+                            '20348'   {$Colour = 'Green'}
+                            '17763'   {$Colour = 'Yellow'}
+                            '14393'   {$Colour = 'Red'}
                             default {$Colour = 'Dark'}
                         }
                         if($VersionGroup[$i].Count -gt 0){
@@ -189,9 +189,20 @@ Add-PodeWebPage -Group $($GroupName) -Name $PageName -Title $PageTitle -Icon 'cl
                             New-PodeWebCard -NoTitle -NoHide -Content @(
                                 New-PodeWebText -Value "Cluster «$($Cluster)» contains:" -Style Bold
                                 New-PodeWebBadge -Colour Blue -Value "$($SCVMHosts.Count) Hosts"
+                                $Query = "Select Cluster, Version, COUNT(Version) AS Count from $($SqlViewName) Where (Cluster = '$Cluster') Group by Version"
+                                $Group = Invoke-MySQLiteQuery -Path $global:PodeDB -Query $Query # | Out-Default
+                                if($Cluster -eq $Group.Cluster){
+                                    switch -Regex ($Group.Version){
+                                        '20348'   {$Colour = 'Green'}
+                                        '17763'   {$Colour = 'Yellow'}
+                                        '14393'   {$Colour = 'Red'}
+                                        default {$Colour = 'Dark'}
+                                    }
+                                    New-PodeWebBadge -Colour $Colour -Value "V$($Group.Version) ($($Group.Count))"
+                                }
                             )
                             #endregion Badge
-
+                            
                             #region add table
                             New-PodeWebTable -Id "Table$($i)" -Name "VC$($i)" -DisplayName "Cluster $($Cluster)" -AsCard -SimpleSort -NoExport -NoRefresh -Click -DataColumn HostName -ClickScriptBlock{
                                 param($Properties, $item, $global:PodeDB, $SqlViewName, $Cluster)

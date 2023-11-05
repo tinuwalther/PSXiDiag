@@ -37,6 +37,10 @@ Add-PodeWebPage -Name 'Summary' -Title 'vCenter Summary' -Icon 'clipboard-check'
                 $ESXiHosts = $classic_summary.'Total ESXiHosts' + $cloud_summary.'Total ESXiHosts'
                 New-PodeWebBadge -Colour Blue -Value "$($ESXiHosts) ESXiHosts"
                 
+                $SqliteQuery = "SELECT COUNT(HostName) AS 'Total SCVMHosts' FROM hyperv_SCVMHosts"
+                $SCVMHosts = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                New-PodeWebBadge -Colour Blue -Value "$($SCVMHosts.'Total SCVMHosts') Hyper-V Hosts"
+                
                 $VMs = $classic_summary.'Total VMs' + $cloud_summary.'Total VMs'
                 New-PodeWebBadge -Colour Light -Value "$($VMs) VMs"
 
@@ -121,7 +125,7 @@ Add-PodeWebPage -Name 'Summary' -Title 'vCenter Summary' -Icon 'clipboard-check'
             New-PodeWebGrid -Cells @(
     
                 if(Test-Path $PodeDB){
-                    $SqlTableName = 'classic_summary', 'cloud_summary'
+                    $SqlTableName = 'classic_summary', 'cloud_summary' #, 'hyperv_SCVMHosts'
                     $Properties = @(
                         'vCenterServer'	
                         'CountOfESXiHosts'
@@ -130,14 +134,27 @@ Add-PodeWebPage -Name 'Summary' -Title 'vCenter Summary' -Icon 'clipboard-check'
                     foreach($item in $SqlTableName){
                         $i ++
                         switch -Regex ($item){
-                            'cloud'   {$DisplayName = 'Cloud'}
-                            'classic' {$DisplayName = 'Classic'}
+                            'cloud' {
+                                $DisplayName = 'Cloud'
+                                $SqliteQuery = "SELECT COUNT(vCenterServer) AS 'Total vCenter', SUM(CountOfESXiHosts) AS 'Total ESXiHosts', SUM(CountOfVMs) AS 'Total VMs' FROM $item"
+                                $summary = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                            }
+                            'classic' {
+                                $DisplayName = 'Classic'
+                                $SqliteQuery = "SELECT COUNT(vCenterServer) AS 'Total vCenter', SUM(CountOfESXiHosts) AS 'Total ESXiHosts', SUM(CountOfVMs) AS 'Total VMs' FROM $item"
+                                $summary = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                            }
+                            'hyperv' {
+                                $DisplayName = 'Hyper-V'
+                                $SqliteQuery = "SELECT COUNT(VMMServer) AS 'Total VMMServer', SUM(HostName) AS 'Total Hosts', SUM(2*HostName) AS 'Total VMs' FROM $item"
+                                $summary = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                            }
                         }
     
-                        New-PodeWebCell -Width '50%' -Content @(
+                        New-PodeWebCell -Width '30%' -Content @(
 
-                            $SqliteQuery = "SELECT COUNT(vCenterServer) AS 'Total vCenter', SUM(CountOfESXiHosts) AS 'Total ESXiHosts', SUM(CountOfVMs) AS 'Total VMs' FROM $item"
-                            $summary = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
+                            # $SqliteQuery = "SELECT COUNT(vCenterServer) AS 'Total vCenter', SUM(CountOfESXiHosts) AS 'Total ESXiHosts', SUM(CountOfVMs) AS 'Total VMs' FROM $item"
+                            # $summary = Invoke-MySQLiteQuery -Path $PodeDB -Query $SqliteQuery
 
                             New-PodeWebCard  -Id "Chart$($i)" -Name "Chart$($i)" -DisplayName "$($DisplayName) Summary" -Content @(
 
