@@ -55,3 +55,44 @@ Custom8
 Custom9 
 Custom10
 #endregion
+
+#region VMMServer
+$hvVMM = Get-VMMServer -ComputerName $VMMServer -TCPPort 8100
+$hvVMM.Name
+$hvVMM.ActiveVMMNode
+$hvVMM.ManagedComputer.FQDN
+#endregion
+
+
+#region Cluster
+$hvCluster = Get-SCVMHostCluster
+$hvCluster.ClusterName.count
+$hvCluster | Select-Object -First 1
+
+$Properties = @(
+    'ClusterName'
+    @{N='Description';E={$_.Description.Trim()}}
+    @{N='HostGroupPath';E={$_.HostGroup.Path}}
+    'SharedVolumes'
+    'AvailableStorageNode'
+)
+$hvCluster | Select-Object $Properties
+#endregion
+
+
+#region SCVMHost
+$hvHosts = Get-SCVMHost
+$hvHosts.Count
+$hvHosts | Select-Object -First 1
+
+$Properties = @(
+    'Name'
+    @{N='Cluster';E={ (Get-SCVMHostCluster -VMHostGroup $_.VMHostGroup).ClusterName }}
+    @{N='Description';E={$_.Description.Trim()}}
+    'HyperVVersion'
+    'HyperVState'
+    @{N='VMs';E={$_.VMs.Count}}
+)
+$hvHosts | Select-Object -First 1 | Select-Object $Properties
+
+#endregion
