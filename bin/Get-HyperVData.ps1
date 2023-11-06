@@ -28,18 +28,18 @@ foreach($cluster in $hvCluster){
 #region Get Hosts
 $hvHosts   = Get-SCVMHost
 foreach($node in $hvHosts){
-    $hvCluster = Get-SCVMHostCluster -VMHostGroup $node.VMHostGroup
     [PSCustomObject]@{
         HostName         = $node.Name
-        #OSVersion        = $node.OperatingSystem.Name
+        OSVersion        = $node.OperatingSystem.Name
         Version          = $node.HyperVVersion
         Manufacturer     = ''
         Model            = ''
         VMMServer        = $VMM.Name
-        Cluster          = $hvCluster.ClusterName
+        Cluster          = Get-Cluster -Name $node.Name
         PhysicalLocation = $node.VMHostGroup.Name
         HyperVState      = $node.HyperVState
         Notes            = $node.Description # or $node.Custom1
+        VMs              = $node.VMs.Count
     }
 }
 
