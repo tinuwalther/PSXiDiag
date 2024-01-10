@@ -35,8 +35,8 @@ foreach($node in $hvHosts){
         Manufacturer     = ''
         Model            = ''
         VMMServer        = $VMM.Name
-        Cluster          = Get-Cluster -Name $node.Name
-        PhysicalLocation = $node.VMHostGroup.Name
+        Cluster          = Get-Cluster -Name $node.Name -ErrorAction Ignore
+        PhysicalLocation = $node.VMHostGroup
         HyperVState      = $node.HyperVState
         Notes            = $node.Description # or $node.Custom1
         VMs              = $node.VMs.Count
