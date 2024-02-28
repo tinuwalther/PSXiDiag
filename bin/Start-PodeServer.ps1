@@ -10,7 +10,7 @@
     Specify a URI to a help page, this will show when Get-Help -Online is used.
 
 .EXAMPLE
-    Start-PodeServer.ps1 -Verbose
+    pwsh .\Start-PodeServer.ps1 -Verbose
 #>
 [CmdletBinding()]
 param ()
@@ -717,9 +717,9 @@ if($CurrentOS -eq [OSType]::Windows){
     }else{
         Write-Host "Running on Windows and start new session with elevated Privileges" -ForegroundColor Green
         if($PSVersionTable.PSVersion.Major -lt 6){
-            Start-Process "$psHome\powershell.exe" -Verb Runas -ArgumentList $($MyInvocation.MyCommand.Name)
+            Start-Process "$psHome\powershell.exe" -Verb Runas -WorkingDirectory $PSScriptRoot -ArgumentList $($MyInvocation.MyCommand.Name)
         }else{
-            Start-Process "$psHome\pwsh.exe" -Verb Runas -ArgumentList $($MyInvocation.MyCommand.Name)
+            Start-Process "$psHome\pwsh.exe" -Verb Runas -WorkingDirectory $PSScriptRoot -ArgumentList $($MyInvocation.MyCommand.Name)
         }
     }
 }else{
