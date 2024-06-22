@@ -1,4 +1,4 @@
-"vCenterServer";"CountOfESXiHosts";"CountOfVMs"
+"VIServer";"CountOfHosts";"CountOfVMs"
 "vcsa00dev.cloud.ch";"7";"180"
 "vcsa00dmz.cloud.ch";"6";"175"
 "vcsa10prd.cloud.ch";"51";"1275"

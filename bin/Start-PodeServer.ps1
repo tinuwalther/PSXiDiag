@@ -615,8 +615,8 @@ function Update-SummaryTable{
     } -process { 
         $i ++
         $SqlQuery = "Insert into $($SqlTableName) Values(
-            '$($_.vCenterServer)',
-            '$($_.CountOfESXiHosts)',
+            '$($_.VIServer)',
+            '$($_.CountOfHosts)',
             '$($_.CountOfVMs)',
             '$(Get-Date)',
             '$($i)'
