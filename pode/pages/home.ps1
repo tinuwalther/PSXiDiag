@@ -1,4 +1,6 @@
-﻿Set-PodeWebHomePage -Title 'Welcome to the PSXi App!' -Layouts @(
+﻿Import-PodeWebStylesheet -Url 'psxi.css'
+
+Set-PodeWebHomePage -Title 'Welcome to the PSXi App!' -Layouts @(
 
     #region Defaults
     $PodeRoot = $($PSScriptRoot).Replace('pages','db')

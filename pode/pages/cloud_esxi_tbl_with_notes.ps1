@@ -1,10 +1,14 @@
 ﻿<#
     Cloud Zone
 #>
-$GroupName = (Get-PodeConfig).PSXi.Group2
+Import-PodeWebStylesheet -Url 'psxi.css'
 
-Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Title "$($GroupName) ESXi Host Inventory" -Icon 'cloud' -ArgumentList $GroupName -ScriptBlock {
-    param($GroupName)
+$GroupName = (Get-PodeConfig).PSXi.Group2
+$PageName  = "1. $($GroupName) ESXi Hosts"
+$PageTitle = "1. $($GroupName) ESXi Host Inventory"
+
+Add-PodeWebPage -Group $($GroupName) -Name $PageName -Title $PageTitle -Icon 'cloud' -ArgumentList @($GroupName, $PageName, $PageTitle) -ScriptBlock {
+    param($GroupName, $PageName, $PageTitle)
 
     #region module
     if(-not(Get-InstalledModule -Name mySQLite -ea SilentlyContinue)){
@@ -26,7 +30,7 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
     #region Breadcrumb
     Set-PodeWebBreadcrumb -Items @(
         New-PodeWebBreadcrumbItem -Name 'Home' -Url '/'
-        New-PodeWebBreadcrumbItem -Name "$GroupName ESXi Host Inventory" -Url "/pages/PageName?value=$($GroupName) ESXi Hosts Table" -Active
+        New-PodeWebBreadcrumbItem -Name $PageTitle -Url "/pages/PageName?value=$($PageTitle)" -Active
     )
     #endregion Breadcrumb
 
@@ -52,13 +56,14 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                 )
                 break
             }else{
-                $i = $ii = 200
+                $i =  200 
+                $ii = 200
                 $SqlViewName = $item
                 $SqliteQuery  = "Select * from $($SqlViewName)"
                 $FullDB       = Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery
                 [datetime]$Created = $FullDB.Created | Select-Last 1
                 $VIServer     = $FullDB | Group-Object vCenterServer | Select-Object -ExpandProperty Name
-                $Properties = (Get-PodeConfig).PSXi.TableHeader
+                $Properties = (Get-PodeConfig).PSXi.vmwESXiHeader
             }
         }
         #endregion Get data from SQLite
@@ -68,7 +73,7 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
             if($MySQLiteDB){
 
                 #region Summary
-                New-PodeWebCard -Name Summary -DisplayName "Summary of $GroupName" -Content @(
+                New-PodeWebCard -Name Summary -DisplayName "Summary of $GroupName ESXiHosts" -Content @(
                     New-PodeWebText -Value "Last update: $(Get-Date $Created -f 'yyyy-MM-dd HH:mm:ss') "  
                     New-PodeWebBadge -Colour Green -Value "$($VIServer.Count) vCenter"
                     $TotalCluster = $FullDB | Group-Object Cluster
@@ -92,12 +97,12 @@ Add-PodeWebPage -Group $($GroupName) -Name "$($GroupName) ESXi Host Table" -Titl
                 #endregion Summary
 
                 #region Search
-                New-PodeWebForm -Id "Form$($GroupName)" -Name "Search for ESXiHost" -AsCard -ShowReset -ArgumentList @($Properties, $global:PodeDB, $SqlViewName) -ScriptBlock {
+                New-PodeWebForm -Id "Form$($GroupName)" -Name "Search for Host" -AsCard -ShowReset -ArgumentList @($Properties, $global:PodeDB, $SqlViewName) -ScriptBlock {
                     param($Properties, $global:PodeDB, $SqlViewName)
                     $SqliteQuery = "Select * from $($SqlViewName) Where HostName Like '%$($WebEvent.Data.Search)%' Order by vCenterServer"
                     Invoke-MySQLiteQuery -Path $global:PodeDB -Query $SqliteQuery | Out-PodeWebTable -Sort
                 } -Content @(
-                    New-PodeWebTextbox -Id "Search$($GroupName)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '400px' -Placeholder 'Enter a HostName or leave it empty to load all Hosts' -CssClass 'no-form'
+                    New-PodeWebTextbox -Id "Search$($GroupName)" -Name 'Search' -DisplayName 'HostName' -Type Text -NoForm -Width '450px' -Placeholder 'Enter a HostName or leave it empty to load all Hosts' -CssClass 'no-form'
                 )
                 #endregion Search
 

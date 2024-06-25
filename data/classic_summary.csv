@@ -1,5 +1,5 @@
-vCenterServer;CountOfESXiHosts;CountOfVMs
-vCSA421.classic.ch;2;60
-vCSA400.classic.ch;6;150
-vCSA410.classic.ch;6;140
-vCSA420.classic.ch;4;140
+"VIServer";"CountOfHosts";"CountOfVMs"
+"vCSA421.classic.ch";"2";"60"
+"vCSA400.classic.ch";"6";"150"
+"vCSA410.classic.ch";"6";"140"
+"vCSA420.classic.ch";"4";"140"

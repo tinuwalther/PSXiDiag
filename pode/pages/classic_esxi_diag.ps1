@@ -2,12 +2,15 @@
     Classic Zone
 #>
 $GroupName = (Get-PodeConfig).PSXi.Group1
-Add-PodeWebPage -Group $GroupName -Name "$GroupName ESXi Host Diagram" -Title "$GroupName ESXi Host Diagram" -Icon 'server' -ArgumentList $GroupName -ScriptBlock {
-    param($GroupName)
+$PageName  = "3. $($GroupName) ESXi Diagram"
+$PageTitle = "3. $($GroupName) ESXi Host Diagram"
+
+Add-PodeWebPage -Group $GroupName -Name $PageName -Title $PageTitle -Icon 'server' -ArgumentList @($GroupName, $PageName, $PageTitle) -ScriptBlock {
+    param($GroupName, $PageNam, $PageTitle)
 
     Set-PodeWebBreadcrumb -Items @(
         New-PodeWebBreadcrumbItem -Name 'Home' -Url '/'
-        New-PodeWebBreadcrumbItem -Name "$GroupName ESXi Host Diagram" -Url "/pages/PageName?value=$($GroupName) ESXi Hosts Diagram" -Active
+        New-PodeWebBreadcrumbItem -Name $PageTitle -Url "/pages/PageName?value=$($PageName)" -Active
     )
 
     New-PodeWebIFrame -Url '/classic_ESXiHosts_diag'
