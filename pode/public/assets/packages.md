@@ -1,3 +1,16 @@
+# Bootstrap
+
+[Bootstrap](https://getbootstrap.com/)
+
+## How to update Bootstrap
+
+Open [Bootstrap](https://getbootstrap.com/) and scroll down to **Include via CDN**.
+
+Browse to the URL in link href of the bootstrap.min.css, mark the whole content, and copy & paste the content in to your bootstrap.min.css-file.
+
+Browse to the URL in script src of the bootstrap.bundle.min.js, mark the whole content, and copy & paste the content in to your bootstrap.bundle.min.js-file.
+
+
 # NPM Packages
 
 ## CDNPKG
