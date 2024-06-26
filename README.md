@@ -79,7 +79,7 @@ For each zones, there is a Mermaid-Class-Diagram for each vCenter.
 
 ![PSXiEsxInventory](./img/PSXiDiagramESXi.png)
 
-The Diagram is an iFrame to another page and it will be automatically genereate, if you upload a new CSV-file into the folder where the FileWatcher is configured.
+The Diagram is an iFrame to another page and it will be automatically genereate, if you upload a new CSV-file into the folder where the FileWatcher is configured. This page use pode, pode.web, PSHTML and Mermaid.
 
 [Top](#)
 
